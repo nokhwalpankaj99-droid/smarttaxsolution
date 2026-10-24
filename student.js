@@ -28,7 +28,12 @@ const quiz=document.getElementById('quiz');
 document.getElementById('startQuiz').addEventListener('click',startQuiz);
 function startQuiz(){
  const subject=document.getElementById('subject').value;
- activeQuestions=questionSets[subject].slice().sort(()=>Math.random()-.5);
+ activeQuestions=questionSets[subject].map(item=>{
+  const choices=item.o.map((text,index)=>({text,correct:index===item.a}));
+  for(let i=choices.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[choices[i],choices[j]]=[choices[j],choices[i]];}
+  return {q:item.q,o:choices.map(choice=>choice.text),a:choices.findIndex(choice=>choice.correct)};
+ });
+ for(let i=activeQuestions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[activeQuestions[i],activeQuestions[j]]=[activeQuestions[j],activeQuestions[i]];}
  answers={};
  renderQuestions(subject);
 }
@@ -40,8 +45,10 @@ function renderQuestions(subject){
   quiz.appendChild(block);
  });
  const submit=document.createElement('button');submit.type='button';submit.className='button primary';submit.textContent='Submit Practice';submit.addEventListener('click',()=>{
+  const missing=activeQuestions.findIndex((q,i)=>!quiz.querySelector('input[name="q'+i+'"]:checked));
+  if(missing!==-1){const first=quiz.querySelector('input[name="q'+missing+'"]');first.closest('.quiz-option').scrollIntoView({behavior:'smooth',block:'center'});first.focus();alert('Please answer every question before submitting.');return;}
   let score=0;activeQuestions.forEach((q,i)=>{const chosen=quiz.querySelector('input[name="q'+i+'"]:checked');if(chosen&&Number(chosen.value)===q.a)score++});
-  const percent=Math.round(score/activeQuestions.length*100);const result=document.createElement('div');result.className='quiz-result';result.textContent='Your sample score: '+score+'/'+activeQuestions.length+' ('+percent+'%). '+(percent>=60?'You reached the 60% practice target.':'Keep practising and try again.');
+  const percent=Math.round(score/activeQuestions.length*100);const result=document.createElement('div');result.className='quiz-result';result.setAttribute('role','status');result.setAttribute('aria-live','polite');result.textContent='Your sample score: '+score+'/'+activeQuestions.length+' ('+percent+'%). '+(percent>=60?'You reached the 60% practice target.':'Keep practising and try again.');
   quiz.appendChild(result);submit.disabled=true;submit.textContent='Submitted';
  });
  quiz.appendChild(submit);
