@@ -26,10 +26,14 @@ create table if not exists public.questions (
   course_id uuid not null references public.courses(id) on delete cascade,
   question_text text not null,
   options jsonb not null check (jsonb_typeof(options) = 'array' and jsonb_array_length(options) >= 2),
-  correct_option integer not null check (correct_option >= 0),
   explanation text not null default '',
   is_active boolean not null default true,
   created_at timestamptz not null default now()
+);
+
+create table if not exists public.question_answer_keys (
+  question_id uuid primary key references public.questions(id) on delete cascade,
+  correct_option integer not null check (correct_option >= 0)
 );
 
 create table if not exists public.exam_attempts (
@@ -80,6 +84,7 @@ for each row execute procedure public.handle_new_user();
 alter table public.profiles enable row level security;
 alter table public.courses enable row level security;
 alter table public.questions enable row level security;
+alter table public.question_answer_keys enable row level security;
 alter table public.exam_attempts enable row level security;
 alter table public.certificates enable row level security;
 
@@ -98,7 +103,7 @@ create policy "student reads own attempts" on public.exam_attempts for select to
 drop policy if exists "student reads own certificates" on public.certificates;
 create policy "student reads own certificates" on public.certificates for select to authenticated using (student_id = (select auth.uid()));
 
--- Intentionally no client insert/update policies for scores/certificates:
+-- No client policies for answer keys: students must never read correct answers directly.\n-- Intentionally no client insert/update policies for scores/certificates:
 -- exam grading and certificate issuance must be done by trusted server-side logic,
 -- not by browser JavaScript. Admin policies and secure RPC/functions must be added
 -- after the first admin account is provisioned.
