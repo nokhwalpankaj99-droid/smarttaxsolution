@@ -53,3 +53,65 @@ function renderQuestions(subject){
  });
  quiz.appendChild(submit);
 }
+
+// Supabase student account connection. Only the publishable key belongs in browser code.
+(function initStudentAuth(){
+ const status=document.getElementById('auth-status');
+ if(!status) return;
+ const setStatus=(message,isError=false)=>{status.textContent=message;status.style.color=isError?'#a12622':'#075e53';};
+ const profileBox=document.getElementById('student-profile');
+ const registerBtn=document.getElementById('registerBtn');
+ const loginBtn=document.getElementById('loginBtn');
+ const logoutBtn=document.getElementById('logoutBtn');
+ if(!window.supabase || !window.STS_SUPABASE_URL || !window.STS_SUPABASE_PUBLISHABLE_KEY){
+  setStatus('Account service is not configured. Please contact Smart Tax Solution.',true);return;
+ }
+ const client=window.supabase.createClient(window.STS_SUPABASE_URL,window.STS_SUPABASE_PUBLISHABLE_KEY);
+ const emailInput=document.getElementById('auth-email');
+ const passwordInput=document.getElementById('auth-password');
+ const nameInput=document.getElementById('auth-name');
+ const phoneInput=document.getElementById('auth-phone');
+ const getCredentials=()=>{
+  const email=emailInput.value.trim();
+  const password=passwordInput.value;
+  if(!email || !emailInput.checkValidity()){setStatus('Please enter a valid email address.',true);return null;}
+  if(password.length<8){setStatus('Password must be at least 8 characters.',true);return null;}
+  return {email,password};
+ };
+ registerBtn.addEventListener('click',async()=>{
+  const c=getCredentials();if(!c)return;
+  registerBtn.disabled=true;loginBtn.disabled=true;setStatus('Creating your account…');
+  try{
+   const {data,error}=await client.auth.signUp({email:c.email,password:c.password,options:{data:{full_name:nameInput.value.trim().slice(0,100),phone:phoneInput.value.trim().slice(0,20)},emailRedirectTo:window.location.origin+'/student.html'}});
+   if(error)throw error;
+   if(data.session){setStatus('Account created and signed in successfully.');await showUser(data.user);}
+   else setStatus('Registration received. Check your email for a confirmation link, then sign in.');
+  }catch(e){setStatus(e.message||'Could not create account. Please try again.',true);}
+  finally{registerBtn.disabled=false;loginBtn.disabled=false;}
+ });
+ loginBtn.addEventListener('click',async()=>{
+  const c=getCredentials();if(!c)return;
+  registerBtn.disabled=true;loginBtn.disabled=true;setStatus('Signing in…');
+  try{const {data,error}=await client.auth.signInWithPassword(c);if(error)throw error;setStatus('Signed in successfully.');await showUser(data.user);}
+  catch(e){setStatus(e.message||'Sign-in failed. Check your details and try again.',true);}
+  finally{registerBtn.disabled=false;loginBtn.disabled=false;}
+ });
+ logoutBtn.addEventListener('click',async()=>{
+  logoutBtn.disabled=true;
+  try{const {error}=await client.auth.signOut();if(error)throw error;profileBox.hidden=true;logoutBtn.hidden=true;registerBtn.hidden=false;loginBtn.hidden=false;setStatus('You have signed out.');}
+  catch(e){setStatus(e.message||'Could not sign out.',true);}
+  finally{logoutBtn.disabled=false;}
+ });
+ async function showUser(user){
+  if(!user)return;
+  registerBtn.hidden=true;loginBtn.hidden=true;logoutBtn.hidden=false;
+  profileBox.hidden=false;profileBox.textContent='Signed in as '+(user.email||'student')+'. Loading profile…';
+  try{
+   const {data,error}=await client.from('profiles').select('full_name,phone,created_at').eq('id',user.id).maybeSingle();
+   if(error)throw error;
+   profileBox.textContent='Welcome '+((data&&data.full_name)||user.user_metadata?.full_name||'Student')+'! Signed in as '+(user.email||'')+'. Your account is connected.';
+  }catch(e){profileBox.textContent='You are signed in as '+(user.email||'student')+'. Profile details could not be loaded yet; database permissions may need setup.';}
+ }
+ client.auth.getSession().then(({data,error})=>{if(error)setStatus('Could not check session.',true);else if(data.session)showUser(data.session.user);});
+ client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'){profileBox.hidden=true;logoutBtn.hidden=true;registerBtn.hidden=false;loginBtn.hidden=false;}});
+})();
