@@ -115,3 +115,42 @@ function renderQuestions(subject){
  client.auth.getSession().then(({data,error})=>{if(error)setStatus('Could not check session.',true);else if(data.session)showUser(data.session.user);});
  client.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'){profileBox.hidden=true;logoutBtn.hidden=true;registerBtn.hidden=false;loginBtn.hidden=false;}});
 })();
+
+
+// Secure randomized exam: the database RPC grades answers and stores attempts.
+(function initSecureExam(){
+ const start=document.getElementById('loadSecureExam'),area=document.getElementById('secure-exam-area'),result=document.getElementById('secure-result');
+ if(!start||!area||!window.supabase)return;
+ const client=window.supabase.createClient(window.STS_SUPABASE_URL,window.STS_SUPABASE_PUBLISHABLE_KEY);
+ let activeQuestions=[];
+ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ start.addEventListener('click',async()=>{
+  result.hidden=true;area.textContent='Loading questions…';start.disabled=true;
+  try{
+   const {data:sessionData}=await client.auth.getSession();
+   if(!sessionData.session)throw new Error('Please register or sign in first.');
+   const slug=document.getElementById('secure-course').value;
+   const count=Number(document.getElementById('secure-count').value);
+   const {data:course,error:courseError}=await client.from('courses').select('id,title').eq('slug',slug).eq('is_published',true).maybeSingle();
+   if(courseError)throw courseError;if(!course)throw new Error('This course is not published yet.');
+   const {data,error}=await client.from('questions').select('id,question_text,options').eq('course_id',course.id).eq('is_active',true);
+   if(error)throw error;
+   if(!data||data.length<count)throw new Error('This course currently has '+(data?.length||0)+' active questions. Admin must add at least '+count+' questions before the exam can start.');
+   activeQuestions=[...data].sort(()=>Math.random()-.5).slice(0,count);
+   area.innerHTML='<h3>'+esc(course.title)+' — '+count+' questions</h3><form id="secure-exam-form">'+activeQuestions.map((q,i)=>'<fieldset style="border:1px solid #dce5f5;border-radius:10px;padding:14px;margin:14px 0"><legend><strong>'+ (i+1)+'. '+esc(q.question_text)+'</strong></legend>'+q.options.map((op,j)=>'<label class="quiz-option"><input required type="radio" name="q_'+q.id+'" value="'+j+'"> '+esc(op)+'</label>').join('')+'</fieldset>').join('')+'<button class="button primary" type="submit">Submit exam</button></form>';
+   document.getElementById('secure-exam-form').addEventListener('submit',submitExam);
+  }catch(e){area.textContent=e.message||'Unable to load exam. Please try again.';}
+  finally{start.disabled=false;}
+ });
+ async function submitExam(ev){
+  ev.preventDefault();const form=ev.currentTarget,button=form.querySelector('button[type=submit]');button.disabled=true;
+  try{
+   const answers=activeQuestions.map(q=>{const chosen=form.querySelector('input[name="q_'+q.id+'"]:checked');if(!chosen)throw new Error('Please answer every question before submitting.');return {question_id:q.id,selected_option:Number(chosen.value)};});
+   const {data,error}=await client.rpc('submit_sts_exam',{p_course_slug:document.getElementById('secure-course').value,p_question_count:activeQuestions.length,p_answers:answers});
+   if(error)throw error;
+   result.hidden=false;result.innerHTML='<h3>Exam result</h3><p>Score: <strong>'+esc(data.score)+' / '+esc(data.total)+'</strong></p><p>Percentage: <strong>'+esc(data.percentage)+'%</strong></p><p><strong>'+(data.passed?'PASS':'NOT PASSED')+'</strong> — passing score is 60%.</p>'+(data.certificate_number?'<p>Certificate number: <strong>'+esc(data.certificate_number)+'</strong></p><p><a href="verify-certificate.html?number='+encodeURIComponent(data.certificate_number)+'" target="_blank" rel="noopener noreferrer">Verify certificate</a></p>':'<p>You can practise and try again after reviewing the course material.</p>');
+   area.textContent='Your submitted answers have been graded by the database.';
+  }catch(e){area.insertAdjacentHTML('beforeend','<p class="warning-box">'+esc(e.message||'Submission failed')+'</p>');}
+  finally{button.disabled=false;}
+ }
+})();
