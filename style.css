@@ -12,3 +12,32 @@
 .contact-details a{text-decoration:underline;text-underline-offset:3px}
 .contact-actions{display:flex;gap:10px;flex-wrap:wrap}
 @media(max-width:760px){.founder-grid{grid-template-columns:1fr}}
+
+/* Professional visual refresh: deep navy, warm gold, clean service-led layout */
+:root{--ink:#15243a;--muted:#64748b;--blue:#173d70;--teal:#b58a45;--pale:#f5f7fa;--line:#e1e7ef;--white:#fff}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#17263c;background:#fff;line-height:1.7}
+.site-header{max-width:1240px;padding:18px 30px;border-bottom:1px solid #edf0f4}
+.brand-mark{background:linear-gradient(145deg,#122b4b,#24517c);border-radius:10px;box-shadow:none;letter-spacing:-.5px}
+.brand strong{font-size:17px;letter-spacing:0}.brand small{letter-spacing:.45px}
+.site-header nav{gap:25px}.site-header nav>a:not(.nav-button){font-size:13px;color:#34445b}.nav-button{background:#173d70;border-radius:5px;padding:11px 18px}
+.hero{max-width:1240px;margin:0 auto;padding:82px 30px 78px;gap:72px;background:radial-gradient(ellipse at 94% 10%,#edf2f8 0,transparent 43%)}
+.eyebrow{color:#9a7337;letter-spacing:1.8px}
+h1{font-size:clamp(42px,5.2vw,66px);line-height:1.09;letter-spacing:-2.1px;margin:18px 0}
+h1 span{color:#173d70}.hero-copy>p{font-size:16px;line-height:1.8;color:#5d6b7f}
+.button{border-radius:5px;padding:13px 21px;font-size:13px}.primary{background:#173d70;box-shadow:none}.secondary{border:1px solid #cbd5e1;background:transparent;color:#173d70}
+.hero-card{border-radius:12px;box-shadow:0 20px 55px #1c304810;border-color:#e1e7ef;transform:none;padding:27px}
+.topic-icon{border-radius:9px}.gst{background:#edf2f8;color:#173d70}.tax{background:#f7f0e5;color:#8a652d}.exam{background:#eef3f0;color:#35735f}
+.card-footer{font-size:12px}.trust-strip{max-width:1180px;border-radius:10px;box-shadow:0 10px 30px #15243a06;padding:27px 30px}
+.trust-strip div{border-left:2px solid #c4a46d}.section,.feature-section{max-width:1180px;padding-top:92px;padding-bottom:92px}
+.section-heading h2,.contact-section h2{font-size:clamp(29px,3.5vw,42px);letter-spacing:-1.1px;color:#17263c}
+.section-heading p{font-size:14px}.course-grid{gap:24px}.course-card{border-radius:12px;padding:31px;border-color:#e1e7ef}
+.course-card:hover{box-shadow:0 18px 40px #17263c0d;transform:translateY(-2px)}
+.course-symbol{border-radius:10px;background:#edf2f8;color:#173d70}.course-symbol.income{background:#f7f0e5;color:#8a652d}
+.course-card h3{font-size:23px}.course-card p,.course-card li{font-size:13px;line-height:1.8}
+.text-link{color:#173d70}.feature-section{max-width:none;background:#f5f7fa;padding-left:max(30px,calc((100% - 1180px)/2));padding-right:max(30px,calc((100% - 1180px)/2))}
+.step{border-radius:10px;border-color:#e1e7ef;padding:28px}.step>span{color:#9a7337}
+.contact-section{max-width:1180px;margin:30px auto 65px;padding:40px;border-radius:12px;background:linear-gradient(120deg,#142b49,#204a74)}
+.contact-section .eyebrow{color:#dfc28f}.contact-section h2{color:#fff}.contact-section p{line-height:1.8}
+.light{color:#173d70;border-radius:5px}.contact-actions{gap:9px}.site-footer{max-width:1180px;gap:18px;padding:28px 30px 38px;font-size:12px}
+.footer-brand{color:#173d70}.founder-card{border-radius:12px;box-shadow:0 10px 30px #17263c06}.founder-initials{border-radius:10px;background:#edf2f8;color:#173d70}.founder-initials.cofounder{background:#f7f0e5;color:#8a652d}
+@media(max-width:760px){.site-header{padding:15px 18px}.site-header nav{gap:12px}.hero{padding:48px 20px 52px;gap:30px}.hero-card{padding:20px}.trust-strip{border-radius:10px}.section,.feature-section{padding:68px 20px}.contact-section{margin:25px 16px 45px;padding:26px}.site-footer{padding:25px 20px 32px}}
