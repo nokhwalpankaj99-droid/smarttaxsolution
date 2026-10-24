@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 118" role="img" aria-labelledby="title desc">
+<title id="title">Smart Tax Solution logo</title><desc id="desc">Final Smart Tax Solution brand mark in navy blue and green with upward growth arrow.</desc>
+<rect width="620" height="118" fill="#fff" fill-opacity="0"/>
+<g transform="translate(8 7)">
+ <path d="M15 55 C22 18 60 7 95 17 L78 34 C53 29 38 38 36 52 C34 68 49 75 70 68 L91 61 C117 52 136 63 132 82 C128 101 97 108 62 99 C39 93 23 82 15 69" fill="none" stroke="#0b4b91" stroke-width="11" stroke-linecap="round"/>
+ <path d="M67 20 L133 20 L122 36 L98 36 L98 94 L79 94 L79 36 L57 36 Z" fill="#159b45"/>
+ <path d="M124 62 C143 45 154 28 160 9 L145 15 L158 0 L176 11 L162 12 C154 41 139 64 119 79" fill="#159b45"/>
+ <path d="M111 74 L111 52 L128 52 L137 61 L137 81" fill="#fff" stroke="#0b4b91" stroke-width="3"/>
+ <path d="M128 52 L128 62 L137 62" fill="none" stroke="#0b4b91" stroke-width="3"/>
+ <path d="M116 61 H125 M116 68 H130 M116 75 H126" stroke="#0b4b91" stroke-width="2.5" stroke-linecap="round"/>
+ <circle cx="137" cy="79" r="8" fill="#159b45"/><path d="M133 79 l3 3 5 -6" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<path d="M195 20 V98" stroke="#0b4b91" stroke-width="2"/>
+<text x="215" y="55" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="800" letter-spacing="-1" fill="#0b315e">SMART <tspan fill="#159b45">TAX</tspan></text>
+<text x="216" y="82" font-family="Arial, Helvetica, sans-serif" font-size="24" letter-spacing="9" fill="#0b315e">SOLUTION</text>
+<text x="217" y="104" font-family="Arial, Helvetica, sans-serif" font-size="11" font-style="italic" fill="#0b315e">Your Tax Partner for a Brighter Future</text>
+</svg>
