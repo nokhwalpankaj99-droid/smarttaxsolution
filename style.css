@@ -54,3 +54,20 @@ h1 span{color:#173d70}.hero-copy>p{font-size:16px;line-height:1.8;color:#5d6b7f}
 .portal-links a:hover{background:#edf2f8;border-color:#cbd7e6;text-decoration:underline}
 .portal-disclaimer{margin:22px auto 0;max-width:850px;text-align:center;color:var(--muted);font-size:12px}
 @media(max-width:760px){.portal-grid{grid-template-columns:1fr}.portal-links{grid-template-columns:1fr}.portal-card{padding:21px}}
+
+/* Dark blue multi-column footer inspired by the supplied reference */
+.site-footer{display:block;max-width:none;margin:0;padding:0;background:#17345d;color:#d9e5f5;border-top:0;font-size:13px}
+.footer-main{max-width:1240px;margin:0 auto;padding:42px 30px 35px;display:grid;grid-template-columns:1fr 1fr 1.15fr 1.35fr 1.25fr;gap:30px}
+.footer-column{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.footer-column h3{margin:0 0 5px;color:#41c4f2;font-size:14px;font-weight:750;line-height:1.5}
+.footer-column a{color:#d9e5f5;text-decoration:none;font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+.footer-column a:hover{color:#55d0ff;text-decoration:underline}
+.footer-column p{margin:0;color:#d9e5f5;font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+.footer-column p strong{font-weight:650;color:#fff}
+.footer-social{margin-top:3px}
+.footer-social a{display:inline-block;border:1px solid #7188a7;border-radius:4px;padding:5px 10px}
+.footer-bottom{border-top:1px solid #496080;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:15px max(30px,calc((100% - 1180px)/2));color:#9fb9d9;font-size:12px}
+.footer-disclaimer{max-width:1180px;margin:0 auto;padding:0 30px 18px;color:#aabdd5;font-size:11px;line-height:1.6}
+@media(max-width:950px){.footer-main{grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}.footer-contact{grid-column:auto}}
+@media(max-width:620px){.footer-main{grid-template-columns:repeat(2,minmax(0,1fr));padding:32px 20px;gap:25px 18px}.footer-column h3{font-size:13px}.footer-column a,.footer-column p{font-size:12px}.footer-bottom{padding:15px 20px;flex-direction:column;gap:7px}.footer-disclaimer{padding:0 20px 18px}}
+@media(max-width:390px){.footer-main{grid-template-columns:1fr}}
