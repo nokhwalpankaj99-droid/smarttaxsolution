@@ -23,7 +23,17 @@
 <main class="portal-wrap">
 <a class="top-back" href="index.html">← Back to home</a>
 <section class="portal-hero"><span class="eyebrow">STUDENT LEARNING PORTAL</span><h1>Your tax learning journey starts here.</h1><p>Explore GST and Income Tax learning paths, review practical topics and try the sample assessment below. This is the first portal preview while secure student accounts and the full question bank are being set up.</p></section>
-<div class="portal-grid">
+<section class="portal-panel" id="student-account" style="margin-top:22px">
+<span class="eyebrow">STUDENT ACCOUNT</span><h2 style="margin-top:8px">Register or sign in</h2>
+<p>Create a student account to connect your learning profile to the secure database.</p>
+<div class="portal-grid" style="margin-top:10px">
+<div><div class="form-row"><label for="auth-name">Full name (registration only)</label><input id="auth-name" autocomplete="name" maxlength="100" placeholder="Your full name"></div>
+<div class="form-row"><label for="auth-phone">Mobile number (optional)</label><input id="auth-phone" autocomplete="tel" maxlength="20" placeholder="Mobile number"></div></div>
+<div><div class="form-row"><label for="auth-email">Email address</label><input id="auth-email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com"></div>
+<div class="form-row"><label for="auth-password">Password</label><input id="auth-password" type="password" autocomplete="current-password" minlength="8" required placeholder="At least 8 characters"></div></div></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="button primary" id="registerBtn" type="button">Create account</button><button class="button" id="loginBtn" type="button">Sign in</button><button class="button" id="logoutBtn" type="button" hidden>Sign out</button></div>
+<p id="auth-status" role="status" aria-live="polite" style="margin-top:14px"></p><div id="student-profile" class="exam-box" hidden></div>
+<div class="warning-box">Never share your password. Email confirmation may be required by Supabase settings. This first connection supports account creation and sign-in; secure exams, saved results, certificates and admin controls are separate next steps.</div></section><div class="portal-grid">
 <section class="portal-panel"><div class="course-symbol gst">G</div><h2>GST Practical Learning</h2><p>Study the foundations of GST and build confidence with practical compliance concepts.</p><ul><li>GST registration and taxpayer basics</li><li>Tax invoices and credit/debit notes</li><li>GSTR-1 and GSTR-3B overview</li><li>Input Tax Credit and GSTR-2B reconciliation</li><li>Returns, due dates and common errors</li></ul><a class="text-link" href="mailto:smarttaxsolutionsgnr@gmail.com?subject=GST%20Course%20Enquiry">Enquire about GST course →</a></section>
 <section class="portal-panel"><div class="course-symbol income">₹</div><h2>Income Tax Learning</h2><p>Understand essential tax concepts and common compliance workflows.</p><ul><li>Basic tax terminology and financial year</li><li>Heads of income and deductions overview</li><li>TDS concepts and common sections</li><li>Advance tax and return-filing basics</li><li>Practical examples and documentation</li></ul><a class="text-link" href="mailto:smarttaxsolutionsgnr@gmail.com?subject=Income%20Tax%20Course%20Enquiry">Enquire about Income Tax →</a></section>
 </div>
@@ -34,5 +44,5 @@
 </section>
 </main>
 <footer class="site-footer"><a class="footer-brand" href="index.html">Smart Tax Solution</a><span>GST & Income Tax learning resources</span><a href="mailto:smarttaxsolutionsgnr@gmail.com">smarttaxsolutionsgnr@gmail.com</a><small>Educational content only. Any certificate offered is a private training certificate unless separately accredited.</small><small>© <span id="year"></span> Smart Tax Solution.</small></footer>
-<script src="student.js"></script><script>document.getElementById('year').textContent=new Date().getFullYear()</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>window.STS_SUPABASE_URL="https://jbjergbqjokxxcvntimk.supabase.co";window.STS_SUPABASE_PUBLISHABLE_KEY="sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k";</script><script src="student.js"></script><script>document.getElementById('year').textContent=new Date().getFullYear()</script>
 </body></html>
