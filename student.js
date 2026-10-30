@@ -86,7 +86,12 @@ async function downloadDocument(cert,kind){
    doc.setFont('helvetica','normal');doc.setFontSize(12);doc.text('UDYAM-RJ-15-0042566',w/2,165,{align:'center'});
    doc.setFontSize(9);doc.text('Certificate No: '+cert.certificate_number,20,184);
    doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,191);
-   try{const qr=await QRCode.toDataURL(qrUrl,{width:220,margin:1});doc.addImage(qr,'PNG',w-42,151,25,25);doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Scan to verify',w-29.5,179,{align:'center'});}catch(e){}
+   try{
+     if(!window.QRCode||typeof window.QRCode.toDataURL!=='function')throw new Error('QR library did not load');
+     const qr=await window.QRCode.toDataURL(qrUrl,{width:360,margin:2,errorCorrectionLevel:'H',color:{dark:'#000000',light:'#ffffff'}});
+     if(!qr||!qr.startsWith('data:image/png;base64,'))throw new Error('QR image generation failed');
+     doc.addImage(qr,'PNG',w-45,148,30,30,'CERTQR','FAST');doc.setFontSize(8);doc.setTextColor(...muted);doc.text('SCAN TO VERIFY',w-30,181,{align:'center'});
+   }catch(e){console.error('Certificate QR generation failed:',e);alert('QR Code generate nahi hua: '+(e.message||e));}
    doc.setDrawColor(...navy);doc.line(w/2-23,h-34,w/2+23,h-34);
    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...navy);doc.text('Authorized Signature',w/2,h-29,{align:'center'});
    doc.setDrawColor(...gold);doc.line(22,h-23,w-22,h-23);
@@ -122,7 +127,12 @@ async function downloadDocument(cert,kind){
    widths.forEach((cw,i)=>{doc.setFillColor(255,255,255);doc.rect(x,y,cw,rowH,'S');doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text(rows[1][i],x+cw/2,y+7.5,{align:'center',maxWidth:cw-2});x+=cw;});
    y+=rowH+7;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Percentage: '+pct.toFixed(2)+'%',20,y);
    doc.text('Overall Result: '+(passed?'PASS':'NOT PASSED'),105,y);
-   try{const qr=await QRCode.toDataURL(qrUrl,{width:200,margin:1});doc.addImage(qr,'PNG',w-42,h-51,25,25);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('Scan to verify',w-29.5,h-22,{align:'center'});}catch(e){}
+   try{
+     if(!window.QRCode||typeof window.QRCode.toDataURL!=='function')throw new Error('QR library did not load');
+     const qr=await window.QRCode.toDataURL(qrUrl,{width:360,margin:2,errorCorrectionLevel:'H',color:{dark:'#000000',light:'#ffffff'}});
+     if(!qr||!qr.startsWith('data:image/png;base64,'))throw new Error('QR image generation failed');
+     doc.addImage(qr,'PNG',w-45,h-53,30,30,'MARKQR','FAST');doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('SCAN TO VERIFY',w-30,h-20,{align:'center'});
+   }catch(e){console.error('Marksheet QR generation failed:',e);alert('QR Code generate nahi hua: '+(e.message||e));}
    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Private training record · Verify certificate status using the QR code',w/2,h-15,{align:'center'});
    doc.setTextColor(...navy);doc.line(20,h-35,60,h-35);doc.setFontSize(9);doc.text('Authorized Signature',20,h-29);
  }
