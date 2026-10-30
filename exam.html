@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102542">
+<title>Student Examination | Smart Tax Solution</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--exam-ink:#132743;--exam-blue:#1c4ed8;--exam-border:#d9e2ef}
+body{background:#f3f6fb;color:var(--exam-ink)}
+.exam-top{position:sticky;top:0;z-index:20;background:#102542;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:14px;box-shadow:0 4px 16px #10254222}
+.exam-brand{display:flex;align-items:center;gap:10px;font-weight:800}.exam-brand img{width:38px;height:38px;object-fit:contain;background:#fff;border-radius:8px}
+.exam-top small{display:block;color:#c8d5ec;font-size:11px;font-weight:500}
+.exam-top-right{display:flex;align-items:center;gap:16px}.timer{font-variant-numeric:tabular-nums;font-size:22px;font-weight:850;letter-spacing:1px;background:#fff;color:#102542;border-radius:9px;padding:8px 12px;min-width:104px;text-align:center}.timer.warning{background:#ffe6e6;color:#a61b1b}
+.exam-layout{max-width:1200px;margin:22px auto;padding:0 18px;display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px}.exam-card,.side-card{background:#fff;border:1px solid var(--exam-border);border-radius:14px;box-shadow:0 5px 20px #1e33530a}.exam-card{padding:24px}.exam-head{display:flex;justify-content:space-between;gap:12px;align-items:start;border-bottom:1px solid #e7edf5;padding-bottom:16px}.badge{font-size:11px;letter-spacing:.8px;font-weight:800;color:#1642a0;background:#eaf0ff;padding:7px 9px;border-radius:6px}.instructions{background:#f8fafc;border:1px solid #e4eaf2;padding:12px;border-radius:9px;color:#51627a;font-size:13px;margin:15px 0}.question{font-size:18px;line-height:1.55;font-weight:750;margin:20px 0}.option{display:flex;align-items:flex-start;gap:11px;padding:14px;border:1px solid #dce4ef;border-radius:10px;margin:10px 0;cursor:pointer;transition:.15s}.option:hover{border-color:#7895ed;background:#f8faff}.option:has(input:checked){border-color:#2455df;background:#edf2ff}.option input{margin-top:4px;accent-color:#2455df}.controls{display:flex;justify-content:space-between;gap:10px;margin-top:24px}.controls button,.side-card button{border:0;border-radius:8px;padding:11px 16px;font-weight:750;cursor:pointer}.btn-primary{background:#1c4ed8;color:white}.btn-light{background:#edf1f7;color:#172b49}.btn-danger{background:#a61b1b;color:white}.side-card{padding:18px;height:max-content;position:sticky;top:92px}.side-card h3{margin:0 0 12px}.student-line{font-size:12px;color:#65748b;overflow-wrap:anywhere}.progress-track{height:7px;background:#e7edf6;border-radius:8px;overflow:hidden;margin:12px 0}.progress-fill{height:100%;width:0;background:#1c4ed8;transition:width .2s}.question-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:15px 0}.qjump{background:#eef2f8;color:#33455f;border:1px solid #dce4ef;padding:8px 0!important}.qjump.answered{background:#dff7eb;color:#086442;border-color:#b5e8d0}.qjump.current{outline:2px solid #2455df;outline-offset:1px}.side-card .btn-primary{width:100%;margin-top:8px}.status{font-size:13px;color:#51627a;line-height:1.5}.hidden{display:none!important}.result-card{max-width:700px;margin:50px auto;padding:32px;background:#fff;border-radius:16px;border:1px solid var(--exam-border)}.result-card h1{margin-top:0}.result-score{font-size:40px;font-weight:900;color:#1746c1}.footnote{font-size:11px;color:#6a7890;margin-top:16px;line-height:1.5}
+@media(max-width:800px){.exam-layout{grid-template-columns:1fr}.side-card{position:static;order:-1}.exam-top{align-items:flex-start}.exam-top-right{gap:8px}.timer{font-size:18px;min-width:84px}.exam-card{padding:16px}.exam-head{flex-direction:column}.question{font-size:16px}}
+</style>
+</head>
+<body>
+<header class="exam-top">
+ <div class="exam-brand"><img src="assets/smart-tax-solution-logo.svg" alt=""><div>Smart Tax Solution<small>SECURE STUDENT EXAMINATION</small></div></div>
+ <div class="exam-top-right"><div><small>TIME REMAINING</small><div class="timer" id="timer" aria-live="polite">10:00</div></div><button class="btn-light" id="signOutBtn" type="button">Sign out</button></div>
+</header>
+<main id="loading" class="result-card"><h1>Verifying student session…</h1><p class="status">Please wait while your secure student session is checked.</p></main>
+<main id="examShell" class="exam-layout hidden">
+ <section class="exam-card">
+  <div class="exam-head"><div><span class="badge">ONLINE ASSESSMENT</span><h1 id="courseTitle">Student Examination</h1><p class="status">Read each question carefully. Select one answer and use Next/Previous to navigate.</p></div><div><strong id="questionCounter">Question 1 of 50</strong><div class="status" id="saveState">Answers remain in this session until submitted.</div></div></div>
+  <div class="instructions"><strong>Exam rules:</strong> Total duration is 10 minutes for this current exam setup. The timer cannot be paused. If time runs out, answers will be submitted automatically. For security, the session signs out after 10 minutes of inactivity.</div>
+  <div id="questionArea"></div>
+  <div class="controls"><button class="btn-light" id="prevBtn" type="button">← Previous</button><button class="btn-primary" id="nextBtn" type="button">Save & Next →</button></div>
+  <p class="footnote">This is a private Smart Tax Solution training assessment. It is not a TCS examination and does not represent government accreditation. Do not refresh or close this page during the exam.</p>
+ </section>
+ <aside class="side-card"><h3>Candidate panel</h3><p class="student-line" id="candidateEmail">Checking candidate…</p><p class="status" id="answerCount">Answered 0 of 50</p><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="question-grid" id="questionGrid"></div><button class="btn-primary" id="submitBtn" type="button">Submit exam</button><p class="footnote">Green: answered · Blue outline: current · Grey: unanswered</p></aside>
+</main>
+<main id="resultPanel" class="result-card hidden" aria-live="polite"></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="exam.js"></script>
+</body></html>
