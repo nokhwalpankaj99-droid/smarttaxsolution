@@ -62,29 +62,36 @@ async function downloadDocument(cert,kind){
  if(logoData){doc.addImage(logoData,'PNG',w/2-25,14,50,9.5,'STSLOGO','FAST');}
  doc.setTextColor(...navy);doc.setFont('helvetica','bold');
  if(isCert){
-   doc.setFontSize(23);doc.text('CERTIFICATE OF COMPLETION',w/2,38,{align:'center'});
-   doc.setDrawColor(...gold);doc.setLineWidth(.7);doc.line(w/2-43,43,w/2+43,43);
-   doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(...muted);
-   doc.text('THIS CERTIFICATE IS PRESENTED TO',w/2,51,{align:'center'});
-   doc.setTextColor(...navy);doc.setFont('times','bolditalic');doc.setFontSize(25);
-   doc.text(profile?.full_name||'Student Name',w/2,66,{align:'center',maxWidth:220});
-   doc.setDrawColor(...gold);doc.line(w/2-48,69,w/2+48,69);
-   doc.setFont('helvetica','normal');doc.setFontSize(12);
-   doc.text('For successfully completing the following assessment',w/2,79,{align:'center'});
-   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text(course,w/2,89,{align:'center',maxWidth:220});
-   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...muted);
-   doc.text('Student Details',20,105);
-   doc.setTextColor(...navy);doc.setFontSize(9.5);
-   doc.text("Father's Name: "+(profile?.father_name||'—'),20,113);
-   doc.text("Mother's Name: "+(profile?.mother_name||'—'),20,120);
-   const addr=doc.splitTextToSize('Address: '+(profile?.address||'—'),125);doc.text(addr,20,127);
-   doc.text('Mobile: '+(profile?.phone||'—'),20,142);
-   doc.text('Email: '+(currentUser?.email||'—'),20,149);
-   doc.text('Certificate No: '+cert.certificate_number,20,160);
-   doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,167);
-   try{const qr=await QRCode.toDataURL(qrUrl,{width:220,margin:1});doc.addImage(qr,'PNG',w-42,h-50,25,25);doc.setFontSize(8);doc.text('Scan to verify',w-29.5,h-21,{align:'center'});}catch(e){}
-   doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Private training certificate · Not a government-issued or government-accredited credential',w/2,h-15,{align:'center'});
-   doc.setDrawColor(...navy);doc.line(w-92,h-31,w-57,h-31);doc.setTextColor(...navy);doc.text('Authorized Signature',w-74.5,h-26,{align:'center'});
+   // Minimal, elegant certificate: only student name and course are prominent.
+   doc.setFont('helvetica','bold');doc.setFontSize(24);doc.setTextColor(...navy);
+   doc.text('CERTIFICATE',w/2,39,{align:'center'});
+   doc.setFontSize(13);doc.setTextColor(...gold);doc.text('OF COMPLETION',w/2,47,{align:'center'});
+   doc.setDrawColor(...gold);doc.setLineWidth(.8);doc.line(w/2-48,52,w/2+48,52);
+   doc.setFont('helvetica','normal');doc.setFontSize(11);doc.setTextColor(...muted);
+   doc.text('THIS CERTIFICATE IS PRESENTED TO',w/2,64,{align:'center'});
+   doc.setFont('times','bold');doc.setFontSize(30);doc.setTextColor(20,43,74);
+   const studentName=profile?.full_name||'Student Name';
+   doc.text(doc.splitTextToSize(studentName,230),w/2,83,{align:'center',maxWidth:230});
+   doc.setDrawColor(...gold);doc.setLineWidth(.7);doc.line(w/2-60,91,w/2+60,91);
+   doc.setFont('helvetica','normal');doc.setFontSize(12);doc.setTextColor(...muted);
+   doc.text('has successfully completed the course',w/2,103,{align:'center'});
+   doc.setFont('helvetica','bold');doc.setFontSize(22);doc.setTextColor(21,105,67);
+   doc.text(doc.splitTextToSize(course,235),w/2,119,{align:'center',maxWidth:235});
+   doc.setDrawColor(...gold);doc.line(w/2-45,139,w/2+45,139);
+   doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...navy);
+   doc.text('MSME UDYAM REGISTRATION NO.',w/2,151,{align:'center'});
+   doc.setFont('helvetica','normal');doc.setFontSize(12);doc.text('UDYAM-RJ-15-0042566',w/2,159,{align:'center'});
+   doc.setFontSize(9);doc.text('Certificate No: '+cert.certificate_number,20,176);
+   doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,183);
+   try{const qr=await QRCode.toDataURL(qrUrl,{width:220,margin:1});doc.addImage(qr,'PNG',w/2-12.5,150,25,25);doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Scan to verify',w/2,178,{align:'center'});}catch(e){}
+   doc.setDrawColor(...navy);doc.line(w/2-23,h-34,w/2+23,h-34);
+   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...navy);doc.text('Authorized Signature',w/2,h-29,{align:'center'});
+   doc.setDrawColor(...gold);doc.line(22,h-23,w-22,h-23);
+   doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(...navy);
+   doc.text('CERTIFICATE AVAILABLE ON WEBSITE',w/2,h-16,{align:'center'});
+   doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...muted);
+   doc.text('Verify using the QR code above.',w/2,h-11,{align:'center'});
+ 
  }else{
    doc.setFontSize(19);doc.text('STATEMENT OF MARKS',w/2,38,{align:'center'});
    doc.setFontSize(11);doc.setFont('helvetica','normal');doc.text('Student Assessment Record',w/2,45,{align:'center'});
