@@ -35,10 +35,10 @@ $('resetBtn').addEventListener('click',async()=>{const email=$('reset-email').va
 $('forgotUsername').addEventListener('click',e=>{e.preventDefault();status('Your username is your registered email address. If you cannot remember it, contact support using the account recovery link below. For privacy, the portal cannot display account emails here.');});
 
 async function makeQRDataURL(text){
+ // First try a local QR library if one is available.
  if(window.QRCode&&typeof window.QRCode.toDataURL==='function'){
    return await window.QRCode.toDataURL(text,{width:360,margin:2,errorCorrectionLevel:'H',color:{dark:'#000000',light:'#ffffff'}});
  }
- // Fallback for QRCode.js, which renders to a canvas or image element.
  if(typeof window.QRCode==='function'){
    const host=document.createElement('div');host.style.cssText='position:fixed;left:-10000px;top:0;width:180px;height:180px;background:#fff';
    document.body.appendChild(host);
@@ -46,13 +46,21 @@ async function makeQRDataURL(text){
      new window.QRCode(host,{text,width:180,height:180,colorDark:'#000000',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel?.H||2});
      for(let i=0;i<30;i++){
        const canvas=host.querySelector('canvas');if(canvas)return canvas.toDataURL('image/png');
-       const img=host.querySelector('img');if(img?.complete&&img.naturalWidth)return img.src;
+       const img=host.querySelector('img');if(img?.complete&&img.naturalWidth)return await imageToPng(img);
        await new Promise(r=>setTimeout(r,100));
      }
-     throw new Error('QR image did not render');
    }finally{host.remove();}
  }
- throw new Error('QR library did not load. Please refresh the portal.');
+ // Independent hosted QR generation fallback; embed the resulting pixels in the PDF.
+ const endpoint='https://quickchart.io/qr?size=360&margin=2&ecLevel=H&format=png&text='+encodeURIComponent(text);
+ const img=new Image();img.crossOrigin='anonymous';
+ await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('QR service could not be reached. Check internet access and retry.'));img.src=endpoint;});
+ return await imageToPng(img);
+}
+async function imageToPng(img){
+ const canvas=document.createElement('canvas');canvas.width=img.naturalWidth||360;canvas.height=img.naturalHeight||360;
+ const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0);
+ try{return canvas.toDataURL('image/png');}catch(e){throw new Error('Browser blocked QR image access. Please try Chrome with internet enabled.');}
 }
 async function downloadDocument(cert,kind){
  const a=cert.exam_attempts||{},course=a.courses?.title||'Training Course',pct=Number(a.percentage||0),passed=!!a.passed;
