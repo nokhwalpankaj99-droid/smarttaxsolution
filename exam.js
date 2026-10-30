@@ -23,8 +23,8 @@ async function init(){
   course=c;
   const {data:qs,error:qe}=await db.from('questions').select('id,question_text,options').eq('course_id',course.id).eq('is_active',true);
   if(qe)throw qe;
-  if(!qs||qs.length<50){$('loading').innerHTML='<h1>Exam not available yet</h1><p>This course has '+(qs?.length||0)+' active questions. A 50-question exam needs at least 50 reviewed questions. Please contact the administrator.</p><a class="button primary" href="student.html">Return to student portal</a>';return;}
-  questions=qs.sort(()=>Math.random()-.5).slice(0,50);
+  if(!qs||qs.length<requestedCount){$('loading').innerHTML='<h1>Exam not available yet</h1><p>This course has '+(qs?.length||0)+' active questions. A '+requestedCount+'-question exam needs at least '+requestedCount+' reviewed questions. Please contact the administrator.</p><a class="button primary" href="student.html">Return to student portal</a>';return;}
+  questions=qs.sort(()=>Math.random()-.5).slice(0,requestedCount);
   $('courseTitle').textContent=course.title+' — Certification Assessment';
   $('questionCounter').textContent='Question 1 of '+questions.length;
   $('loading').classList.add('hidden');$('examShell').classList.remove('hidden');
