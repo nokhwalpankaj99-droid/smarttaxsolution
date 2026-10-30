@@ -75,15 +75,18 @@ async function downloadDocument(cert,kind){
    doc.setDrawColor(...gold);doc.setLineWidth(.7);doc.line(w/2-60,91,w/2+60,91);
    doc.setFont('helvetica','normal');doc.setFontSize(12);doc.setTextColor(...muted);
    doc.text('has successfully completed the course',w/2,103,{align:'center'});
-   doc.setFont('helvetica','bold');doc.setFontSize(22);doc.setTextColor(21,105,67);
-   doc.text(doc.splitTextToSize(course,235),w/2,119,{align:'center',maxWidth:235});
+   doc.setFont('helvetica','bold');doc.setFontSize(30);doc.setTextColor(21,105,67);
+   const courseLines=doc.splitTextToSize(course.toUpperCase(),245);doc.text(courseLines,w/2,120,{align:'center',maxWidth:245,lineHeightFactor:1.1});
+   doc.setFont('helvetica','normal');doc.setFontSize(12);doc.setTextColor(...navy);
+   const courseDesc=/gst/i.test(course)?'Course completed: Goods and Services Tax (GST) — registration, GST returns, input tax credit (ITC), tax invoices and GST compliance.':/income.?tax/i.test(course)?'Course completed: Income Tax — ITR basics, tax computation, deductions and return filing concepts.':'Course completed: assessment and learning in '+course+'.';
+   doc.text(doc.splitTextToSize(courseDesc,230),w/2,132,{align:'center',maxWidth:230,lineHeightFactor:1.15});
    doc.setDrawColor(...gold);doc.line(w/2-45,139,w/2+45,139);
    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...navy);
-   doc.text('MSME UDYAM REGISTRATION NO.',w/2,151,{align:'center'});
-   doc.setFont('helvetica','normal');doc.setFontSize(12);doc.text('UDYAM-RJ-15-0042566',w/2,159,{align:'center'});
-   doc.setFontSize(9);doc.text('Certificate No: '+cert.certificate_number,20,176);
-   doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,183);
-   try{const qr=await QRCode.toDataURL(qrUrl,{width:220,margin:1});doc.addImage(qr,'PNG',w-42,145,25,25);doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Scan to verify',w-29.5,173,{align:'center'});}catch(e){}
+   doc.text('MSME UDYAM REGISTRATION NO.',w/2,157,{align:'center'});
+   doc.setFont('helvetica','normal');doc.setFontSize(12);doc.text('UDYAM-RJ-15-0042566',w/2,165,{align:'center'});
+   doc.setFontSize(9);doc.text('Certificate No: '+cert.certificate_number,20,184);
+   doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,191);
+   try{const qr=await QRCode.toDataURL(qrUrl,{width:220,margin:1});doc.addImage(qr,'PNG',w-42,151,25,25);doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Scan to verify',w-29.5,179,{align:'center'});}catch(e){}
    doc.setDrawColor(...navy);doc.line(w/2-23,h-34,w/2+23,h-34);
    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...navy);doc.text('Authorized Signature',w/2,h-29,{align:'center'});
    doc.setDrawColor(...gold);doc.line(22,h-23,w-22,h-23);
