@@ -84,7 +84,7 @@ function renderQuestions(subject){
   try{
    const {data,error}=await client.auth.signUp({email:c.email,password:c.password,options:{data:{full_name:nameInput.value.trim().slice(0,100),phone:phoneInput.value.trim().slice(0,20)},emailRedirectTo:'https://smarttaxsolution.site/student.html'}});
    if(error)throw error;
-   if(data.session){setStatus('Account created and signed in successfully.');await showUser(data.user);}
+   if(data.session){setStatus('Account created and signed in successfully.');await showUser(data.user);window.location.href='exam.html';}
    else setStatus('Registration received. Check your email for a confirmation link, then sign in.');
   }catch(e){setStatus(e.message||'Could not create account. Please try again.',true);}
   finally{registerBtn.disabled=false;loginBtn.disabled=false;}
@@ -92,7 +92,7 @@ function renderQuestions(subject){
  loginBtn.addEventListener('click',async()=>{
   const c=getCredentials();if(!c)return;
   registerBtn.disabled=true;loginBtn.disabled=true;setStatus('Signing in…');
-  try{const {data,error}=await client.auth.signInWithPassword(c);if(error)throw error;setStatus('Signed in successfully.');await showUser(data.user);}
+  try{const {data,error}=await client.auth.signInWithPassword(c);if(error)throw error;setStatus('Signed in successfully.');await showUser(data.user);window.location.href='exam.html';}
   catch(e){setStatus(e.message||'Sign-in failed. Check your details and try again.',true);}
   finally{registerBtn.disabled=false;loginBtn.disabled=false;}
  });
