@@ -38,44 +38,87 @@ async function downloadDocument(cert,kind){
  const a=cert.exam_attempts||{},course=a.courses?.title||'Training Course',pct=Number(a.percentage||0),passed=!!a.passed;
  if(cert.revoked_at){alert('This certificate is revoked and cannot be downloaded as valid.');return;}
  if(!window.jspdf?.jsPDF){alert('PDF library did not load. Please refresh and try again.');return;}
- const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'}),w=210;
+ const isCert=kind==='certificate';
+ const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:isCert?'landscape':'portrait',unit:'mm',format:'a4'}),w=isCert?297:210,h=isCert?210:297;
  const qrUrl=location.origin+'/verify-certificate.html?number='+encodeURIComponent(cert.certificate_number);
- // Embed the site's existing SVG logo in both PDFs by converting it to PNG data.
  let logoData=null;
- try {
+ try{
    const response=await fetch(new URL('assets/smart-tax-solution-logo.svg',document.baseURI).href,{cache:'no-cache'});
-   if(!response.ok) throw new Error('Logo request failed');
-   const svg=await response.text();
-   const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
-   const blobUrl=URL.createObjectURL(blob);
-   try {
-     const logoImg=new Image();
-     await new Promise((resolve,reject)=>{logoImg.onload=resolve;logoImg.onerror=reject;logoImg.src=blobUrl;});
-     const canvas=document.createElement('canvas');canvas.width=600;canvas.height=600;
-     const ctx=canvas.getContext('2d');ctx.drawImage(logoImg,0,0,600,600);
+   if(!response.ok)throw new Error('Logo request failed');
+   const svg=await response.text(),blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),blobUrl=URL.createObjectURL(blob);
+   try{
+     const img=new Image();
+     await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=blobUrl;});
+     const ratio=img.naturalWidth/img.naturalHeight||5.25,canvas=document.createElement('canvas');
+     canvas.width=1200;canvas.height=Math.round(1200/ratio);
+     const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
      logoData=canvas.toDataURL('image/png');
-   } finally { URL.revokeObjectURL(blobUrl); }
- } catch(err) { console.warn('PDF logo could not be loaded',err); }
-
- doc.setDrawColor(20,43,74);doc.setLineWidth(1.1);doc.rect(10,10,190,277);
- if(logoData){doc.addImage(logoData,'PNG',18,15,24,24,'STSLOGO','FAST');}
- doc.setFont('helvetica','bold');doc.setFontSize(kind==='certificate'?24:20);doc.text(kind==='certificate'?'CERTIFICATE OF COMPLETION':'STUDENT MARKSHEET',105,28,{align:'center'});
- doc.setFontSize(12);doc.setFont('helvetica','normal');doc.text('SMART TAX SOLUTION',105,38,{align:'center'});
- doc.setFontSize(11);doc.text('Certificate No: '+cert.certificate_number,20,52);
- doc.setFontSize(12);doc.text('Student Name: '+(profile?.full_name||''),20,68);
- doc.text("Father's Name: "+(profile?.father_name||''),20,80);
- doc.text("Mother's Name: "+(profile?.mother_name||''),20,92);
- const lines=doc.splitTextToSize('Address: '+(profile?.address||''),165);doc.text(lines,20,104);
- let y=104+lines.length*6+7;
- doc.text('Mobile: '+(profile?.phone||''),20,y);y+=9;doc.text('Email: '+(currentUser?.email||''),20,y);y+=12;
- doc.text('Course: '+course,20,y);y+=10;
- if(kind==='marksheet'){doc.text('Total Questions: '+(a.question_count||'N/A'),20,y);y+=9;doc.text('Marks Obtained: '+(a.score??'N/A')+' / '+(a.question_count||'N/A'),20,y);y+=9;doc.text('Percentage: '+pct.toFixed(2)+'%',20,y);y+=9;doc.text('Result: '+(passed?'PASS':'NOT PASSED'),20,y);y+=9;}
- doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,y);y+=13;
- if(kind==='certificate'){doc.setFontSize(14);doc.text('has successfully completed the '+course+' assessment.',105,y,{align:'center',maxWidth:165});y+=22;doc.setFontSize(11);doc.text('Private training certificate; not a government-accredited credential.',105,y,{align:'center',maxWidth:170});}
- try{const qr=await QRCode.toDataURL(qrUrl,{width:180,margin:1});doc.addImage(qr,'PNG',157,238,30,30);doc.setFontSize(8);doc.text('Scan to verify',172,272,{align:'center'});}catch(e){}
- doc.setFontSize(10);doc.text('Authorized Signature',25,260);doc.line(25,255,65,255);
- doc.save((kind==='certificate'?'Certificate_':'Marksheet_')+cert.certificate_number+'.pdf');
+   }finally{URL.revokeObjectURL(blobUrl);}
+ }catch(err){console.warn('PDF logo could not be loaded',err);}
+ const navy=[20,43,74],gold=[190,145,54],muted=[95,108,124];
+ doc.setFillColor(255,255,255);doc.rect(0,0,w,h,'F');
+ doc.setDrawColor(...navy);doc.setLineWidth(1.1);doc.rect(7,7,w-14,h-14);
+ doc.setDrawColor(...gold);doc.setLineWidth(.35);doc.rect(10,10,w-20,h-20);
+ if(logoData){doc.addImage(logoData,'PNG',w/2-25,14,50,9.5,'STSLOGO','FAST');}
+ doc.setTextColor(...navy);doc.setFont('helvetica','bold');
+ if(isCert){
+   doc.setFontSize(23);doc.text('CERTIFICATE OF COMPLETION',w/2,38,{align:'center'});
+   doc.setDrawColor(...gold);doc.setLineWidth(.7);doc.line(w/2-43,43,w/2+43,43);
+   doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(...muted);
+   doc.text('THIS CERTIFICATE IS PRESENTED TO',w/2,51,{align:'center'});
+   doc.setTextColor(...navy);doc.setFont('times','bolditalic');doc.setFontSize(25);
+   doc.text(profile?.full_name||'Student Name',w/2,66,{align:'center',maxWidth:220});
+   doc.setDrawColor(...gold);doc.line(w/2-48,69,w/2+48,69);
+   doc.setFont('helvetica','normal');doc.setFontSize(12);
+   doc.text('For successfully completing the following assessment',w/2,79,{align:'center'});
+   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text(course,w/2,89,{align:'center',maxWidth:220});
+   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...muted);
+   doc.text('Student Details',20,105);
+   doc.setTextColor(...navy);doc.setFontSize(9.5);
+   doc.text("Father's Name: "+(profile?.father_name||'—'),20,113);
+   doc.text("Mother's Name: "+(profile?.mother_name||'—'),20,120);
+   const addr=doc.splitTextToSize('Address: '+(profile?.address||'—'),125);doc.text(addr,20,127);
+   doc.text('Mobile: '+(profile?.phone||'—'),20,142);
+   doc.text('Email: '+(currentUser?.email||'—'),20,149);
+   doc.text('Certificate No: '+cert.certificate_number,20,160);
+   doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,167);
+   try{const qr=await QRCode.toDataURL(qrUrl,{width:220,margin:1});doc.addImage(qr,'PNG',w-42,h-50,25,25);doc.setFontSize(8);doc.text('Scan to verify',w-29.5,h-21,{align:'center'});}catch(e){}
+   doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Private training certificate · Not a government-issued or government-accredited credential',w/2,h-15,{align:'center'});
+   doc.setDrawColor(...navy);doc.line(w-92,h-31,w-57,h-31);doc.setTextColor(...navy);doc.text('Authorized Signature',w-74.5,h-26,{align:'center'});
+ }else{
+   doc.setFontSize(19);doc.text('STATEMENT OF MARKS',w/2,38,{align:'center'});
+   doc.setFontSize(11);doc.setFont('helvetica','normal');doc.text('Student Assessment Record',w/2,45,{align:'center'});
+   doc.setDrawColor(...gold);doc.line(20,50,w-20,50);
+   doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('STUDENT DETAILS',20,60);
+   doc.setFont('helvetica','normal');doc.setFontSize(9.5);
+   const details=[
+    ['Full Name',profile?.full_name||'—'],["Father's Name",profile?.father_name||'—'],["Mother's Name",profile?.mother_name||'—'],
+    ['Mobile',profile?.phone||'—'],['Email',currentUser?.email||'—'],['Address',profile?.address||'—'],
+    ['Course',course],['Certificate No.',cert.certificate_number],['Issue Date',new Date(cert.issued_at).toLocaleDateString()]
+   ];
+   let y=68;
+   details.forEach(([label,value])=>{
+     const lines=doc.splitTextToSize(String(value),115);
+     doc.setFont('helvetica','bold');doc.text(label,20,y);
+     doc.setFont('helvetica','normal');doc.text(lines,66,y);
+     y+=Math.max(7,lines.length*5+1);
+   });
+   y+=5;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('ASSESSMENT RESULT',20,y);y+=7;
+   const rows=[['Assessment','Maximum Marks','Marks Obtained','Result'],[course,String(a.question_count||'—'),String(a.score??'—'),passed?'PASS':'NOT PASSED']];
+   const widths=[75,35,38,32],x0=20,rowH=12;
+   let x=x0;
+   widths.forEach((cw,i)=>{doc.setFillColor(237,243,249);doc.rect(x,y,cw,rowH,'FD');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text(rows[0][i],x+cw/2,y+7.5,{align:'center',maxWidth:cw-2});x+=cw;});
+   y+=rowH;x=x0;
+   widths.forEach((cw,i)=>{doc.setFillColor(255,255,255);doc.rect(x,y,cw,rowH,'S');doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text(rows[1][i],x+cw/2,y+7.5,{align:'center',maxWidth:cw-2});x+=cw;});
+   y+=rowH+7;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Percentage: '+pct.toFixed(2)+'%',20,y);
+   doc.text('Overall Result: '+(passed?'PASS':'NOT PASSED'),105,y);
+   try{const qr=await QRCode.toDataURL(qrUrl,{width:200,margin:1});doc.addImage(qr,'PNG',w-42,h-51,25,25);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('Scan to verify',w-29.5,h-22,{align:'center'});}catch(e){}
+   doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Private training record · Verify certificate status using the QR code',w/2,h-15,{align:'center'});
+   doc.setTextColor(...navy);doc.line(20,h-35,60,h-35);doc.setFontSize(9);doc.text('Authorized Signature',20,h-29);
+ }
+ doc.save((isCert?'Certificate_':'Marksheet_')+cert.certificate_number+'.pdf');
 }
+
 $('logoutBtn').addEventListener('click',async()=>{clearTimeout(portalIdleTimer);await db.auth.signOut();currentUser=null;showAuth('login');});
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>view(b.dataset.view)));
 $('gstCount').addEventListener('change',setExamLinks);$('itCount').addEventListener('change',setExamLinks);
