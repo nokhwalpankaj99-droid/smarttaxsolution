@@ -57,7 +57,8 @@ create policy "student or admin read certificates" on public.certificates for se
 create policy "admin manage certificates" on public.certificates for all to authenticated using (public.sts_is_admin()) with check (public.sts_is_admin());
 
 -- Public verification reveals only certificate number, course, name and status; no private account data.
-create or replace function public.verify_sts_certificate(p_number text)
+drop function if exists public.verify_sts_certificate(text);
+create function public.verify_sts_certificate(p_certificate_number text)
 returns table(certificate_number text, student_name text, course_title text, issued_at timestamptz, status text)
 language sql stable security definer set search_path=''
 as $$
@@ -65,10 +66,11 @@ as $$
  case when c.revoked_at is null then 'VALID' else 'REVOKED' end
  from public.certificates c join public.profiles p on p.id=c.student_id
  join public.exam_attempts a on a.id=c.attempt_id join public.courses co on co.id=a.course_id
- where c.certificate_number=p_number
+ where c.certificate_number=p_certificate_number
 $$;
 revoke all on function public.verify_sts_certificate(text) from public;
 grant execute on function public.verify_sts_certificate(text) to anon, authenticated;
+notify pgrst, 'reload schema';
 
 -- Server-side grading. Correct answers are never sent to browser; 60% passing rule and certificate issuance are enforced here.
 create or replace function public.submit_sts_exam(p_course_slug text,p_question_count integer,p_answers jsonb)
