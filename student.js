@@ -84,7 +84,7 @@ function renderQuestions(subject){
   try{
    const {data,error}=await client.auth.signUp({email:c.email,password:c.password,options:{data:{full_name:nameInput.value.trim().slice(0,100),phone:phoneInput.value.trim().slice(0,20)},emailRedirectTo:'https://smarttaxsolution.site/student.html'}});
    if(error)throw error;
-   if(data.session){setStatus('Account created and signed in successfully.');await showUser(data.user);window.location.href='exam.html';}
+   if(data.session){setStatus('Account created and signed in successfully.');await showUser(data.user);window.location.href='exam.html?course='+encodeURIComponent(document.getElementById('secure-course')?.value||'gst');}
    else setStatus('Registration received. Check your email for a confirmation link, then sign in.');
   }catch(e){setStatus(e.message||'Could not create account. Please try again.',true);}
   finally{registerBtn.disabled=false;loginBtn.disabled=false;}
