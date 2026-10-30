@@ -45,9 +45,9 @@ function renderQuestions(subject){
   quiz.appendChild(block);
  });
  const submit=document.createElement('button');submit.type='button';submit.className='button primary';submit.textContent='Submit Practice';submit.addEventListener('click',()=>{
-   const missing=activeQuestions.findIndex((q,i)=>!quiz.querySelector(`input[name="q${i}"]:checked`));
-  if(missing!==-1){const first=quiz.querySelector(`input[name="q${missing}"]`);first.closest('.quiz-option').scrollIntoView({behavior:'smooth',block:'center'});first.focus();alert('Please answer every question before submitting.');return;}
-  let score=0;activeQuestions.forEach((q,i)=>{const chosen=quiz.querySelector(`input[name="q${i}"]:checked`);if(chosen&&Number(chosen.value)===q.a)score++});
+   const missing=activeQuestions.findIndex((q,i)=>!quiz.querySelector('input[name="q'+i+'"]:checked'));
+  if(missing!==-1){const first=quiz.querySelector('input[name="q'+missing+'"]');first.closest('.quiz-option').scrollIntoView({behavior:'smooth',block:'center'});first.focus();alert('Please answer every question before submitting.');return;}
+  let score=0;activeQuestions.forEach((q,i)=>{const chosen=quiz.querySelector('input[name="q'+i+'"]:checked');if(chosen&&Number(chosen.value)===q.a)score++});
   const percent=Math.round(score/activeQuestions.length*100);const result=document.createElement('div');result.className='quiz-result';result.setAttribute('role','status');result.setAttribute('aria-live','polite');result.textContent='Your sample score: '+score+'/'+activeQuestions.length+' ('+percent+'%). '+(percent>=60?'You reached the 60% practice target.':'Keep practising and try again.');
   quiz.appendChild(result);submit.disabled=true;submit.textContent='Submitted';
  });
@@ -109,7 +109,7 @@ function renderQuestions(subject){
   try{
    const {data,error}=await client.from('profiles').select('full_name,phone,created_at').eq('id',user.id).maybeSingle();
    if(error)throw error;
-   profileBox.textContent='Welcome '+((data&&data.full_name)||user.user_metadata?.full_name||'Student')+'! Signed in as '+(user.email||'')+'. Your account is connected.';
+   profileBox.textContent='Welcome '+((data&&data.full_name)||(user.user_metadata && user.user_metadata.full_name)||'Student')+'! Signed in as '+(user.email||'')+'. Your account is connected.';
   }catch(e){profileBox.textContent='You are signed in as '+(user.email||'student')+'. Profile details could not be loaded yet; database permissions may need setup.';}
  }
  client.auth.getSession().then(({data,error})=>{if(error)setStatus('Could not check session.',true);else if(data.session)showUser(data.session.user);});
@@ -123,7 +123,7 @@ function renderQuestions(subject){
  if(!start||!area||!window.supabase)return;
  const client=window.supabase.createClient(window.STS_SUPABASE_URL,window.STS_SUPABASE_PUBLISHABLE_KEY);
  let activeQuestions=[];
- const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const esc=s=>String(s == null ? '' : s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  start.addEventListener('click',async()=>{
   result.hidden=true;area.textContent='Loading questions…';start.disabled=true;
   try{
