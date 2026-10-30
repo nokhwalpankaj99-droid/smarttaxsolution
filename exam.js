@@ -5,13 +5,13 @@ const url='https://jbjergbqjokxxcvntimk.supabase.co';
 const key='sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k';
 if(!window.supabase){$('loading').innerHTML='<h1>Service unavailable</h1><p>Please reload later.</p>';return;}
 const db=window.supabase.createClient(url,key);
-let user=null,course=null,questions=[],answers=new Map(),index=0,seconds=600,examFinished=false,timerId=null,idleId=null;
+let user=null,course=null,questions=[],answers=new Map(),index=0,seconds=1200,examFinished=false,timerId=null,idleId=null;
 const courseSlug=new URLSearchParams(location.search).get('course')==='income-tax'?'income-tax':'gst';
 const requestedCount=new URLSearchParams(location.search).get('count')==='100'?100:50;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function signOut(message){clearInterval(timerId);clearTimeout(idleId);db.auth.signOut().finally(()=>{location.replace('student.html'+(message?'?message='+encodeURIComponent(message):''));});}
 $('signOutBtn').addEventListener('click',()=>signOut('You have signed out.'));
-function resetIdle(){if(examFinished)return;clearTimeout(idleId);idleId=setTimeout(()=>signOut('Signed out after 10 minutes of inactivity.'),10*60*1000);}
+function resetIdle(){if(examFinished)return;clearTimeout(idleId);idleId=setTimeout(()=>signOut('Signed out after 5 minutes of inactivity.'),10*60*1000);}
 ['pointerdown','keydown','mousemove','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
 function showTime(){const m=Math.floor(seconds/60),s=seconds%60;$('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');$('timer').classList.toggle('warning',seconds<=60);}
 async function init(){
