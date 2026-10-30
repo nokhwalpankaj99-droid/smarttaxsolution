@@ -40,8 +40,25 @@ async function downloadDocument(cert,kind){
  if(!window.jspdf?.jsPDF){alert('PDF library did not load. Please refresh and try again.');return;}
  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'}),w=210;
  const qrUrl=location.origin+'/verify-certificate.html?number='+encodeURIComponent(cert.certificate_number);
+ // Embed the site's existing SVG logo in both PDFs by converting it to PNG data.
+ let logoData=null;
+ try {
+   const response=await fetch(new URL('assets/smart-tax-solution-logo.svg',document.baseURI).href,{cache:'no-cache'});
+   if(!response.ok) throw new Error('Logo request failed');
+   const svg=await response.text();
+   const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+   const blobUrl=URL.createObjectURL(blob);
+   try {
+     const logoImg=new Image();
+     await new Promise((resolve,reject)=>{logoImg.onload=resolve;logoImg.onerror=reject;logoImg.src=blobUrl;});
+     const canvas=document.createElement('canvas');canvas.width=600;canvas.height=600;
+     const ctx=canvas.getContext('2d');ctx.drawImage(logoImg,0,0,600,600);
+     logoData=canvas.toDataURL('image/png');
+   } finally { URL.revokeObjectURL(blobUrl); }
+ } catch(err) { console.warn('PDF logo could not be loaded',err); }
+
  doc.setDrawColor(20,43,74);doc.setLineWidth(1.1);doc.rect(10,10,190,277);
- doc.setFont('helvetica','bold');doc.setFontSize(kind==='certificate'?24:20);doc.text(kind==='certificate'?'CERTIFICATE OF COMPLETION':'STUDENT MARKSHEET',105,28,{align:'center'});
+ if(logoData){doc.addImage(logoData,'PNG',18,15,24,24,'STSLOGO','FAST');}\n doc.setFont('helvetica','bold');doc.setFontSize(kind==='certificate'?24:20);doc.text(kind==='certificate'?'CERTIFICATE OF COMPLETION':'STUDENT MARKSHEET',105,28,{align:'center'});
  doc.setFontSize(12);doc.setFont('helvetica','normal');doc.text('SMART TAX SOLUTION',105,38,{align:'center'});
  doc.setFontSize(11);doc.text('Certificate No: '+cert.certificate_number,20,52);
  doc.setFontSize(12);doc.text('Student Name: '+(profile?.full_name||''),20,68);
