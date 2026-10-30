@@ -83,7 +83,7 @@ async function downloadDocument(cert,kind){
    doc.setFont('helvetica','normal');doc.setFontSize(12);doc.text('UDYAM-RJ-15-0042566',w/2,159,{align:'center'});
    doc.setFontSize(9);doc.text('Certificate No: '+cert.certificate_number,20,176);
    doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,183);
-   try{const qr=await QRCode.toDataURL(qrUrl,{width:220,margin:1});doc.addImage(qr,'PNG',w/2-12.5,150,25,25);doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Scan to verify',w/2,178,{align:'center'});}catch(e){}
+   try{const qr=await QRCode.toDataURL(qrUrl,{width:220,margin:1});doc.addImage(qr,'PNG',w-42,145,25,25);doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Scan to verify',w-29.5,173,{align:'center'});}catch(e){}
    doc.setDrawColor(...navy);doc.line(w/2-23,h-34,w/2+23,h-34);
    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...navy);doc.text('Authorized Signature',w/2,h-29,{align:'center'});
    doc.setDrawColor(...gold);doc.line(22,h-23,w-22,h-23);
