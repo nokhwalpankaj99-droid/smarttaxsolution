@@ -46,8 +46,8 @@ function renderQuestions(subject){
  });
  const submit=document.createElement('button');submit.type='button';submit.className='button primary';submit.textContent='Submit Practice';submit.addEventListener('click',()=>{
   const missing=activeQuestions.findIndex((q,i)=>!quiz.querySelector('input[name="q'+i+'"]:checked));
-  if(missing!==-1){const first=quiz.querySelector('input[name="q'+missing+'"]');first.closest('.quiz-option').scrollIntoView({behavior:'smooth',block:'center'});first.focus();alert('Please answer every question before submitting.');return;}
-  let score=0;activeQuestions.forEach((q,i)=>{const chosen=quiz.querySelector('input[name="q'+i+'"]:checked');if(chosen&&Number(chosen.value)===q.a)score++});
+  if(missing!==-1){const first=quiz.querySelector(`input[name="q${missing}"]`);first.closest('.quiz-option').scrollIntoView({behavior:'smooth',block:'center'});first.focus();alert('Please answer every question before submitting.');return;}
+  let score=0;activeQuestions.forEach((q,i)=>{const chosen=quiz.querySelector(`input[name="q${i}"]:checked`);if(chosen&&Number(chosen.value)===q.a)score++});
   const percent=Math.round(score/activeQuestions.length*100);const result=document.createElement('div');result.className='quiz-result';result.setAttribute('role','status');result.setAttribute('aria-live','polite');result.textContent='Your sample score: '+score+'/'+activeQuestions.length+' ('+percent+'%). '+(percent>=60?'You reached the 60% practice target.':'Keep practising and try again.');
   quiz.appendChild(result);submit.disabled=true;submit.textContent='Submitted';
  });
