@@ -91,7 +91,7 @@ begin
  v_pct:=round(v_score::numeric*100/v_total,2);v_passed:=v_pct>=60;
  insert into public.exam_attempts(student_id,course_id,question_count,score,percentage,passed) values(v_uid,v_course.id,v_total,v_score,v_pct,v_passed) returning id into v_attempt;
  if v_passed then
-  v_cert:='STS-'||to_char(now() at time zone 'utc','YYYY')||'-'||upper(substr(encode(gen_random_bytes(8),'hex'),1,12));
+  v_cert:='STS-'||to_char(now() at time zone 'utc','YYYY')||'-'||upper(substr(replace(gen_random_uuid()::text,'-',''),1,12));
   insert into public.certificates(attempt_id,student_id,certificate_number) values(v_attempt,v_uid,v_cert);
  end if;
  return jsonb_build_object('attempt_id',v_attempt,'score',v_score,'total',v_total,'percentage',v_pct,'passed',v_passed,'certificate_number',v_cert);
