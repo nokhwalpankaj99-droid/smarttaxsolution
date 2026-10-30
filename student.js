@@ -34,6 +34,26 @@ $('showRegister').addEventListener('click',()=>showAuth('register'));$('showLogi
 $('resetBtn').addEventListener('click',async()=>{const email=$('reset-email').value.trim();if(!email){status('Enter your registered email address.');return;}const b=$('resetBtn');b.disabled=true;status('Sending recovery email…');try{const r=await db.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname+'?reset=1'});if(r.error)throw r.error;status('If this email is registered, a password reset link will be sent. Check your inbox and spam folder.');}catch(e){status(e.message||'Unable to send reset email.');}finally{b.disabled=false;}});
 $('forgotUsername').addEventListener('click',e=>{e.preventDefault();status('Your username is your registered email address. If you cannot remember it, contact support using the account recovery link below. For privacy, the portal cannot display account emails here.');});
 
+async function makeQRDataURL(text){
+ if(window.QRCode&&typeof window.QRCode.toDataURL==='function'){
+   return await window.QRCode.toDataURL(text,{width:360,margin:2,errorCorrectionLevel:'H',color:{dark:'#000000',light:'#ffffff'}});
+ }
+ // Fallback for QRCode.js, which renders to a canvas or image element.
+ if(typeof window.QRCode==='function'){
+   const host=document.createElement('div');host.style.cssText='position:fixed;left:-10000px;top:0;width:180px;height:180px;background:#fff';
+   document.body.appendChild(host);
+   try{
+     new window.QRCode(host,{text,width:180,height:180,colorDark:'#000000',colorLight:'#ffffff',correctLevel:window.QRCode.CorrectLevel?.H||2});
+     for(let i=0;i<30;i++){
+       const canvas=host.querySelector('canvas');if(canvas)return canvas.toDataURL('image/png');
+       const img=host.querySelector('img');if(img?.complete&&img.naturalWidth)return img.src;
+       await new Promise(r=>setTimeout(r,100));
+     }
+     throw new Error('QR image did not render');
+   }finally{host.remove();}
+ }
+ throw new Error('QR library did not load. Please refresh the portal.');
+}
 async function downloadDocument(cert,kind){
  const a=cert.exam_attempts||{},course=a.courses?.title||'Training Course',pct=Number(a.percentage||0),passed=!!a.passed;
  if(cert.revoked_at){alert('This certificate is revoked and cannot be downloaded as valid.');return;}
@@ -87,8 +107,7 @@ async function downloadDocument(cert,kind){
    doc.setFontSize(9);doc.text('Certificate No: '+cert.certificate_number,20,184);
    doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,191);
    try{
-     if(!window.QRCode||typeof window.QRCode.toDataURL!=='function')throw new Error('QR library did not load');
-     const qr=await window.QRCode.toDataURL(qrUrl,{width:360,margin:2,errorCorrectionLevel:'H',color:{dark:'#000000',light:'#ffffff'}});
+     const qr=await makeQRDataURL(qrUrl);
      if(!qr||!qr.startsWith('data:image/png;base64,'))throw new Error('QR image generation failed');
      doc.addImage(qr,'PNG',w-45,148,30,30,'CERTQR','FAST');doc.setFontSize(8);doc.setTextColor(...muted);doc.text('SCAN TO VERIFY',w-30,181,{align:'center'});
    }catch(e){console.error('Certificate QR generation failed:',e);alert('QR Code generate nahi hua: '+(e.message||e));}
@@ -128,8 +147,7 @@ async function downloadDocument(cert,kind){
    y+=rowH+7;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Percentage: '+pct.toFixed(2)+'%',20,y);
    doc.text('Overall Result: '+(passed?'PASS':'NOT PASSED'),105,y);
    try{
-     if(!window.QRCode||typeof window.QRCode.toDataURL!=='function')throw new Error('QR library did not load');
-     const qr=await window.QRCode.toDataURL(qrUrl,{width:360,margin:2,errorCorrectionLevel:'H',color:{dark:'#000000',light:'#ffffff'}});
+     const qr=await makeQRDataURL(qrUrl);
      if(!qr||!qr.startsWith('data:image/png;base64,'))throw new Error('QR image generation failed');
      doc.addImage(qr,'PNG',w-45,h-53,30,30,'MARKQR','FAST');doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('SCAN TO VERIFY',w-30,h-20,{align:'center'});
    }catch(e){console.error('Marksheet QR generation failed:',e);alert('QR Code generate nahi hua: '+(e.message||e));}
