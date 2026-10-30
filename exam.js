@@ -11,7 +11,7 @@ const requestedCount=new URLSearchParams(location.search).get('count')==='100'?1
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function signOut(message){clearInterval(timerId);clearTimeout(idleId);db.auth.signOut().finally(()=>{location.replace('student.html'+(message?'?message='+encodeURIComponent(message):''));});}
 $('signOutBtn').addEventListener('click',()=>signOut('You have signed out.'));
-function resetIdle(){if(examFinished)return;clearTimeout(idleId);idleId=setTimeout(()=>signOut('Signed out after 5 minutes of inactivity.'),10*60*1000);}
+function resetIdle(){if(examFinished)return;clearTimeout(idleId);idleId=setTimeout(()=>signOut('Signed out after 5 minutes of inactivity.'),5*60*1000);}
 ['pointerdown','keydown','mousemove','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
 function showTime(){const m=Math.floor(seconds/60),s=seconds%60;$('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');$('timer').classList.toggle('warning',seconds<=60);}
 async function init(){
