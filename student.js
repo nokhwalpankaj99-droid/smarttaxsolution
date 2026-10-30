@@ -58,7 +58,8 @@ async function downloadDocument(cert,kind){
  } catch(err) { console.warn('PDF logo could not be loaded',err); }
 
  doc.setDrawColor(20,43,74);doc.setLineWidth(1.1);doc.rect(10,10,190,277);
- if(logoData){doc.addImage(logoData,'PNG',18,15,24,24,'STSLOGO','FAST');}\n doc.setFont('helvetica','bold');doc.setFontSize(kind==='certificate'?24:20);doc.text(kind==='certificate'?'CERTIFICATE OF COMPLETION':'STUDENT MARKSHEET',105,28,{align:'center'});
+ if(logoData){doc.addImage(logoData,'PNG',18,15,24,24,'STSLOGO','FAST');}
+ doc.setFont('helvetica','bold');doc.setFontSize(kind==='certificate'?24:20);doc.text(kind==='certificate'?'CERTIFICATE OF COMPLETION':'STUDENT MARKSHEET',105,28,{align:'center'});
  doc.setFontSize(12);doc.setFont('helvetica','normal');doc.text('SMART TAX SOLUTION',105,38,{align:'center'});
  doc.setFontSize(11);doc.text('Certificate No: '+cert.certificate_number,20,52);
  doc.setFontSize(12);doc.text('Student Name: '+(profile?.full_name||''),20,68);
