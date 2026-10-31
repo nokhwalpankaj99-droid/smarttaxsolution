@@ -6,7 +6,8 @@ const key='sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k';
 if(!window.supabase){$('loading').innerHTML='<h1>Service unavailable</h1><p>Please reload later.</p>';return;}
 const db=window.supabase.createClient(url,key);
 let user=null,course=null,questions=[],answers=new Map(),index=0,seconds=1200,examFinished=false,timerId=null,idleId=null;
-const courseSlug=new URLSearchParams(location.search).get('course')==='income-tax'?'income-tax':'gst';
+const requestedCourse=new URLSearchParams(location.search).get('course');
+const courseSlug=['income-tax','complete-accounting'].includes(requestedCourse)?requestedCourse:'gst';
 const requestedCount=new URLSearchParams(location.search).get('count')==='100'?100:50;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function signOut(message){clearInterval(timerId);clearTimeout(idleId);db.auth.signOut().finally(()=>{location.replace('student.html'+(message?'?message='+encodeURIComponent(message):''));});}
