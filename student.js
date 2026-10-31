@@ -103,44 +103,73 @@ async function downloadDocument(cert,kind){
  if(logoData){doc.addImage(logoData,'PNG',w/2-25,14,50,9.5,'STSLOGO','FAST');}
  doc.setTextColor(...navy);doc.setFont('helvetica','bold');
  if(isCert){
-   // Minimal, elegant certificate: only student name and course are prominent.
-   doc.setFont('helvetica','bold');doc.setFontSize(24);doc.setTextColor(...navy);
-   doc.text('CERTIFICATE',w/2,39,{align:'center'});
-   doc.setFontSize(13);doc.setTextColor(...gold);doc.text('OF COMPLETION',w/2,47,{align:'center'});
-   doc.setDrawColor(...gold);doc.setLineWidth(.8);doc.line(w/2-48,52,w/2+48,52);
-   doc.setFont('helvetica','normal');doc.setFontSize(11);doc.setTextColor(...muted);
-   doc.text('THIS CERTIFICATE IS PRESENTED TO',w/2,64,{align:'center'});
-   doc.setFont('times','bold');doc.setFontSize(30);doc.setTextColor(20,43,74);
+   // Premium landscape certificate layout inspired by the user's reference artwork.
+   const blue=[13,43,105],royal=[28,48,205],gold=[218,157,35],ink=[14,35,78],pale=[232,244,255];
+   doc.setFillColor(255,255,255);doc.rect(0,0,w,h,'F');
+   // Double gold/navy frame and corner ribbons.
+   doc.setDrawColor(...gold);doc.setLineWidth(1.1);doc.rect(2.5,2.5,w-5,h-5);
+   doc.setDrawColor(...blue);doc.setLineWidth(.45);doc.rect(4.5,4.5,w-9,h-9);
+   doc.setFillColor(...blue);doc.triangle(258,5,292,5,292,40,'F');doc.setFillColor(...gold);doc.triangle(265,5,292,5,292,31,'F');
+   doc.setFillColor(...blue);doc.triangle(5,169,5,205,39,205,'F');doc.setFillColor(...gold);doc.triangle(5,180,5,205,28,205,'F');
+   // Brand header.
+   if(logoData)doc.addImage(logoData,'PNG',12,10,83,18,'STSLOGO','FAST');
+   doc.setDrawColor(...ink);doc.setLineWidth(.5);doc.line(144,9,144,34);
+   doc.setFillColor(255,250,237);doc.setDrawColor(...gold);doc.roundedRect(151,9,57,25,2,2,'FD');
+   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(...blue);doc.text('MSME',179.5,17,{align:'center'});
+   doc.setFontSize(7.5);doc.setTextColor(...ink);doc.text('Udyam Registered Enterprise',179.5,22,{align:'center'});
+   doc.setFillColor(...blue);doc.roundedRect(153,24,53,7,2,2,'F');
+   doc.setFontSize(7.3);doc.setTextColor(255,255,255);doc.text('UDYAM-RJ-15-0042566',179.5,28.8,{align:'center'});
+   doc.setFont('times','italic');doc.setFontSize(10);doc.setTextColor(...ink);
+   doc.text(['Empowering Tax','Professionals for a','Better Tomorrow'],219,14);
+   // Ribbon title.
+   doc.setFillColor(...blue);doc.rect(27,42,243,17,'F');
+   doc.setFillColor(...gold);doc.rect(27,42,243,1.1,'F');doc.rect(27,58,243,1.1,'F');
+   doc.setFont('times','bold');doc.setFontSize(23);doc.setTextColor(255,255,255);
+   doc.text('CERTIFICATE OF COMPLETION',148.5,54,{align:'center'});
+   // Recipient and course statement.
+   doc.setFont('times','italic');doc.setFontSize(15);doc.setTextColor(...ink);
+   doc.text('This is to certify that',148.5,70,{align:'center'});
    const studentName=profile?.full_name||'Student Name';
-   doc.text(doc.splitTextToSize(studentName,230),w/2,83,{align:'center',maxWidth:230});
-   doc.setDrawColor(...gold);doc.setLineWidth(.7);doc.line(w/2-60,91,w/2+60,91);
-   doc.setFont('helvetica','normal');doc.setFontSize(12);doc.setTextColor(...muted);
-   doc.text('has successfully completed the course',w/2,103,{align:'center'});
-   doc.setFont('helvetica','bold');doc.setFontSize(30);doc.setTextColor(21,105,67);
-   const courseLines=doc.splitTextToSize(course.toUpperCase(),245);doc.text(courseLines,w/2,120,{align:'center',maxWidth:245,lineHeightFactor:1.1});
-   doc.setFont('helvetica','normal');doc.setFontSize(12);doc.setTextColor(...navy);
-   const courseDesc=/gst/i.test(course)?'Course completed: Goods and Services Tax (GST) — registration, GST returns, input tax credit (ITC), tax invoices and GST compliance.':/income.?tax/i.test(course)?'Course completed: Income Tax — ITR basics, tax computation, deductions and return filing concepts.':'Course completed: assessment and learning in '+course+'.';
-   doc.text(doc.splitTextToSize(courseDesc,230),w/2,132,{align:'center',maxWidth:230,lineHeightFactor:1.15});
-   doc.setDrawColor(...gold);doc.line(w/2-45,139,w/2+45,139);
-   doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(...navy);
-   doc.text('MSME UDYAM REGISTRATION NO.',w/2,157,{align:'center'});
-   doc.setFont('helvetica','normal');doc.setFontSize(12);doc.text('UDYAM-RJ-15-0042566',w/2,165,{align:'center'});
-   doc.setFontSize(9);doc.text('Certificate No: '+cert.certificate_number,20,184);
-   doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,191);
-   if(stampData){doc.addImage(stampData,'PNG',20,146,32,32,'STSSTAMP','FAST');}
+   doc.setFont('helvetica','bold');doc.setFontSize(28);doc.setTextColor(...blue);
+   doc.text(doc.splitTextToSize(studentName,230),148.5,86,{align:'center',maxWidth:230});
+   doc.setDrawColor(...gold);doc.setLineWidth(.6);doc.line(44,89,253,89);
+   doc.setFont('times','italic');doc.setFontSize(13);doc.setTextColor(...ink);
+   doc.text('has successfully completed the',148.5,101,{align:'center'});
+   doc.setFont('times','bold');doc.setFontSize(18);doc.setTextColor(...blue);
+   doc.text(doc.splitTextToSize(course,220),148.5,110,{align:'center',maxWidth:220});
+   doc.setFont('times','italic');doc.setFontSize(11);doc.setTextColor(...ink);
+   doc.text('conducted by Smart Tax Solution and has scored '+pct.toFixed(2)+'% marks in the final examination.',148.5,118,{align:'center',maxWidth:260});
+   // Bottom information band: exact stamp area, certificate details, QR, authorized signatory.
+   if(stampData)doc.addImage(stampData,'PNG',11,125,48,48,'STSSTAMP','FAST');
+   doc.setFillColor(...pale);doc.setDrawColor(30,130,220);doc.setLineWidth(.35);doc.roundedRect(65,125,103,39,3,3,'FD');
+   const rows=[['Certificate No.',cert.certificate_number],['Course',course],['Date of Issue',new Date(cert.issued_at).toLocaleDateString()]];
+   let ry=134;
+   rows.forEach(([label,value])=>{
+     doc.setFont('times','bold');doc.setFontSize(9.2);doc.setTextColor(...ink);doc.text(label,70,ry);
+     doc.setFont('times','normal');doc.text(':',104,ry);
+     doc.setFont('times','bold');doc.setFontSize(8.6);doc.text(doc.splitTextToSize(String(value),57),109,ry,{maxWidth:57});
+     ry+=11;
+   });
    try{
      const qr=await makeQRDataURL(qrUrl);
      if(!qr||!qr.startsWith('data:image/png;base64,'))throw new Error('QR image generation failed');
-     doc.addImage(qr,'PNG',w-45,148,30,30,'CERTQR','FAST');doc.setFontSize(8);doc.setTextColor(...muted);doc.text('SCAN TO VERIFY',w-30,181,{align:'center'});
+     doc.addImage(qr,'PNG',177,125,33,33,'CERTQR','FAST');
+     doc.setFont('times','bold');doc.setFontSize(8.5);doc.setTextColor(...ink);doc.text('Scan to Verify',193.5,162,{align:'center'});
    }catch(e){console.error('Certificate QR generation failed:',e);alert('QR Code generate nahi hua: '+(e.message||e));}
-   doc.setDrawColor(...navy);doc.line(w/2-23,h-34,w/2+23,h-34);
-   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...navy);doc.text('Authorized Signature',w/2,h-29,{align:'center'});
-   doc.setDrawColor(...gold);doc.line(22,h-23,w-22,h-23);
-   doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(...navy);
-   doc.text('CERTIFICATE AVAILABLE ON WEBSITE',w/2,h-16,{align:'center'});
-   doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...muted);
-   doc.text('Verify using the QR code above.',w/2,h-11,{align:'center'});
- 
+   // Signature is clearly identified as the authorized signatory.
+   doc.setDrawColor(...ink);doc.setLineWidth(.45);doc.line(218,151,281,151);
+   doc.setFont('times','bold');doc.setFontSize(10);doc.setTextColor(...ink);doc.text('Adv. Pankaj Nokhwal',249.5,158,{align:'center'});
+   doc.setFont('times','normal');doc.setFontSize(9);doc.text('Director',249.5,163,{align:'center'});
+   doc.setFontSize(8.5);doc.text('Smart Tax Solution',249.5,168,{align:'center'});
+   doc.setDrawColor(...gold);doc.setLineWidth(.6);doc.line(33,176,264,176);
+   doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...blue);
+   doc.text('Expert Guidance',50,184,{align:'center'});doc.text('Online Learning',116,184,{align:'center'});
+   doc.text('Digital Certificate',184,184,{align:'center'});doc.text('Verified & Trusted',247,184,{align:'center'});
+   doc.setDrawColor(...gold);doc.line(83,179,83,189);doc.line(150,179,150,189);doc.line(218,179,218,189);
+   doc.setFillColor(...blue);doc.rect(5,192,287,13,'F');
+   doc.setFont('times','italic');doc.setFontSize(14);doc.setTextColor(255,255,255);
+   doc.text('Together Towards Financial Literacy',148.5,201,{align:'center'});
+
  }else{
    doc.setFontSize(19);doc.text('STATEMENT OF MARKS',w/2,38,{align:'center'});
    doc.setFontSize(11);doc.setFont('helvetica','normal');doc.text('Student Assessment Record',w/2,45,{align:'center'});
