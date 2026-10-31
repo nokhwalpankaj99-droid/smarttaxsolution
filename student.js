@@ -85,17 +85,14 @@ async function downloadDocument(cert,kind){
  }catch(err){console.warn('PDF logo could not be loaded',err);}
  let stampData=null;
  try{
-   const response=await fetch(new URL('assets/smart-tax-stamp.svg',document.baseURI).href,{cache:'no-cache'});
-   if(!response.ok)throw new Error('Stamp request failed');
-   const svg=await response.text(),blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),blobUrl=URL.createObjectURL(blob);
-   try{
-     const img=new Image();
-     await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=blobUrl;});
-     const canvas=document.createElement('canvas');canvas.width=600;canvas.height=600;
-     const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,600,600);ctx.drawImage(img,0,0,600,600);
-     stampData=canvas.toDataURL('image/png');
-   }finally{URL.revokeObjectURL(blobUrl);}
- }catch(err){console.warn('Stamp could not be loaded',err);}
+   // Load the exact original stamp image supplied by the user.
+   const img=new Image();
+   img.src=new URL('assets/stamp-exact.png',document.baseURI).href+'?v=20261031';
+   await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('Original stamp image is missing from assets/stamp-exact.png'));});
+   const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+   const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);
+   stampData=canvas.toDataURL('image/png');
+ }catch(err){console.warn('Original stamp could not be loaded',err);}
  const navy=[20,43,74],gold=[190,145,54],muted=[95,108,124];
  doc.setFillColor(255,255,255);doc.rect(0,0,w,h,'F');
  doc.setDrawColor(...navy);doc.setLineWidth(1.1);doc.rect(7,7,w-14,h-14);
@@ -160,7 +157,7 @@ async function downloadDocument(cert,kind){
    }catch(e){console.error('Certificate QR generation failed:',e);alert('QR Code generate nahi hua: '+(e.message||e));}
    // Business stamp replaces the personal name/designation signature block.
    if(stampData)doc.addImage(stampData,'PNG',224,133,48,48,'STSSTAMP','FAST');
-   doc.setFont('times','bold');doc.setFontSize(9);doc.setTextColor(...ink);doc.text('Authorized Signatory',248,180,{align:'center'});
+   doc.setFont('times','bold');doc.setFontSize(9);doc.setTextColor(...ink);doc.text('Authorized Signatory',248,184,{align:'center'});
    doc.setDrawColor(...gold);doc.setLineWidth(.6);doc.line(33,184,264,184);
    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...blue);
    doc.text('Expert Guidance',50,191,{align:'center'});doc.text('Online Learning',116,191,{align:'center'});
@@ -196,7 +193,7 @@ async function downloadDocument(cert,kind){
    y+=rowH;x=x0;
    widths.forEach((cw,i)=>{doc.setFillColor(255,255,255);doc.rect(x,y,cw,rowH,'S');doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text(rows[1][i],x+cw/2,y+7.5,{align:'center',maxWidth:cw-2});x+=cw;});
    y+=rowH+7;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Percentage: '+pct.toFixed(2)+'%',20,y);
-   if(stampData){doc.addImage(stampData,'PNG',20,220,36,36,'STSMARKSTAMP','FAST');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...navy);doc.text('Authorized Signatory',38,260,{align:'center'});}
+   if(stampData){doc.addImage(stampData,'PNG',20,222,42,42,'STSMARKSTAMP','FAST');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...navy);doc.text('Authorized Signatory',41,267,{align:'center'});}
    doc.text('Overall Result: '+(passed?'PASS':'NOT PASSED'),105,y);
    try{
      const qr=await makeQRDataURL(qrUrl);
