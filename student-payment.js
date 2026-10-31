@@ -41,4 +41,32 @@ async function loadPayments(){
  if(error){$('paymentHistory').textContent='Payment status unavailable. Ask administrator to run supabase/payment-approval-gate.sql.';return;}
  $('paymentHistory').innerHTML=data.length?'<div class="tablewrap"><table><thead><tr><th>Course</th><th>Amount</th><th>UTR</th><th>Status</th><th>Date</th><th>Receipt</th></tr></thead><tbody>'+data.map((p,i)=>'<tr><td>'+esc(({gst:'GST','income-tax':'Income Tax',combo:'Combo'})[p.course_slug]||p.course_slug)+'</td><td>₹'+esc(p.amount_inr)+'</td><td>'+esc(p.upi_transaction_id)+'</td><td><strong>'+esc(p.status.toUpperCase())+'</strong></td><td>'+esc(new Date(p.created_at).toLocaleDateString())+'</td><td>'+(p.status==='approved'?'<button type="button" class="btn secondary" data-payment-receipt="'+i+'">View / Print Receipt</button>':p.status==='pending'?'Available after verification':'Not available')+'</td></tr>').join('')+'</tbody></table></div>':'No payment submissions yet.';
  $('paymentHistory').onclick=ev=>{const b=ev.target.closest('[data-payment-receipt]');if(!b)return;const payment=data[Number(b.dataset.paymentReceipt)];if(payment)printReceipt(payment);};
-};
+}
+async function start(){
+ if(!client||!$('paymentCourse'))return;
+ $('paymentCourse').addEventListener('change',drawQR);
+ $('submitPayment').addEventListener('click',async()=>{
+  const utr=$('paymentUtr').value.trim(),course_slug=$('paymentCourse').value,amount_inr=amount();
+  if(utr.length<8){$('paymentMessage').textContent='Please enter a valid UTR / transaction reference.';return;}
+  const b=$('submitPayment');b.disabled=true;$('paymentMessage').textContent='Submitting payment details…';
+  try{
+   const {data:{session},error:se}=await client.auth.getSession();if(se)throw se;if(!session?.user)throw new Error('Please sign in again.');
+   const {error}=await client.from('course_payments').insert({student_id:session.user.id,course_slug,amount_inr,upi_transaction_id:utr});
+   if(error)throw error;
+   $('paymentUtr').value='';$('paymentMessage').textContent='Payment details submitted. Status is PENDING until an administrator confirms the credit in the bank/UPI account.';
+   await loadPayments();
+  }catch(e){$('paymentMessage').textContent=e.message||'Could not submit payment details. Ensure the database migration has been run.';}
+  finally{b.disabled=false;}
+ });
+ try{
+  await drawQR();
+  const {data}=await client.auth.getSession();user=data.session?.user||null;
+  if(user){
+   const prof=await client.from('profiles').select('full_name').eq('id',user.id).maybeSingle();
+   studentName=prof.data?.full_name||user.user_metadata?.full_name||'Student';
+  }
+  await loadPayments();
+ }catch(e){$('paymentMessage').textContent='Could not load payment tools. '+(e.message||'');}
+}
+start();
+})();
