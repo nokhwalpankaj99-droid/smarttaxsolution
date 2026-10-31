@@ -128,7 +128,8 @@ async function downloadDocument(cert,kind){
    // Double gold/navy frame and corner ribbons.
    doc.setDrawColor(...gold);doc.setLineWidth(1.1);doc.rect(2.5,2.5,w-5,h-5);
    doc.setDrawColor(...blue);doc.setLineWidth(.45);doc.rect(4.5,4.5,w-9,h-9);
-   doc.setFillColor(...blue);doc.triangle(258,5,292,5,292,40,'F');doc.setFillColor(...gold);doc.triangle(265,5,292,5,292,31,'F');
+   // Keep the upper-right corner decoration outside the ISO information panel.
+   doc.setFillColor(...blue);doc.triangle(286,5,292,5,292,40,'F');doc.setFillColor(...gold);doc.triangle(289,5,292,5,292,31,'F');
    doc.setFillColor(...blue);doc.triangle(5,169,5,205,39,205,'F');doc.setFillColor(...gold);doc.triangle(5,180,5,205,28,205,'F');
    // Brand header.
    if(logoData)doc.addImage(logoData,'PNG',12,10,83,18,'STSLOGO','FAST');
@@ -139,7 +140,7 @@ async function downloadDocument(cert,kind){
    doc.setFillColor(...blue);doc.roundedRect(153,24,53,7,2,2,'F');
    doc.setFontSize(7.3);doc.setTextColor(255,255,255);doc.text('UDYAM-RJ-15-0042566',179.5,28.8,{align:'center'});
    // ISO details in a fixed top-right panel, clear of the certificate title ribbon.
-   doc.setFillColor(255,252,242);doc.setDrawColor(...gold);doc.setLineWidth(.45);
+   doc.setFillColor(255,255,255);doc.setDrawColor(...gold);doc.setLineWidth(.55);
    doc.roundedRect(214,8,73,27,1.8,1.8,'FD');
    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...blue);
    doc.text('ISO 9001:2015 CERTIFIED',250.5,15,{align:'center',maxWidth:68});
