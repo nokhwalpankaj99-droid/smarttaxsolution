@@ -24,16 +24,31 @@ async function drawQR(){
  });
 }
 function esc(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function printReceipt(payment){
- if(payment.status!=='approved'){return;}
+async function printReceipt(payment){
+ if(payment.status!=='approved')return;
+ if(!window.jspdf?.jsPDF){$('paymentMessage').textContent='PDF library did not load. Refresh the portal and try again.';return;}
  const receiptNo='STS-PAY-'+String(payment.id).replace(/-/g,'').slice(-10).toUpperCase();
  const course=({gst:'GST Course','income-tax':'Income Tax Course',combo:'GST + Income Tax Combo'})[payment.course_slug]||payment.course_slug;
- const issued=payment.reviewed_at?new Date(payment.reviewed_at):new Date();
- const paidOn=new Date(payment.created_at);
- const w=window.open('','_blank','width=800,height=700');
- if(!w){$('paymentMessage').textContent='Please allow pop-ups to open your verified payment receipt.';return;}
- w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Payment Receipt ${receiptNo}</title><style>body{font:15px Arial,sans-serif;color:#1c2d42;padding:35px}.receipt{max-width:680px;margin:auto;border:2px solid #142b4a;padding:30px}.head{text-align:center;border-bottom:2px solid #e9b44c;padding-bottom:16px}.head h1{color:#142b4a;margin:0 0 6px}.verified{display:inline-block;background:#e6f5eb;color:#176b3a;padding:7px 13px;border-radius:20px;font-weight:bold;margin:18px 0}.row{display:flex;justify-content:space-between;border-bottom:1px solid #e2e9f0;padding:12px 0;gap:20px}.row strong{text-align:right}.amount{font-size:24px;color:#142b4a}.foot{margin-top:25px;font-size:12px;color:#68788b;text-align:center}@media print{body{padding:0}.receipt{border:1px solid #142b4a}}</style></head><body><main class="receipt"><header class="head"><h1>SMART TAX SOLUTION</h1><div>Official Course Fee Payment Receipt</div></header><center><div class="verified">✓ PAYMENT VERIFIED</div></center><div class="row"><span>Receipt Number</span><strong>${esc(receiptNo)}</strong></div><div class="row"><span>Student Name</span><strong>${esc(studentName)}</strong></div><div class="row"><span>Course</span><strong>${esc(course)}</strong></div><div class="row"><span>Amount Received</span><strong class="amount">₹${esc(payment.amount_inr)}</strong></div><div class="row"><span>UPI Transaction / UTR ID</span><strong>${esc(payment.upi_transaction_id)}</strong></div><div class="row"><span>Payment Submitted</span><strong>${esc(paidOn.toLocaleString())}</strong></div><div class="row"><span>Payment Verified On</span><strong>${esc(issued.toLocaleString())}</strong></div><div class="foot">This receipt confirms that the above course fee payment has been verified by Smart Tax Solution.<br>For assistance: smarttaxsolutionsgnr@gmail.com | WhatsApp: 9664029638</div><center><p><button onclick="window.print()">Print / Save as PDF</button></p></center></main></body></html>`);
- w.document.close();
+ const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'}),w=210;
+ let logo=null;
+ try{
+  const res=await fetch('assets/smart-tax-solution-logo.svg',{cache:'no-cache'});if(!res.ok)throw new Error('Logo unavailable');
+  const svg=await res.text(),blob=new Blob([svg],{type:'image/svg+xml'}),obj=URL.createObjectURL(blob);
+  try{const img=new Image();await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=obj;});const cv=document.createElement('canvas');cv.width=1240;cv.height=236;cv.getContext('2d').drawImage(img,0,0,1240,236);logo=cv.toDataURL('image/png');}finally{URL.revokeObjectURL(obj);}
+ }catch(e){console.warn('Receipt logo could not load',e);}
+ doc.setDrawColor(20,43,74);doc.setLineWidth(.8);doc.roundedRect(12,12,186,273,3,3);
+ if(logo)doc.addImage(logo,'PNG',53,23,104,20,'STSRECEIPTLOGO','FAST');
+ else{doc.setFont('helvetica','bold');doc.setFontSize(22);doc.setTextColor(20,43,74);doc.text('SMART TAX SOLUTION',105,37,{align:'center'});}
+ doc.setDrawColor(190,145,54);doc.line(25,51,185,51);
+ doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(20,43,74);doc.text('PAYMENT RECEIPT',105,65,{align:'center'});
+ doc.setFillColor(230,245,235);doc.roundedRect(72,72,66,10,5,5,'F');doc.setFontSize(9);doc.setTextColor(23,107,58);doc.text('PAYMENT VERIFIED',105,78.5,{align:'center'});
+ const rows=[['Receipt Number',receiptNo],['Student Name',studentName],['Course',course],['Amount Received','INR '+payment.amount_inr],['UPI Transaction / UTR ID',payment.upi_transaction_id],['Payment Submitted',new Date(payment.created_at).toLocaleString('en-IN')],['Payment Verified On',new Date(payment.reviewed_at||Date.now()).toLocaleString('en-IN')]];
+ let y=101;
+ for(const [label,value] of rows){doc.setDrawColor(226,233,240);doc.line(25,y+7,185,y+7);doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(104,120,139);doc.text(label,28,y);doc.setFont('helvetica','bold');doc.setTextColor(28,45,66);doc.text(doc.splitTextToSize(String(value),90),182,y,{align:'right',maxWidth:90});y+=19;}
+ doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(20,43,74);doc.text('Thank you for your payment.',105,244,{align:'center'});
+ doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(80,91,104);doc.text('This is a computer generated receipt and hence no signature is required.',105,258,{align:'center',maxWidth:160});
+ doc.setFontSize(8);doc.text('Smart Tax Solution | smarttaxsolutionsgnr@gmail.com | WhatsApp: 9664029638',105,268,{align:'center'});
+ doc.save('Payment_Receipt_'+receiptNo+'.pdf');
 }
 async function loadPayments(){
  if(!user)return;
