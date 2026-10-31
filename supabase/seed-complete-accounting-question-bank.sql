@@ -1,8 +1,32 @@
--- Complete Accounting course: 50-question exam bank
--- Run after add-complete-accounting-course.sql. Safe to rerun without duplicate questions.
+-- FIXED: Complete Accounting question bank
+-- Run this entire file in Supabase SQL Editor.
+-- Inserts the course first, then questions, then answer keys, and publishes only after validation.
 begin;
-with bank(question_text,option_a,option_b,option_c,option_d,correct_option,explanation) as (
- values
+
+insert into public.courses(slug,title,description,is_published)
+values (
+ 'complete-accounting',
+ 'Complete Accounting Course',
+ 'Tally Prime, BUSY Accounting Software, GST accounting, purchase and sales entries, inventory management, banking, bank reconciliation, accounting reports and other accounting software.',
+ false
+)
+on conflict (slug) do update
+set title=excluded.title, description=excluded.description;
+
+create temporary table if not exists sts_accounting_seed (
+ question_text text primary key,
+ option_a text not null,
+ option_b text not null,
+ option_c text not null,
+ option_d text not null,
+ correct_option integer not null check(correct_option between 0 and 3),
+ explanation text not null
+) on commit drop;
+
+truncate table sts_accounting_seed;
+
+insert into sts_accounting_seed(question_text,option_a,option_b,option_c,option_d,correct_option,explanation)
+values
 ('Accounting equation is:','Assets = Liabilities + Capital','Assets = Capital - Liabilities','Capital = Assets + Liabilities','Assets = Income + Expenses',0,'Correct answer: Assets = Liabilities + Capital. Review the relevant accounting principle and supporting records.'),
 ('The main purpose of accounting is to:','Record and communicate financial information','Only calculate GST','Only prepare invoices','Only count cash',0,'Correct answer: Record and communicate financial information. Review the relevant accounting principle and supporting records.'),
 ('Debit the receiver and credit the giver applies to:','Personal accounts','Real accounts','Nominal accounts','Suspense accounts',0,'Correct answer: Personal accounts. Review the relevant accounting principle and supporting records.'),
@@ -53,29 +77,48 @@ with bank(question_text,option_a,option_b,option_c,option_d,correct_option,expla
 ('Receivables ageing analyses:','How long customer invoices remain unpaid','Stock depreciation','Payroll reconciliation','E-way bills',0,'Correct answer: How long customer invoices remain unpaid. Review the relevant accounting principle and supporting records.'),
 ('Payables ageing analyses:','Outstanding supplier bills by age','Customer discounts','Sales quotations','Employee attendance',0,'Correct answer: Outstanding supplier bills by age. Review the relevant accounting principle and supporting records.'),
 ('An audit trail helps to:','Trace who entered or changed a transaction and when','Guarantee tax compliance','Replace source documents','Prevent every error',0,'Correct answer: Trace who entered or changed a transaction and when. Review the relevant accounting principle and supporting records.'),
-('Before filing GST returns, reconcile:','Books, registers, portal data and tax ledgers','Only cash balance','Only fixed assets','Only attendance',0,'Correct answer: Books, registers, portal data and tax ledgers. Review the relevant accounting principle and supporting records.')
-),
-course as (select id from public.courses where slug='complete-accounting'),
-newq as (
- insert into public.questions(course_id,question_text,options,explanation,is_active)
- select c.id,b.question_text,jsonb_build_array(b.option_a,b.option_b,b.option_c,b.option_d),b.explanation,true
- from bank b cross join course c
- where not exists(select 1 from public.questions q where q.course_id=c.id and q.question_text=b.question_text)
- returning id,question_text
-)
+('Before filing GST returns, reconcile:','Books, registers, portal data and tax ledgers','Only cash balance','Only fixed assets','Only attendance',0,'Correct answer: Books, registers, portal data and tax ledgers. Review the relevant accounting principle and supporting records.');
+
+insert into public.questions(course_id,question_text,options,explanation,is_active)
+select c.id,s.question_text,
+       jsonb_build_array(s.option_a,s.option_b,s.option_c,s.option_d),
+       s.explanation,true
+from sts_accounting_seed s
+cross join public.courses c
+where c.slug='complete-accounting'
+and not exists (
+ select 1 from public.questions q
+ where q.course_id=c.id and q.question_text=s.question_text
+);
+
 insert into public.question_answer_keys(question_id,correct_option)
-select q.id,b.correct_option from public.questions q
-join course c on c.id=q.course_id join bank b on b.question_text=q.question_text
-on conflict(question_id) do update set correct_option=excluded.correct_option;
+select q.id,s.correct_option
+from sts_accounting_seed s
+join public.courses c on c.slug='complete-accounting'
+join public.questions q on q.course_id=c.id and q.question_text=s.question_text
+on conflict(question_id) do update
+set correct_option=excluded.correct_option;
 
 do $$
-declare n integer; cid uuid;
+declare v_course_id uuid; v_total integer;
 begin
- select id into cid from public.courses where slug='complete-accounting';
- select count(*) into n from public.questions q join public.question_answer_keys k on k.question_id=q.id
- where q.course_id=cid and q.is_active;
- if n < 50 then raise exception 'Only % active questions with answer keys. At least 50 required.',n; end if;
- update public.courses set is_published=true where id=cid;
+ select id into v_course_id from public.courses where slug='complete-accounting';
+ if v_course_id is null then
+   raise exception 'Complete Accounting course was not created.';
+ end if;
+
+ select count(*) into v_total
+ from public.questions q
+ join public.question_answer_keys k on k.question_id=q.id
+ where q.course_id=v_course_id and q.is_active=true;
+
+ if v_total < 50 then
+   raise exception 'Only % active questions have answer keys; at least 50 are required.',v_total;
+ end if;
+
+ update public.courses set is_published=true where id=v_course_id;
+ raise notice 'Complete Accounting published with % active questions and answer keys.',v_total;
 end $$;
+
 notify pgrst,'reload schema';
 commit;
