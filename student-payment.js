@@ -4,12 +4,12 @@ const $=id=>document.getElementById(id);
 const UPI='9664029638-10@ybl';
 const client=window.supabase?.createClient(window.STS_SUPABASE_URL,window.STS_SUPABASE_PUBLISHABLE_KEY);
 let user=null,studentName='Student';
-const prices={gst:999,'income-tax':999,combo:1499};
+const prices={gst:999,'income-tax':999,combo:1499,'complete-accounting':1999};
 function amount(){return prices[$('paymentCourse').value]||999;}
 async function drawQR(){
  const course=$('paymentCourse').value,amt=amount();
  $('paymentAmount').textContent='₹'+amt;
- const note=course==='combo'?'GST and Income Tax Combo Fee':course==='gst'?'GST Course Fee':'Income Tax Course Fee';
+ const note=course==='combo'?'GST and Income Tax Combo Fee':course==='gst'?'GST Course Fee':course==='income-tax'?'Income Tax Course Fee':'Complete Accounting Course Fee';
  const uri='upi://pay?pa='+encodeURIComponent(UPI)+'&pn='+encodeURIComponent('Smart Tax Solution')+'&am='+amt+'&cu=INR&tn='+encodeURIComponent(note);
  const img=$('paymentQrImage'),status=$('paymentQrStatus');
  if(!img){console.error('Payment QR image element is missing');return;}
@@ -28,7 +28,7 @@ async function printReceipt(payment){
  if(payment.status!=='approved')return;
  if(!window.jspdf?.jsPDF){$('paymentMessage').textContent='PDF library did not load. Refresh the portal and try again.';return;}
  const receiptNo='STS-PAY-'+String(payment.id).replace(/-/g,'').slice(-10).toUpperCase();
- const course=({gst:'GST Course','income-tax':'Income Tax Course',combo:'GST + Income Tax Combo'})[payment.course_slug]||payment.course_slug;
+ const course=({gst:'GST Course','income-tax':'Income Tax Course',combo:'GST + Income Tax Combo','complete-accounting':'Complete Accounting Course'})[payment.course_slug]||payment.course_slug;
  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'}),w=210;
  let logo=null;
  try{
@@ -54,7 +54,7 @@ async function loadPayments(){
  if(!user)return;
  const {data,error}=await client.from('course_payments').select('id,course_slug,amount_inr,upi_transaction_id,status,created_at,reviewed_at').eq('student_id',user.id).order('created_at',{ascending:false}).limit(30);
  if(error){$('paymentHistory').textContent='Payment status unavailable. Ask administrator to run supabase/payment-approval-gate.sql.';return;}
- $('paymentHistory').innerHTML=data.length?'<div class="tablewrap"><table><thead><tr><th>Course</th><th>Amount</th><th>UTR</th><th>Status</th><th>Date</th><th>Receipt</th></tr></thead><tbody>'+data.map((p,i)=>'<tr><td>'+esc(({gst:'GST','income-tax':'Income Tax',combo:'Combo'})[p.course_slug]||p.course_slug)+'</td><td>₹'+esc(p.amount_inr)+'</td><td>'+esc(p.upi_transaction_id)+'</td><td><strong>'+esc(p.status.toUpperCase())+'</strong></td><td>'+esc(new Date(p.created_at).toLocaleDateString())+'</td><td>'+(p.status==='approved'?'<button type="button" class="btn secondary" data-payment-receipt="'+i+'">View / Print Receipt</button>':p.status==='pending'?'Available after verification':'Not available')+'</td></tr>').join('')+'</tbody></table></div>':'No payment submissions yet.';
+ $('paymentHistory').innerHTML=data.length?'<div class="tablewrap"><table><thead><tr><th>Course</th><th>Amount</th><th>UTR</th><th>Status</th><th>Date</th><th>Receipt</th></tr></thead><tbody>'+data.map((p,i)=>'<tr><td>'+esc(({gst:'GST','income-tax':'Income Tax',combo:'Combo','complete-accounting':'Complete Accounting'})[p.course_slug]||p.course_slug)+'</td><td>₹'+esc(p.amount_inr)+'</td><td>'+esc(p.upi_transaction_id)+'</td><td><strong>'+esc(p.status.toUpperCase())+'</strong></td><td>'+esc(new Date(p.created_at).toLocaleDateString())+'</td><td>'+(p.status==='approved'?'<button type="button" class="btn secondary" data-payment-receipt="'+i+'">View / Print Receipt</button>':p.status==='pending'?'Available after verification':'Not available')+'</td></tr>').join('')+'</tbody></table></div>':'No payment submissions yet.';
  $('paymentHistory').onclick=ev=>{const b=ev.target.closest('[data-payment-receipt]');if(!b)return;const payment=data[Number(b.dataset.paymentReceipt)];if(payment)printReceipt(payment);};
 }
 async function start(){
