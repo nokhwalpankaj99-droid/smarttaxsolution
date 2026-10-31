@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+<rect width="600" height="600" fill="#fff"/>
+<circle cx="300" cy="300" r="278" fill="none" stroke="#172fc5" stroke-width="13"/>
+<circle cx="300" cy="300" r="263" fill="none" stroke="#172fc5" stroke-width="5"/>
+<circle cx="300" cy="300" r="205" fill="none" stroke="#172fc5" stroke-width="5"/>
+<defs><path id="top" d="M 90,300 A 210,210 0 0,1 510,300"/><path id="bottom" d="M 88,310 A 212,212 0 0,0 512,310"/></defs>
+<text fill="#172fc5" font-family="Arial,sans-serif" font-size="46" font-weight="700" letter-spacing="1"><textPath href="#top" startOffset="50%" text-anchor="middle">Smart Tax Solution</textPath></text>
+<text fill="#172fc5" font-family="Arial,sans-serif" font-size="29" font-weight="700" letter-spacing=".5"><textPath href="#bottom" startOffset="50%" text-anchor="middle">GST | Income Tax | All Tax Solutions</textPath></text>
+<text x="100" y="318" fill="#172fc5" font-size="48">★</text><text x="454" y="318" fill="#172fc5" font-size="48">★</text>
+<g fill="none" stroke="#172fc5" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+<path d="M155 260 C230 252 340 248 444 230 C375 263 296 291 231 344 C200 318 176 290 155 260"/>
+<path d="M240 335 C257 308 266 295 270 270 C274 248 268 239 260 255 C250 275 261 326 276 326 C299 326 316 295 332 304 C347 313 356 291 370 300 C385 312 394 289 408 300 C422 310 432 293 445 303"/>
+<path d="M200 375 C270 368 354 368 445 375"/>
+</g>
+</svg>
