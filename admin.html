@@ -121,7 +121,7 @@ async function downloadAnswerKeyPdf(){
  const title=mode==="paper"?"Random Exam Practice Paper":mode==="key"?"Answer Key":"Question Notes & Answer Key";
  const node=document.createElement("div");
  node.style.cssText="font-family:Arial,sans-serif;color:#172033;background:#fff;width:794px;box-sizing:border-box;line-height:1.42;position:relative";
- const logo="https://smarttaxsolution.site/assets/smart-tax-solution-logo.svg";
+ const logo=new URL("assets/smart-tax-solution-logo.svg",window.location.href).href;
  const pageSize=4;
  const questionHtml=body.match(/<article class="q">[\s\S]*?<\/article>/g)||[];
  if(questionHtml.length!==n){box.textContent="PDF page content could not be prepared. Please refresh and retry.";return;}
