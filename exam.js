@@ -5,7 +5,7 @@ const url='https://jbjergbqjokxxcvntimk.supabase.co';
 const key='sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k';
 if(!window.supabase){$('loading').innerHTML='<h1>Service unavailable</h1><p>Please reload later.</p>';return;}
 const db=window.supabase.createClient(url,key);
-let user=null,course=null,questions=[],answers=new Map(),index=0,seconds=1200,examFinished=false,timerId=null,idleId=null;
+let user=null,course=null,questions=[],answers=new Map(),index=0,seconds=600,examFinished=false,timerId=null,idleId=null;
 const requestedCourse=new URLSearchParams(location.search).get('course');
 const courseSlug=['income-tax','complete-accounting'].includes(requestedCourse)?requestedCourse:'gst';
 const requestedCount=new URLSearchParams(location.search).get('count')==='100'?100:50;
