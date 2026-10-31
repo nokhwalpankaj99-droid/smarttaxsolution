@@ -53,7 +53,7 @@ set search_path = ''
 as $$
 begin
  if new.role is distinct from old.role
-    and current_user not in ('postgres','service_role')
+    and session_user not in ('postgres','service_role')
     and not public.sts_is_admin() then
    raise exception 'Only an authorized administrator can change a profile role';
  end if;
@@ -134,8 +134,8 @@ create policy "admin manage payments" on public.course_payments
  for all to authenticated using (public.sts_is_admin()) with check (public.sts_is_admin());
 
 -- Do not allow anonymous access to private records or answer keys.
-revoke all on public.profiles, public.exam_attempts, public.certificates,
- public.question_answer_keys, public.course_payments from anon;
+revoke all on public.profiles, public.courses, public.questions, public.exam_attempts,
+ public.certificates, public.question_answer_keys, public.course_payments from anon;
 revoke all on public.profiles, public.courses, public.questions,
  public.question_answer_keys, public.exam_attempts, public.certificates,
  public.course_payments from public;
