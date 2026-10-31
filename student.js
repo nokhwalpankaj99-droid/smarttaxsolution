@@ -138,8 +138,17 @@ async function downloadDocument(cert,kind){
    doc.setFontSize(7.5);doc.setTextColor(...ink);doc.text('Udyam Registered Enterprise',179.5,22,{align:'center'});
    doc.setFillColor(...blue);doc.roundedRect(153,24,53,7,2,2,'F');
    doc.setFontSize(7.3);doc.setTextColor(255,255,255);doc.text('UDYAM-RJ-15-0042566',179.5,28.8,{align:'center'});
-   doc.setFont('times','italic');doc.setFontSize(10);doc.setTextColor(...ink);
-   doc.text(['Empowering Tax','Professionals for a','Better Tomorrow'],219,14);
+   // ISO 9001:2015 certification badge based on the uploaded GCS certificate.
+   doc.setFillColor(255,255,255);doc.setDrawColor(...blue);doc.setLineWidth(.8);doc.roundedRect(215,8,72,27,2,2,'FD');
+   doc.setFillColor(...blue);doc.roundedRect(217,10,68,8,1.5,1.5,'F');
+   doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(255,255,255);
+   doc.text('ISO 9001:2015',251,15.5,{align:'center'});
+   doc.setFontSize(7.2);doc.setTextColor(...blue);
+   doc.text('CERTIFIED QUALITY MANAGEMENT',251,22,{align:'center'});
+   doc.setFontSize(7.4);doc.setTextColor(...ink);
+   doc.text('Certification No.: GCS/QMS/11666',251,29,{align:'center'});
+   doc.setFont('helvetica','normal');doc.setFontSize(5.8);doc.setTextColor(...muted);
+   doc.text('Certified by Global Certification Services',251,33,{align:'center'});
    // Ribbon title.
    doc.setFillColor(...blue);doc.rect(27,42,243,17,'F');
    doc.setFillColor(...gold);doc.rect(27,42,243,1.1,'F');doc.rect(27,58,243,1.1,'F');
