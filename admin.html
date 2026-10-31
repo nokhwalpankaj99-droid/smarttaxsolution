@@ -16,11 +16,11 @@
 <section class="admin-card"><h2>Course settings</h2><p>Publish only after you have reviewed course content and loaded the required question bank.</p><label for="course">Course</label><select id="course"><option value="gst">GST Practical Learning</option><option value="income-tax">Income Tax Learning</option></select><label><input type="checkbox" id="published" style="width:auto"> Published / available to students</label><button id="saveCourse" class="button primary">Save course status</button></section>
 <section class="admin-card"><h2>Add a lesson</h2><label for="lessonCourse">Course</label><select id="lessonCourse"><option value="gst">GST</option><option value="income-tax">Income Tax</option></select><label for="lessonTitle">Lesson title</label><input id="lessonTitle" maxlength="180"><label for="lessonBody">Lesson content (plain text)</label><textarea id="lessonBody" maxlength="20000"></textarea><label><input id="lessonPublished" type="checkbox" style="width:auto"> Publish lesson</label><button id="addLesson" class="button primary">Add lesson</button></section>
 <section class="admin-card"><h2>Add an exam question</h2><p>Question bank needs at least 50 active questions for a 50-question exam or 100 for a 100-question exam. Questions are shuffled for each attempt.</p><label for="questionCourse">Course</label><select id="questionCourse"><option value="gst">GST</option><option value="income-tax">Income Tax</option></select><label for="questionText">Question</label><textarea id="questionText" maxlength="2000"></textarea><div class="admin-grid"><div><label for="opt0">Option A</label><input id="opt0" maxlength="500"></div><div><label for="opt1">Option B</label><input id="opt1" maxlength="500"></div><div><label for="opt2">Option C</label><input id="opt2" maxlength="500"></div><div><label for="opt3">Option D</label><input id="opt3" maxlength="500"></div></div><label for="correct">Correct option</label><select id="correct"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select><label for="explanation">Explanation (optional)</label><textarea id="explanation" maxlength="3000"></textarea><button id="addQuestion" class="button primary">Save question</button></section>
-<section class="admin-card"><h2>Question Bank & Answer Key PDF</h2><p>Admin-only question list with all four options, correct answer and explanation. Students cannot access this report.</p><label for="answerKeyCourse">Course</label><select id="answerKeyCourse"><option value="complete-accounting">Complete Accounting Course</option></select><button id="downloadAnswerKey" class="button primary" type="button">Download Answer Key PDF</button><div id="answerKeyStatus" class="admin-status" role="status">Choose a course and download its answer key.</div></section>
+<section class="admin-card"><h2>Question Bank & Answer Key PDF</h2><p>Admin-only question list with all four options, correct answer and explanation. Students cannot access this report.</p><label for="answerKeyCourse">Course</label><select id="answerKeyCourse"></select><div class="admin-grid"><div><label for="pdfMode">PDF Type</label><select id="pdfMode"><option value="notes">Question Notes + Answer Key</option><option value="paper">Random Exam Practice Paper</option><option value="key">Answer Key Only</option></select></div><div><label for="pdfCount">Questions</label><select id="pdfCount"><option value="all">All available questions</option><option value="50">50 questions</option><option value="100">100 questions</option></select></div></div><button id="downloadAnswerKey" class="button primary" type="button">Download PDF Directly</button><div id="answerKeyStatus" class="admin-status" role="status">Select any course and PDF type. PDF will download directly.</div></section>
 <section class="admin-card"><h2>Payment approvals</h2><p>Verify each UTR against the actual PhonePe/bank credit before approving. Approval enables certificate issuance for the selected course.</p><div id="payments" class="admin-table">Sign in as admin to load payments.</div></section>
 <section class="admin-card"><h2>Student accounts and exam results</h2><button id="refreshData" class="button primary">Refresh lists</button><h3>Students</h3><div id="students" class="admin-table">Sign in as admin to load.</div><h3>Exam attempts</h3><div id="attempts" class="admin-table">Sign in as admin to load.</div><h3>Certificates</h3><div id="certificates" class="admin-table">Sign in as admin to load.</div></section>
 </div></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script><script>
 const db=supabase.createClient("https://jbjergbqjokxxcvntimk.supabase.co","sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k");
 const $=id=>document.getElementById(id), status=m=>$("status").textContent=m;
 let courses={},mfaFactorId=null,mfaMode="verify",pendingUser=null;
@@ -58,7 +58,7 @@ $("mfaCancel").onclick=async()=>{await db.auth.signOut();pendingUser=null;$("mfa
 $("signIn").onclick=async()=>{status("Signing in…");const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error){status(error.message);return;}await continueAdmin(data.user);};
 async function verifyAdmin(user){const {data,error}=await db.from("profiles").select("role,full_name").eq("id",user.id).maybeSingle();if(error||!data||data.role!=="admin"){await db.auth.signOut();$("workspace").hidden=true;$("signOut").hidden=true;$("signIn").hidden=false;status("Access denied. This account is not assigned the admin role. Assign role=admin manually to the correct profile in Supabase Table Editor after verifying the account.");return;} $("workspace").hidden=false;$("signOut").hidden=false;$("signIn").hidden=true;status("Administrator access verified: "+(data.full_name||user.email));await loadCourses();await refresh(); }
 $("signOut").onclick=async()=>{await db.auth.signOut();$("workspace").hidden=true;$("signOut").hidden=true;$("signIn").hidden=false;status("Signed out.");};
-async function loadCourses(){const {data,error}=await db.from("courses").select("id,slug,title,is_published");if(error){status("Could not load courses: "+error.message);return;}courses=Object.fromEntries(data.map(c=>[c.slug,c]));for(const id of ["course","lessonCourse","questionCourse"]){const old=$(id).value;$(id).innerHTML=data.map(c=>'<option value="'+c.slug+'">'+c.title.replace(/</g,"&lt;")+'</option>').join("");if(courses[old])$(id).value=old;} syncPublished();}
+async function loadCourses(){const {data,error}=await db.from("courses").select("id,slug,title,is_published");if(error){status("Could not load courses: "+error.message);return;}courses=Object.fromEntries(data.map(c=>[c.slug,c]));const answerSelect=$("answerKeyCourse");if(answerSelect){const old=answerSelect.value;answerSelect.innerHTML=data.map(c=>'<option value="'+c.slug+'">'+c.title.replace(/</g,"&lt;")+'</option>').join("");if(courses[old])answerSelect.value=old;}for(const id of ["course","lessonCourse","questionCourse"]){const old=$(id).value;$(id).innerHTML=data.map(c=>'<option value="'+c.slug+'">'+c.title.replace(/</g,"&lt;")+'</option>').join("");if(courses[old])$(id).value=old;} syncPublished();}
 function syncPublished(){const c=courses[$("course").value];$("published").checked=!!c?.is_published;}
 $("course").onchange=syncPublished;
 $("saveCourse").onclick=async()=>{const c=courses[$("course").value];if(!c)return;const {error}=await db.from("courses").update({is_published:$("published").checked}).eq("id",c.id);status(error?"Course update failed: "+error.message:"Course status saved. Publish only when enough approved questions and content are ready.");if(!error)await loadCourses();};
@@ -83,27 +83,37 @@ $("payments").addEventListener("click",async ev=>{
 });
 
 async function downloadAnswerKeyPdf(){
- const courseSlug=$("answerKeyCourse").value;
- const statusBox=$("answerKeyStatus");statusBox.textContent="Loading questions and answer keys…";
- const c=courses[courseSlug];if(!c){statusBox.textContent="Course not found.";return;}
- const {data:qs,error:qe}=await db.from("questions").select("id,question_text,options,explanation").eq("course_id",c.id).eq("is_active",true).order("created_at",{ascending:true});
- if(qe){statusBox.textContent="Questions could not be loaded: "+qe.message;return;}
- if(!qs?.length){statusBox.textContent="No active questions found.";return;}
- const ids=qs.map(q=>q.id);
- const {data:keys,error:ke}=await db.from("question_answer_keys").select("question_id,correct_option").in("question_id",ids);
- if(ke){statusBox.textContent="Answer keys could not be loaded: "+ke.message;return;}
- const keyMap=new Map((keys||[]).map(k=>[k.question_id,Number(k.correct_option)]));
- const missing=qs.filter(q=>!keyMap.has(q.id));
- if(missing.length){statusBox.textContent=missing.length+" questions are missing answer keys. PDF was not generated.";return;}
- const win=window.open("","_blank");
- if(!win){statusBox.textContent="Please allow pop-ups for this site, then try again.";return;}
- const safe=x=>String(x??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
- const rows=qs.map((q,i)=>{
-  const k=keyMap.get(q.id),opts=Array.isArray(q.options)?q.options:[];
-  return '<article class="q"><h3>Q'+(i+1)+'. '+safe(q.question_text)+'</h3><ol type="A">'+opts.map((o,j)=>'<li'+(j===k?' class="correct"':'')+'>'+safe(o)+(j===k?' <b>✓ Correct Answer</b>':'')+'</li>').join('')+'</ol><p><b>Answer:</b> '+String.fromCharCode(65+k)+'. '+safe(opts[k]||"")+'</p>'+(q.explanation?'<p><b>Explanation:</b> '+safe(q.explanation)+'</p>':'')+'</article>';
+ const slug=$("answerKeyCourse").value,mode=$("pdfMode").value,choice=$("pdfCount").value,box=$("answerKeyStatus");
+ box.textContent="Preparing PDF…";
+ const c=courses[slug];if(!c){box.textContent="Course not found.";return;}
+ if(typeof html2pdf!=="function"){box.textContent="PDF library unavailable. Refresh and retry.";return;}
+ const {data:qs,error:qe}=await db.from("questions").select("id,question_text,options,explanation").eq("course_id",c.id).eq("is_active",true);
+ if(qe){box.textContent=qe.message;return;}if(!qs?.length){box.textContent="No active questions.";return;}
+ const ids=qs.map(q=>q.id),{data:keys,error:ke}=await db.from("question_answer_keys").select("question_id,correct_option").in("question_id",ids);
+ if(ke){box.textContent=ke.message;return;}
+ const map=new Map((keys||[]).map(k=>[k.question_id,Number(k.correct_option)]));
+ const all=qs.filter(q=>map.has(q.id)&&Array.isArray(q.options)&&map.get(q.id)>=0&&map.get(q.id)<q.options.length);
+ if(all.length!==qs.length){box.textContent="Some questions have missing or invalid answer keys. Please fix them before exporting.";return;}
+ for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
+ const n=choice==="all"?all.length:Number(choice);if(all.length<n){box.textContent="Only "+all.length+" complete questions available.";return;}
+ const esc=x=>String(x??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+ const body=all.slice(0,n).map((q,i)=>{
+  const opts=q.options.map((value,j)=>({value,correct:j===map.get(q.id)}));
+  for(let j=opts.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[opts[j],opts[k]]=[opts[k],opts[j]];}
+  const answer=opts.findIndex(x=>x.correct);
+  const list=opts.map((o,j)=>'<div class="opt">'+String.fromCharCode(65+j)+'. '+esc(o.value)+(mode!=="paper"&&o.correct?' <b style="color:#087443">✓ Correct Answer</b>':'')+'</div>').join("");
+  return '<article class="q"><h3>Q'+(i+1)+'. '+esc(q.question_text)+'</h3>'+list+(mode!=="paper"?'<p><b>Correct Answer:</b> '+String.fromCharCode(65+answer)+'. '+esc(opts[answer].value)+'</p>'+(q.explanation?'<p><b>Explanation / Notes:</b> '+esc(q.explanation)+'</p>':''):'')+'</article>';
  }).join("");
- win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+safe(c.title)+' - Answer Key</title><style>body{font:14px Arial,sans-serif;color:#172033;margin:28px;line-height:1.45}h1{font-size:22px;margin-bottom:4px}.sub{color:#53627a;margin-bottom:22px}.q{break-inside:avoid;border-bottom:1px solid #d8deea;padding:10px 0}.q h3{font-size:15px;margin:0 0 8px}.q ol{margin:5px 0 8px;padding-left:28px}.q li{padding:2px 5px}.correct{font-weight:bold;color:#087443;background:#eaf7ef}.q p{margin:5px 0}.print{padding:9px 16px;background:#173b68;color:#fff;border:0;border-radius:6px;margin-bottom:18px;cursor:pointer}@media print{.print{display:none}body{margin:14mm}}</style></head><body><button class="print" onclick="window.print()">Print / Save as PDF</button><h1>'+safe(c.title)+' — Answer Key</h1><div class="sub">Smart Tax Solution | '+qs.length+' active questions | Admin copy</div>'+rows+'</body></html>');
- win.document.close();statusBox.textContent="Answer key opened in a new tab. In that tab choose Print → Save as PDF.";
+ const title=mode==="paper"?"Random Exam Practice Paper":mode==="key"?"Answer Key":"Question Notes & Answer Key";
+ const node=document.createElement("div");node.style.cssText="font-family:Arial,sans-serif;color:#172033;background:#fff;padding:24px;width:750px;box-sizing:border-box;line-height:1.45";
+ node.innerHTML='<h1>'+esc(c.title)+'</h1><h2>'+title+'</h2><p>Smart Tax Solution | '+n+' Questions | '+(mode==="paper"?"Practice paper — answers hidden":"Admin study copy")+'</p>'+body+'<p>For training and practice. Verify current laws and official notifications before professional use.</p>';
+ node.querySelectorAll(".q").forEach(x=>x.style.cssText="break-inside:avoid;border-bottom:1px solid #d8deea;padding:10px 0;margin-bottom:8px");
+ node.querySelectorAll("h3").forEach(x=>x.style.fontSize="14px");node.querySelectorAll(".opt").forEach(x=>x.style.cssText="font-size:12px;padding:3px 8px");
+ document.body.appendChild(node);
+ const filename=slug+"-"+mode+"-"+new Date().toISOString().slice(0,10)+".pdf";
+ try{await html2pdf().set({margin:10,filename,image:{type:"jpeg",quality:.96},html2canvas:{scale:1.5,useCORS:true,backgroundColor:"#fff"},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"]}}).from(node).save();box.textContent="PDF downloaded: "+filename;}
+ catch(e){box.textContent="PDF generation failed: "+(e.message||"Please retry.");}
+ finally{node.remove();}
 }
 $("downloadAnswerKey").onclick=downloadAnswerKeyPdf;
 
