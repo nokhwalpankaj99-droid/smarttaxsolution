@@ -4,7 +4,14 @@
 <style>.admin-wrap{max-width:1100px;margin:35px auto;padding:0 22px}.admin-card{background:#fff;border:1px solid #dce4f0;border-radius:15px;padding:22px;margin:18px 0}.admin-card h2{margin-top:0}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.admin-wrap label{display:block;font-size:13px;font-weight:700;margin:10px 0 5px}.admin-wrap input,.admin-wrap select,.admin-wrap textarea{width:100%;padding:11px;border:1px solid #ccd6e5;border-radius:8px;font:inherit}.admin-wrap textarea{min-height:90px}.admin-wrap button{cursor:pointer;margin:8px 8px 0 0}.admin-status{padding:12px;border-radius:8px;background:#f3f7ff;white-space:pre-wrap}.admin-table{overflow:auto}.admin-table table{width:100%;border-collapse:collapse;font-size:13px}.admin-table th,.admin-table td{border-bottom:1px solid #e1e7f0;padding:9px;text-align:left}.admin-table th{background:#f3f6fb}@media(max-width:700px){.admin-grid{grid-template-columns:1fr}}</style></head>
 <body><header class="site-header"><a class="brand" href="index.html"><img class="brand-logo" src="assets/smart-tax-solution-logo.svg" alt="Smart Tax Solution logo" width="44" height="44"><span><strong>Smart Tax Solution</strong><small>Administrator Portal</small></span></a><nav><a href="student.html">Student Portal</a><a href="index.html">Home</a></nav></header>
 <main class="admin-wrap"><h1>Student Portal Administration</h1><p>Sign in using an account that has been securely assigned the <code>admin</code> role in Supabase. New student accounts are not administrators.</p>
-<section class="admin-card"><h2>Administrator sign in</h2><div class="admin-grid"><div><label for="email">Admin email</label><input id="email" type="email" autocomplete="username"></div><div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password"></div></div><button id="signIn" class="button primary">Sign in</button><button id="signOut" class="button" hidden>Sign out</button><div id="status" class="admin-status" role="status" aria-live="polite">Not signed in.</div></section>
+<section class="admin-card"><h2>Administrator sign in</h2><div class="admin-grid"><div><label for="email">Admin email</label><input id="email" type="email" autocomplete="username"></div><div><label for="password">Password</label><input id="password" type="password" autocomplete="current-password"></div></div><button id="signIn" class="button primary">Sign in</button><button id="signOut" class="button" hidden>Sign out</button><div id="status" class="admin-status" role="status" aria-live="polite">Not signed in.</div>
+<div id="mfaPanel" hidden style="margin-top:16px;padding:16px;border:1px solid #ccd6e5;border-radius:10px">
+<h3>Admin two-step verification</h3><p id="mfaHelp">Set up or verify your authenticator app.</p>
+<div id="mfaQr" style="max-width:220px;overflow-wrap:anywhere"></div>
+<label for="mfaCode">6-digit authenticator code</label><input id="mfaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}">
+<button id="mfaAction" class="button primary">Verify code</button>
+<button id="mfaCancel" class="button">Cancel / Sign out</button>
+</div></section>
 <div id="workspace" hidden>
 <section class="admin-card"><h2>Course settings</h2><p>Publish only after you have reviewed course content and loaded the required question bank.</p><label for="course">Course</label><select id="course"><option value="gst">GST Practical Learning</option><option value="income-tax">Income Tax Learning</option></select><label><input type="checkbox" id="published" style="width:auto"> Published / available to students</label><button id="saveCourse" class="button primary">Save course status</button></section>
 <section class="admin-card"><h2>Add a lesson</h2><label for="lessonCourse">Course</label><select id="lessonCourse"><option value="gst">GST</option><option value="income-tax">Income Tax</option></select><label for="lessonTitle">Lesson title</label><input id="lessonTitle" maxlength="180"><label for="lessonBody">Lesson content (plain text)</label><textarea id="lessonBody" maxlength="20000"></textarea><label><input id="lessonPublished" type="checkbox" style="width:auto"> Publish lesson</label><button id="addLesson" class="button primary">Add lesson</button></section>
@@ -15,8 +22,39 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const db=supabase.createClient("https://jbjergbqjokxxcvntimk.supabase.co","sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k");
 const $=id=>document.getElementById(id), status=m=>$("status").textContent=m;
-let courses={};
-$("signIn").onclick=async()=>{status("Signing in…");const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error){status(error.message);return;}await verifyAdmin(data.user);};
+let courses={},mfaFactorId=null,mfaMode="verify",pendingUser=null;
+async function continueAdmin(user){
+ const {data:level,error:levelError}=await db.auth.mfa.getAuthenticatorAssuranceLevel();
+ if(levelError){status("Could not check MFA: "+levelError.message);return;}
+ if(level?.nextLevel==="aal2"&&level?.currentLevel!=="aal2"){await startMfa(user);return;}
+ await verifyAdmin(user);
+}
+async function startMfa(user){
+ pendingUser=user; $("mfaPanel").hidden=false;$("workspace").hidden=true;$("mfaQr").innerHTML="";
+ const {data,error}=await db.auth.mfa.listFactors();
+ if(error){status("MFA check failed: "+error.message);return;}
+ const verified=(data?.totp||[]).find(x=>x.status==="verified");
+ if(verified){mfaFactorId=verified.id;mfaMode="verify";$("mfaHelp").textContent="Authenticator app se 6-digit code enter karein.";$("mfaAction").textContent="Verify and continue";status("Two-step verification required.");}
+ else{
+  const {data:enroll,error:enrollError}=await db.auth.mfa.enroll({factorType:"totp",friendlyName:"Smart Tax Solution Admin"});
+  if(enrollError){status("MFA setup failed: "+enrollError.message);return;}
+  mfaFactorId=enroll.id;mfaMode="enroll";$("mfaHelp").textContent="Authenticator app (Google Authenticator / Microsoft Authenticator) se QR scan karein, phir 6-digit code enter karein.";
+  $("mfaQr").innerHTML=enroll.totp?.qr_code||"QR unavailable. Secret: "+(enroll.totp?.secret||"");
+  $("mfaAction").textContent="Enable two-step verification";
+  status("MFA enrollment pending. Scan QR and verify code.");
+ }
+}
+$("mfaAction").onclick=async()=>{
+ const code=$("mfaCode").value.trim();if(!/^\\d{6}$/.test(code)){status("6-digit code enter karein.");return;}
+ const {data:challenge,error:challengeError}=await db.auth.mfa.challenge({factorId:mfaFactorId});
+ if(challengeError){status("MFA challenge failed: "+challengeError.message);return;}
+ const {error:verifyError}=await db.auth.mfa.verify({factorId:mfaFactorId,challengeId:challenge.id,code});
+ if(verifyError){status("Invalid or expired code: "+verifyError.message);return;}
+ $("mfaPanel").hidden=true;$("mfaCode").value="";status("Two-step verification successful.");
+ if(pendingUser)await verifyAdmin(pendingUser);
+};
+$("mfaCancel").onclick=async()=>{await db.auth.signOut();pendingUser=null;$("mfaPanel").hidden=true;$("workspace").hidden=true;$("signOut").hidden=true;$("signIn").hidden=false;status("Signed out.");};
+$("signIn").onclick=async()=>{status("Signing in…");const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error){status(error.message);return;}await continueAdmin(data.user);};
 async function verifyAdmin(user){const {data,error}=await db.from("profiles").select("role,full_name").eq("id",user.id).maybeSingle();if(error||!data||data.role!=="admin"){await db.auth.signOut();$("workspace").hidden=true;$("signOut").hidden=true;$("signIn").hidden=false;status("Access denied. This account is not assigned the admin role. Assign role=admin manually to the correct profile in Supabase Table Editor after verifying the account.");return;} $("workspace").hidden=false;$("signOut").hidden=false;$("signIn").hidden=true;status("Administrator access verified: "+(data.full_name||user.email));await loadCourses();await refresh(); }
 $("signOut").onclick=async()=>{await db.auth.signOut();$("workspace").hidden=true;$("signOut").hidden=true;$("signIn").hidden=false;status("Signed out.");};
 async function loadCourses(){const {data,error}=await db.from("courses").select("id,slug,title,is_published");if(error){status("Could not load courses: "+error.message);return;}courses=Object.fromEntries(data.map(c=>[c.slug,c]));for(const id of ["course","lessonCourse","questionCourse"]){const old=$(id).value;$(id).innerHTML=data.map(c=>'<option value="'+c.slug+'">'+c.title.replace(/</g,"&lt;")+'</option>').join("");if(courses[old])$(id).value=old;} syncPublished();}
@@ -43,5 +81,5 @@ $("payments").addEventListener("click",async ev=>{
  status("Payment "+(approve?"approved.":"rejected."));await refresh();
 });
 $("refreshData").onclick=refresh;
-db.auth.getSession().then(({data})=>{if(data.session)verifyAdmin(data.session.user);});
+db.auth.getSession().then(({data})=>{if(data.session)continueAdmin(data.session.user);});
 </script></body></html>
