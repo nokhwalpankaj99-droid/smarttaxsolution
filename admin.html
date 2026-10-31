@@ -34,15 +34,17 @@ async function startMfa(user){
  pendingUser=user; $("mfaPanel").hidden=false;$("workspace").hidden=true;$("mfaQr").innerHTML="";
  const {data,error}=await db.auth.mfa.listFactors();
  if(error){status("MFA check failed: "+error.message);return;}
- const verified=(data?.totp||[]).find(x=>x.status==="verified");
+ const factors=data?.totp||[];
+ const verified=factors.find(x=>x.status==="verified");
  if(verified){mfaFactorId=verified.id;mfaMode="verify";$("mfaHelp").textContent="Authenticator app se 6-digit code enter karein.";$("mfaAction").textContent="Verify and continue";status("Two-step verification required.");}
  else{
+  const pending=factors.find(x=>x.status!=="verified");
+  if(pending){const {error:removeError}=await db.auth.mfa.unenroll({factorId:pending.id});if(removeError){status("Pending MFA setup reset nahi hua: "+removeError.message);return;}}
   const {data:enroll,error:enrollError}=await db.auth.mfa.enroll({factorType:"totp",friendlyName:"Smart Tax Solution Admin"});
   if(enrollError){status("MFA setup failed: "+enrollError.message);return;}
   mfaFactorId=enroll.id;mfaMode="enroll";$("mfaHelp").textContent="Authenticator app (Google Authenticator / Microsoft Authenticator) se QR scan karein, phir 6-digit code enter karein.";
   $("mfaQr").innerHTML=enroll.totp?.qr_code||"QR unavailable. Secret: "+(enroll.totp?.secret||"");
-  $("mfaAction").textContent="Enable two-step verification";
-  status("MFA enrollment pending. Scan QR and verify code.");
+  $("mfaAction").textContent="Enable two-step verification";status("MFA enrollment pending. Scan QR and verify code.");
  }
 }
 $("mfaAction").onclick=async()=>{
@@ -55,8 +57,20 @@ $("mfaAction").onclick=async()=>{
  if(pendingUser)await verifyAdmin(pendingUser);
 };
 $("mfaCancel").onclick=async()=>{await db.auth.signOut();pendingUser=null;$("mfaPanel").hidden=true;$("workspace").hidden=true;$("signOut").hidden=true;$("signIn").hidden=false;status("Signed out.");};
-$("signIn").onclick=async()=>{status("Signing in…");const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error){status(error.message);return;}await continueAdmin(data.user);};
-async function verifyAdmin(user){const {data,error}=await db.from("profiles").select("role,full_name").eq("id",user.id).maybeSingle();if(error||!data||data.role!=="admin"){await db.auth.signOut();$("workspace").hidden=true;$("signOut").hidden=true;$("signIn").hidden=false;status("Access denied. This account is not assigned the admin role. Assign role=admin manually to the correct profile in Supabase Table Editor after verifying the account.");return;} $("workspace").hidden=false;$("signOut").hidden=false;$("signIn").hidden=true;status("Administrator access verified: "+(data.full_name||user.email));await loadCourses();await refresh(); }
+$("signIn").onclick=async()=>{
+ const email=$("email").value.trim(),password=$("password").value;
+ if(!email||!password){status("Admin email aur password dono enter karein.");return;}
+ $("signIn").disabled=true;status("Signing in…");
+ try{const {data,error}=await db.auth.signInWithPassword({email,password});if(error){status("Login failed: "+error.message);return;}pendingUser=data.user;await continueAdmin(data.user);}
+ catch(e){status("Login process error: "+(e?.message||"Refresh karke dobara try karein."));}
+ finally{$("signIn").disabled=false;}
+};
+async function verifyAdmin(user){
+ const {data,error}=await db.from("profiles").select("role,full_name").eq("id",user.id).maybeSingle();
+ if(error){status("Profile check failed: "+error.message+" — profiles table ki admin SELECT policy check karein.");return;}
+ if(!data||data.role!=="admin"){await db.auth.signOut();pendingUser=null;$("workspace").hidden=true;$("signOut").hidden=true;$("signIn").hidden=false;status("Access denied: "+user.email+" ke profile me role=admin nahi hai. Supabase Table Editor > profiles me isi user ID ki role value admin honi chahiye.");return;}
+ pendingUser=user;$("mfaPanel").hidden=true;$("workspace").hidden=false;$("signOut").hidden=false;$("signIn").hidden=true;status("Administrator access verified: "+(data.full_name||user.email));await loadCourses();await refresh();
+}
 $("signOut").onclick=async()=>{await db.auth.signOut();$("workspace").hidden=true;$("signOut").hidden=true;$("signIn").hidden=false;status("Signed out.");};
 async function loadCourses(){const {data,error}=await db.from("courses").select("id,slug,title,is_published");if(error){status("Could not load courses: "+error.message);return;}courses=Object.fromEntries(data.map(c=>[c.slug,c]));const answerSelect=$("answerKeyCourse");if(answerSelect){const old=answerSelect.value;answerSelect.innerHTML=data.map(c=>'<option value="'+c.slug+'">'+c.title.replace(/</g,"&lt;")+'</option>').join("");if(courses[old])answerSelect.value=old;}for(const id of ["course","lessonCourse","questionCourse"]){const old=$(id).value;$(id).innerHTML=data.map(c=>'<option value="'+c.slug+'">'+c.title.replace(/</g,"&lt;")+'</option>').join("");if(courses[old])$(id).value=old;} syncPublished();}
 function syncPublished(){const c=courses[$("course").value];$("published").checked=!!c?.is_published;}
