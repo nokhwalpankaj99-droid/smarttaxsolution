@@ -134,8 +134,8 @@ async function downloadDocument(cert,kind){
    if(logoData)doc.addImage(logoData,'PNG',12,10,83,18,'STSLOGO','FAST');
    doc.setDrawColor(...ink);doc.setLineWidth(.5);doc.line(144,9,144,34);
    doc.setFillColor(255,250,237);doc.setDrawColor(...gold);doc.roundedRect(151,9,57,25,2,2,'FD');
-   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(...blue);doc.text('MSME',179.5,17,{align:'center'});
-   doc.setFontSize(7.5);doc.setTextColor(...ink);doc.text('Udyam Registered Enterprise',179.5,22,{align:'center'});
+   doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(...blue);doc.text('UDYAM',179.5,16.5,{align:'center'});
+   doc.setFontSize(7.2);doc.setTextColor(...ink);doc.text('Registered Enterprise',179.5,21.5,{align:'center'});
    doc.setFillColor(...blue);doc.roundedRect(153,24,53,7,2,2,'F');
    doc.setFontSize(7.3);doc.setTextColor(255,255,255);doc.text('UDYAM-RJ-15-0042566',179.5,28.8,{align:'center'});
    // ISO details in a fixed top-right panel, clear of the certificate title ribbon.
