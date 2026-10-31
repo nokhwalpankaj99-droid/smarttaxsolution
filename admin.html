@@ -45,7 +45,7 @@ async function startMfa(user){
  }
 }
 $("mfaAction").onclick=async()=>{
- const code=$("mfaCode").value.trim();if(!/^\\d{6}$/.test(code)){status("6-digit code enter karein.");return;}
+ const code=$("mfaCode").value.trim();if(!/^\d{6}$/.test(code)){status("6-digit code enter karein.");return;}
  const {data:challenge,error:challengeError}=await db.auth.mfa.challenge({factorId:mfaFactorId});
  if(challengeError){status("MFA challenge failed: "+challengeError.message);return;}
  const {error:verifyError}=await db.auth.mfa.verify({factorId:mfaFactorId,challengeId:challenge.id,code});
