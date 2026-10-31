@@ -83,6 +83,19 @@ async function downloadDocument(cert,kind){
      logoData=canvas.toDataURL('image/png');
    }finally{URL.revokeObjectURL(blobUrl);}
  }catch(err){console.warn('PDF logo could not be loaded',err);}
+ let stampData=null;
+ try{
+   const response=await fetch(new URL('assets/smart-tax-stamp.svg',document.baseURI).href,{cache:'no-cache'});
+   if(!response.ok)throw new Error('Stamp request failed');
+   const svg=await response.text(),blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),blobUrl=URL.createObjectURL(blob);
+   try{
+     const img=new Image();
+     await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=blobUrl;});
+     const canvas=document.createElement('canvas');canvas.width=600;canvas.height=600;
+     const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,600,600);ctx.drawImage(img,0,0,600,600);
+     stampData=canvas.toDataURL('image/png');
+   }finally{URL.revokeObjectURL(blobUrl);}
+ }catch(err){console.warn('Stamp could not be loaded',err);}
  const navy=[20,43,74],gold=[190,145,54],muted=[95,108,124];
  doc.setFillColor(255,255,255);doc.rect(0,0,w,h,'F');
  doc.setDrawColor(...navy);doc.setLineWidth(1.1);doc.rect(7,7,w-14,h-14);
@@ -114,6 +127,7 @@ async function downloadDocument(cert,kind){
    doc.setFont('helvetica','normal');doc.setFontSize(12);doc.text('UDYAM-RJ-15-0042566',w/2,165,{align:'center'});
    doc.setFontSize(9);doc.text('Certificate No: '+cert.certificate_number,20,184);
    doc.text('Issue Date: '+new Date(cert.issued_at).toLocaleDateString(),20,191);
+   if(stampData){doc.addImage(stampData,'PNG',20,146,32,32,'STSSTAMP','FAST');}
    try{
      const qr=await makeQRDataURL(qrUrl);
      if(!qr||!qr.startsWith('data:image/png;base64,'))throw new Error('QR image generation failed');
@@ -153,6 +167,7 @@ async function downloadDocument(cert,kind){
    y+=rowH;x=x0;
    widths.forEach((cw,i)=>{doc.setFillColor(255,255,255);doc.rect(x,y,cw,rowH,'S');doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text(rows[1][i],x+cw/2,y+7.5,{align:'center',maxWidth:cw-2});x+=cw;});
    y+=rowH+7;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Percentage: '+pct.toFixed(2)+'%',20,y);
+   if(stampData){doc.addImage(stampData,'PNG',20,205,30,30,'STSMARKSTAMP','FAST');}
    doc.text('Overall Result: '+(passed?'PASS':'NOT PASSED'),105,y);
    try{
      const qr=await makeQRDataURL(qrUrl);
