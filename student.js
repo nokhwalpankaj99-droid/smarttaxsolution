@@ -138,13 +138,16 @@ async function downloadDocument(cert,kind){
    doc.setFontSize(7.5);doc.setTextColor(...ink);doc.text('Udyam Registered Enterprise',179.5,22,{align:'center'});
    doc.setFillColor(...blue);doc.roundedRect(153,24,53,7,2,2,'F');
    doc.setFontSize(7.3);doc.setTextColor(255,255,255);doc.text('UDYAM-RJ-15-0042566',179.5,28.8,{align:'center'});
-   // ISO certification details (text only; no logo/seal).
-   doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(...blue);
-   doc.text('ISO 9001:2015 CERTIFIED',251,15,{align:'center'});
-   doc.setFontSize(7.5);doc.setTextColor(...ink);
-   doc.text('Certification Number: GCS/QMS/11666',251,22,{align:'center'});
-   doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...muted);
-   doc.text('Certified by Global Certification Services',251,28,{align:'center'});
+   // ISO details in a fixed top-right panel, clear of the certificate title ribbon.
+   doc.setFillColor(255,252,242);doc.setDrawColor(...gold);doc.setLineWidth(.45);
+   doc.roundedRect(214,8,73,27,1.8,1.8,'FD');
+   doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...blue);
+   doc.text('ISO 9001:2015 CERTIFIED',250.5,15,{align:'center',maxWidth:68});
+   doc.setDrawColor(...gold);doc.setLineWidth(.25);doc.line(220,18,281,18);
+   doc.setFontSize(7.1);doc.setTextColor(...ink);
+   doc.text('Certification No.: GCS/QMS/11666',250.5,23,{align:'center',maxWidth:68});
+   doc.setFont('helvetica','normal');doc.setFontSize(6.1);doc.setTextColor(...muted);
+   doc.text('Certified by Global Certification Services',250.5,29,{align:'center',maxWidth:68});
    // Ribbon title.
    doc.setFillColor(...blue);doc.rect(27,42,243,17,'F');
    doc.setFillColor(...gold);doc.rect(27,42,243,1.1,'F');doc.rect(27,58,243,1.1,'F');
