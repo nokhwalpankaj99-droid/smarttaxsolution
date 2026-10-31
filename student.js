@@ -135,40 +135,40 @@ async function downloadDocument(cert,kind){
    doc.setDrawColor(...gold);doc.setLineWidth(.6);doc.line(44,89,253,89);
    doc.setFont('times','italic');doc.setFontSize(13);doc.setTextColor(...ink);
    doc.text('has successfully completed the',148.5,101,{align:'center'});
-   doc.setFont('times','bold');doc.setFontSize(18);doc.setTextColor(...blue);
-   doc.text(doc.splitTextToSize(course,220),148.5,110,{align:'center',maxWidth:220});
-   doc.setFont('times','italic');doc.setFontSize(11);doc.setTextColor(...ink);
-   doc.text('conducted by Smart Tax Solution and has scored '+pct.toFixed(2)+'% marks in the final examination.',148.5,118,{align:'center',maxWidth:260});
-   // Bottom information band: exact stamp area, certificate details, QR, authorized signatory.
-   if(stampData)doc.addImage(stampData,'PNG',11,125,48,48,'STSSTAMP','FAST');
-   doc.setFillColor(...pale);doc.setDrawColor(30,130,220);doc.setLineWidth(.35);doc.roundedRect(65,125,103,39,3,3,'FD');
+   doc.setFont('times','bold');doc.setFontSize(22);doc.setTextColor(...blue);
+   doc.text(doc.splitTextToSize(course,230),148.5,110,{align:'center',maxWidth:230});
+   doc.setFont('times','italic');doc.setFontSize(10.5);doc.setTextColor(...ink);
+   doc.text('conducted by Smart Tax Solution and has scored '+pct.toFixed(2)+'% marks in the final examination.',148.5,119,{align:'center',maxWidth:270});
+   const courseDescription=/gst/i.test(course)?'Course completed: Goods and Services Tax (GST) — registration, GST returns, input tax credit (ITC), tax invoices and GST compliance.':'Course completed: Income Tax — basic tax concepts, tax computation, deductions and income tax return filing.';
+   doc.setFont('times','italic');doc.setFontSize(9.5);doc.setTextColor(...ink);
+   doc.text(doc.splitTextToSize(courseDescription,270),148.5,127,{align:'center',maxWidth:270});
+   // Bottom information band: certificate details, QR and the supplied business stamp in place of a personal signatory.
+   doc.setFillColor(...pale);doc.setDrawColor(30,130,220);doc.setLineWidth(.35);doc.roundedRect(11,139,104,35,3,3,'FD');
    const rows=[['Certificate No.',cert.certificate_number],['Course',course],['Date of Issue',new Date(cert.issued_at).toLocaleDateString()]];
-   let ry=134;
+   let ry=147;
    rows.forEach(([label,value])=>{
      doc.setFont('times','bold');doc.setFontSize(9.2);doc.setTextColor(...ink);doc.text(label,70,ry);
      doc.setFont('times','normal');doc.text(':',104,ry);
      doc.setFont('times','bold');doc.setFontSize(8.6);doc.text(doc.splitTextToSize(String(value),57),109,ry,{maxWidth:57});
-     ry+=11;
+     ry+=9;
    });
    try{
      const qr=await makeQRDataURL(qrUrl);
      if(!qr||!qr.startsWith('data:image/png;base64,'))throw new Error('QR image generation failed');
-     doc.addImage(qr,'PNG',177,125,33,33,'CERTQR','FAST');
-     doc.setFont('times','bold');doc.setFontSize(8.5);doc.setTextColor(...ink);doc.text('Scan to Verify',193.5,162,{align:'center'});
+     doc.addImage(qr,'PNG',145,139,33,33,'CERTQR','FAST');
+     doc.setFont('times','bold');doc.setFontSize(8.5);doc.setTextColor(...ink);doc.text('Scan to Verify',161.5,176,{align:'center'});
    }catch(e){console.error('Certificate QR generation failed:',e);alert('QR Code generate nahi hua: '+(e.message||e));}
-   // Signature is clearly identified as the authorized signatory.
-   doc.setDrawColor(...ink);doc.setLineWidth(.45);doc.line(218,151,281,151);
-   doc.setFont('times','bold');doc.setFontSize(10);doc.setTextColor(...ink);doc.text('Adv. Pankaj Nokhwal',249.5,158,{align:'center'});
-   doc.setFont('times','normal');doc.setFontSize(9);doc.text('Director',249.5,163,{align:'center'});
-   doc.setFontSize(8.5);doc.text('Smart Tax Solution',249.5,168,{align:'center'});
-   doc.setDrawColor(...gold);doc.setLineWidth(.6);doc.line(33,176,264,176);
+   // Business stamp replaces the personal name/designation signature block.
+   if(stampData)doc.addImage(stampData,'PNG',224,133,48,48,'STSSTAMP','FAST');
+   doc.setFont('times','bold');doc.setFontSize(9);doc.setTextColor(...ink);doc.text('Authorized Signatory',248,180,{align:'center'});
+   doc.setDrawColor(...gold);doc.setLineWidth(.6);doc.line(33,184,264,184);
    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...blue);
-   doc.text('Expert Guidance',50,184,{align:'center'});doc.text('Online Learning',116,184,{align:'center'});
-   doc.text('Digital Certificate',184,184,{align:'center'});doc.text('Verified & Trusted',247,184,{align:'center'});
-   doc.setDrawColor(...gold);doc.line(83,179,83,189);doc.line(150,179,150,189);doc.line(218,179,218,189);
-   doc.setFillColor(...blue);doc.rect(5,192,287,13,'F');
+   doc.text('Expert Guidance',50,191,{align:'center'});doc.text('Online Learning',116,191,{align:'center'});
+   doc.text('Digital Certificate',184,191,{align:'center'});doc.text('Verified & Trusted',247,191,{align:'center'});
+   doc.setDrawColor(...gold);doc.line(83,186,83,196);doc.line(150,186,150,196);doc.line(218,186,218,196);
+   doc.setFillColor(...blue);doc.rect(5,198,287,7,'F');
    doc.setFont('times','italic');doc.setFontSize(14);doc.setTextColor(255,255,255);
-   doc.text('Together Towards Financial Literacy',148.5,201,{align:'center'});
+   doc.text('Together Towards Financial Literacy',148.5,203,{align:'center'});
 
  }else{
    doc.setFontSize(19);doc.text('STATEMENT OF MARKS',w/2,38,{align:'center'});
