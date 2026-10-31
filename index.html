@@ -47,7 +47,7 @@
       <a href="#government-portals">Govt Portals</a>
       <a href="#features">How it works</a>
       <a href="#about">About Us</a>
-      <a href="student.html">Student Portal</a>
+      <a href="student.html">Student Portal</a><a href="grievance.html">Grievance Portal</a>
       <a class="nav-button" href="#enquiry">Get Updates</a>
     </nav>
   </header>
@@ -176,8 +176,8 @@
 
   <footer class="site-footer">
     <div class="footer-main">
-      <div class="footer-column"><h3>About Smart Tax</h3><a href="#about">About Us</a><a href="#courses">Our Services</a><a href="gst-services.html">GST Services</a><a href="income-tax-services.html">Income Tax Services</a><a href="student.html">Student Portal</a><a href="#government-portals">Government Tax Portals</a></div>
-      <div class="footer-column"><h3>Website Policies</h3><a href="privacy-policy.html">Privacy Policy</a><a href="terms.html">Terms & Conditions</a><a href="#disclaimer">Disclaimer</a><a href="contact.html">Contact / Enquiry Form</a><a href="mailto:smarttaxsolutionsgnr@gmail.com?subject=Website%20Feedback">Website Feedback</a></div>
+      <div class="footer-column"><h3>About Smart Tax</h3><a href="#about">About Us</a><a href="#courses">Our Services</a><a href="gst-services.html">GST Services</a><a href="income-tax-services.html">Income Tax Services</a><a href="student.html">Student Portal</a><a href="grievance.html">Grievance Portal</a><a href="#government-portals">Government Tax Portals</a></div>
+      <div class="footer-column"><h3>Website Policies</h3><a href="privacy-policy.html">Privacy Policy</a><a href="terms.html">Terms & Conditions</a><a href="#disclaimer">Disclaimer</a><a href="contact.html">Contact / Enquiry Form</a><a href="grievance.html">Grievance Portal</a><a href="mailto:smarttaxsolutionsgnr@gmail.com?subject=Website%20Feedback">Website Feedback</a></div>
       <div class="footer-column"><h3>Related Government Sites</h3><a href="https://www.cbic.gov.in/" target="_blank" rel="noopener noreferrer">CBIC</a><a href="https://www.incometax.gov.in/" target="_blank" rel="noopener noreferrer">Income Tax Portal</a><a href="https://www.gst.gov.in/" target="_blank" rel="noopener noreferrer">GST Portal</a><a href="https://www.udyamregistration.gov.in/" target="_blank" rel="noopener noreferrer">Udyam Registration</a><a href="https://www.mca.gov.in/" target="_blank" rel="noopener noreferrer">MCA Portal</a></div>
       <div class="footer-column"><h3>Help & Taxpayer Resources</h3><a href="#government-portals">All Tax Portal Links</a><a href="https://services.gst.gov.in/services/searchtp" target="_blank" rel="noopener noreferrer">Search GSTIN</a><a href="https://www.tdscpc.gov.in/" target="_blank" rel="noopener noreferrer">TRACES / TDS</a><a href="https://www.icegate.gov.in/" target="_blank" rel="noopener noreferrer">ICEGATE</a><a href="https://www.india.gov.in/" target="_blank" rel="noopener noreferrer">National Portal of India</a></div>
       <div class="footer-column footer-contact"><h3>Contact Us</h3><p><strong>Mobile / WhatsApp:</strong><br><a href="tel:+919664029638">96640-29638</a></p><p><strong>Email:</strong><br><a href="mailto:smarttaxsolutionsgnr@gmail.com">smarttaxsolutionsgnr@gmail.com</a></p><p><strong>Address:</strong><br>58 LNP, Ridmalsar Road,<br>Sri Ganganagar, Rajasthan – 335061</p><div class="footer-social"><a href="https://wa.me/919664029638?text=Hello%20Smart%20Tax%20Solution" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">WhatsApp ↗</a></div></div>
@@ -186,5 +186,7 @@
     <p class="footer-disclaimer" id="disclaimer">External government links open on their respective websites. Service information is general in nature and should be verified against current official rules.</p>
   </footer>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-</body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+(async()=>{try{const sb=window.supabase.createClient("https://jbjergbqjokxxcvntimk.supabase.co","sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k");const {data}=await sb.auth.getSession();if(data.session?.user){location.replace("student.html?message="+encodeURIComponent("Please logout from the Student Portal before accessing the main website."));}}catch(e){console.warn("Student session check unavailable",e);}})();
+</script></body>
 </html>
