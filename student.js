@@ -6,9 +6,12 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 if(!window.supabase||!url||!key){$('auth-status').textContent='Portal service is unavailable. Please try again later.';return;}
 const db=window.supabase.createClient(url,key);
 let currentUser=null,profile=null,attempts=[],certificates=[];
-let portalIdleTimer=null;
-function resetPortalIdle(){clearTimeout(portalIdleTimer);portalIdleTimer=setTimeout(async()=>{await db.auth.signOut();location.replace('student.html?message='+encodeURIComponent('Automatically signed out after 5 minutes of inactivity.'));},5*60*1000);}
-['pointerdown','keydown','mousemove','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,resetPortalIdle,{passive:true}));
+let portalIdleTimer=null,portalWarningTimer=null,portalCountdownTimer=null,portalWarningOpen=false;
+function hideSessionWarning(){portalWarningOpen=false;$('sessionWarning')?.classList.remove('show');clearTimeout(portalWarningTimer);clearInterval(portalCountdownTimer);}
+function finishPortalLogout(){hideSessionWarning();clearTimeout(portalIdleTimer);db.auth.signOut().finally(()=>{currentUser=null;location.replace('student.html?message='+encodeURIComponent('You have been logged out.'));});}
+function showSessionWarning(){if(!currentUser)return;portalWarningOpen=true;$('sessionWarning').classList.add('show');let left=60;$('sessionCountdown').textContent='You will be automatically logged out in '+left+' seconds.';portalCountdownTimer=setInterval(()=>{left--;if(left<=0){finishPortalLogout();return;}$('sessionCountdown').textContent='You will be automatically logged out in '+left+' seconds.';},1000);portalWarningTimer=setTimeout(finishPortalLogout,60000);}
+function resetPortalIdle(){if(!currentUser||portalWarningOpen)return;clearTimeout(portalIdleTimer);portalIdleTimer=setTimeout(showSessionWarning,10*60*1000);}
+['pointerdown','keydown','mousemove','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,()=>{if(currentUser&&!portalWarningOpen)resetPortalIdle();},{passive:true}));
 function status(msg){$('auth-status').textContent=msg||'';}
 function showAuth(mode='login'){ $('authView').classList.remove('hide');$('dashboardView').classList.add('hide');$('loginFields').classList.toggle('hide',mode!=='login');$('registerFields').classList.toggle('hide',mode!=='register');$('resetFields').classList.toggle('hide',mode!=='reset');$('authTitle').textContent=mode==='register'?'Create Student Account':mode==='reset'?'Reset Password':'Student Login';$('authSubtitle').textContent=mode==='register'?'Create your secure account to access courses and exams.':mode==='reset'?'We will email you a secure password reset link.':'Enter your registered email and password.';status('');}
 function view(name){['overview','profile','exams','certificates'].forEach(v=>$('view-'+v).classList.toggle('hide',v!==name));document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));}
@@ -220,11 +223,14 @@ async function downloadDocument(cert,kind){
  doc.save((isCert?'Certificate_':'Marksheet_')+cert.certificate_number+'.pdf');
 }
 
-$('logoutBtn').addEventListener('click',async()=>{clearTimeout(portalIdleTimer);await db.auth.signOut();currentUser=null;showAuth('login');});
+$('logoutBtn').addEventListener('click',finishPortalLogout);
+$('sessionLogoutBtn').addEventListener('click',finishPortalLogout);
+$('sessionContinueBtn').addEventListener('click',()=>{hideSessionWarning();resetPortalIdle();});
+$('backWebsiteLink').addEventListener('click',e=>{if(currentUser){e.preventDefault();alert('Please click Sign Out / Logout before opening the main website.');}});
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>view(b.dataset.view)));
 $('gstCount').addEventListener('change',setExamLinks);$('itCount').addEventListener('change',setExamLinks);
 $('saveProfile').addEventListener('click',async()=>{if(!currentUser)return;const full_name=$('profileName').value.trim(),phone=$('profilePhone').value.trim(),father_name=$('profileFather').value.trim(),mother_name=$('profileMother').value.trim(),address=$('profileAddress').value.trim();if(!full_name||!father_name||!mother_name||!address||!phone){$('profileStatus').textContent='Please complete all profile details.';return;}const b=$('saveProfile');b.disabled=true;$('profileStatus').textContent='Saving…';try{const r=await db.from('profiles').update({full_name,phone,father_name,mother_name,address}).eq('id',currentUser.id);if(r.error)throw r.error;profile={...profile,full_name,phone,father_name,mother_name,address};$('welcomeName').textContent='Welcome, '+full_name;$('profileStatus').textContent='Profile updated successfully.';}catch(e){$('profileStatus').textContent='Could not save profile: '+(e.message||'Please try again.');}finally{b.disabled=false;}});
 $('changePassword').addEventListener('click',async()=>{if(!currentUser?.email)return;try{const r=await db.auth.resetPasswordForEmail(currentUser.email,{redirectTo:location.origin+location.pathname+'?reset=1'});if(r.error)throw r.error;$('profileStatus').textContent='If eligible, a password reset link has been emailed to your registered address.';}catch(e){$('profileStatus').textContent=e.message||'Unable to request password reset.';}});
-db.auth.onAuthStateChange(async(event,session)=>{if(event==='PASSWORD_RECOVERY'){showAuth('reset');status('Open the recovery link from your email to continue password recovery.');return;}if(session?.user){if(!currentUser||currentUser.id!==session.user.id)await loadDashboard(session.user);resetPortalIdle();}else{clearTimeout(portalIdleTimer);currentUser=null;showAuth('login');}});
+db.auth.onAuthStateChange(async(event,session)=>{if(event==='PASSWORD_RECOVERY'){showAuth('reset');status('Open the recovery link from your email to continue password recovery.');return;}if(session?.user){if(!currentUser||currentUser.id!==session.user.id)await loadDashboard(session.user);resetPortalIdle();}else{clearTimeout(portalIdleTimer);hideSessionWarning();currentUser=null;showAuth('login');}});
 (async()=>{setExamLinks();const {data}=await db.auth.getSession();if(data.session?.user){await loadDashboard(data.session.user);resetPortalIdle();}else showAuth('login');if(new URLSearchParams(location.search).get('reset')==='1'){showAuth('reset');status('Password recovery link detected. Follow the secure instructions from your email.');}})();
 })();
