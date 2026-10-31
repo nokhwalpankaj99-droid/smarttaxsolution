@@ -7,12 +7,21 @@ let user=null;
 const prices={gst:999,'income-tax':999,combo:1499};
 function amount(){return prices[$('paymentCourse').value]||999;}
 async function drawQR(){
- if(!window.QRCode?.toCanvas)return;
  const course=$('paymentCourse').value,amt=amount();
  $('paymentAmount').textContent='₹'+amt;
  const note=course==='combo'?'GST and Income Tax Combo Fee':course==='gst'?'GST Course Fee':'Income Tax Course Fee';
  const uri='upi://pay?pa='+encodeURIComponent(UPI)+'&pn='+encodeURIComponent('Smart Tax Solution')+'&am='+amt+'&cu=INR&tn='+encodeURIComponent(note);
- await QRCode.toCanvas($('paymentQr'),uri,{width:220,margin:2,errorCorrectionLevel:'H'});
+ const img=$('paymentQrImage'),status=$('paymentQrStatus');
+ if(!img){console.error('Payment QR image element is missing');return;}
+ status.textContent='Loading UPI QR…';
+ img.style.display='block';
+ img.alt='UPI payment QR for ₹'+amt+' to Smart Tax Solution';
+ const imageUrl='https://quickchart.io/qr?size=440&margin=2&ecLevel=H&format=png&text='+encodeURIComponent(uri);
+ await new Promise((resolve,reject)=>{
+   img.onload=()=>{status.textContent='Scan with PhonePe, Google Pay or any UPI app.';resolve();};
+   img.onerror=()=>{status.textContent='QR image could not load. Check your internet connection and refresh this page.';reject(new Error('UPI QR image service unavailable'));};
+   img.src=imageUrl;
+ });
 }
 async function loadPayments(){
  if(!user)return;
