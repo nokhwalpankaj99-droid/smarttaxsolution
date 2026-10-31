@@ -135,13 +135,13 @@ async function downloadDocument(cert,kind){
    doc.setDrawColor(...gold);doc.setLineWidth(.6);doc.line(44,89,253,89);
    doc.setFont('times','italic');doc.setFontSize(13);doc.setTextColor(...ink);
    doc.text('has successfully completed the',148.5,101,{align:'center'});
-   doc.setFont('times','bold');doc.setFontSize(22);doc.setTextColor(...blue);
+   doc.setFont('times','bold');doc.setFontSize(25);doc.setTextColor(...blue);
    doc.text(doc.splitTextToSize(course,230),148.5,110,{align:'center',maxWidth:230});
    doc.setFont('times','italic');doc.setFontSize(10.5);doc.setTextColor(...ink);
-   doc.text('conducted by Smart Tax Solution and has scored '+pct.toFixed(2)+'% marks in the final examination.',148.5,119,{align:'center',maxWidth:270});
+   doc.text('conducted by Smart Tax Solution and has scored '+pct.toFixed(2)+'% marks in the final examination.',148.5,121,{align:'center',maxWidth:270});
    const courseDescription=/gst/i.test(course)?'Course completed: Goods and Services Tax (GST) — registration, GST returns, input tax credit (ITC), tax invoices and GST compliance.':'Course completed: Income Tax — basic tax concepts, tax computation, deductions and income tax return filing.';
    doc.setFont('times','italic');doc.setFontSize(9.5);doc.setTextColor(...ink);
-   doc.text(doc.splitTextToSize(courseDescription,270),148.5,127,{align:'center',maxWidth:270});
+   doc.text(doc.splitTextToSize(courseDescription,270),148.5,129,{align:'center',maxWidth:270});
    // Bottom information band: certificate details, QR and the supplied business stamp in place of a personal signatory.
    doc.setFillColor(...pale);doc.setDrawColor(30,130,220);doc.setLineWidth(.35);doc.roundedRect(11,139,104,35,3,3,'FD');
    const rows=[['Certificate No.',cert.certificate_number],['Course',course],['Date of Issue',new Date(cert.issued_at).toLocaleDateString()]];
@@ -196,7 +196,7 @@ async function downloadDocument(cert,kind){
    y+=rowH;x=x0;
    widths.forEach((cw,i)=>{doc.setFillColor(255,255,255);doc.rect(x,y,cw,rowH,'S');doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text(rows[1][i],x+cw/2,y+7.5,{align:'center',maxWidth:cw-2});x+=cw;});
    y+=rowH+7;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Percentage: '+pct.toFixed(2)+'%',20,y);
-   if(stampData){doc.addImage(stampData,'PNG',20,205,30,30,'STSMARKSTAMP','FAST');}
+   if(stampData){doc.addImage(stampData,'PNG',20,220,36,36,'STSMARKSTAMP','FAST');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...navy);doc.text('Authorized Signatory',38,260,{align:'center'});}
    doc.text('Overall Result: '+(passed?'PASS':'NOT PASSED'),105,y);
    try{
      const qr=await makeQRDataURL(qrUrl);
@@ -204,7 +204,7 @@ async function downloadDocument(cert,kind){
      doc.addImage(qr,'PNG',w-45,h-53,30,30,'MARKQR','FAST');doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('SCAN TO VERIFY',w-30,h-20,{align:'center'});
    }catch(e){console.error('Marksheet QR generation failed:',e);alert('QR Code generate nahi hua: '+(e.message||e));}
    doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...muted);doc.text('Private training record · Verify certificate status using the QR code',w/2,h-15,{align:'center'});
-   doc.setTextColor(...navy);doc.line(20,h-35,60,h-35);doc.setFontSize(9);doc.text('Authorized Signature',20,h-29);
+   doc.setTextColor(...navy);
  }
  doc.save((isCert?'Certificate_':'Marksheet_')+cert.certificate_number+'.pdf');
 }
