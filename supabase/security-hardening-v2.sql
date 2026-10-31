@@ -123,6 +123,7 @@ create policy "admin manage certificates" on public.certificates
 drop policy if exists "student read own payments" on public.course_payments;
 drop policy if exists "student submit own payment" on public.course_payments;
 drop policy if exists "admin read payments" on public.course_payments;
+drop policy if exists "admin manage payments" on public.course_payments;
 create policy "student read own payments" on public.course_payments
  for select to authenticated using (student_id = (select auth.uid()) or public.sts_is_admin());
 create policy "student submit own payment" on public.course_payments
