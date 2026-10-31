@@ -20,7 +20,7 @@
 <section class="admin-card"><h2>Payment approvals</h2><p>Verify each UTR against the actual PhonePe/bank credit before approving. Approval enables certificate issuance for the selected course.</p><div id="payments" class="admin-table">Sign in as admin to load payments.</div></section>
 <section class="admin-card"><h2>Student accounts and exam results</h2><button id="refreshData" class="button primary">Refresh lists</button><h3>Students</h3><div id="students" class="admin-table">Sign in as admin to load.</div><h3>Exam attempts</h3><div id="attempts" class="admin-table">Sign in as admin to load.</div><h3>Certificates</h3><div id="certificates" class="admin-table">Sign in as admin to load.</div></section>
 </div></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script><script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script><script>
 const db=supabase.createClient("https://jbjergbqjokxxcvntimk.supabase.co","sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k");
 const $=id=>document.getElementById(id), status=m=>$("status").textContent=m;
 let courses={},mfaFactorId=null,mfaMode="verify",pendingUser=null;
