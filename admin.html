@@ -119,26 +119,58 @@ async function downloadAnswerKeyPdf(){
   return '<article class="q"><h3>Q'+(i+1)+'. '+esc(q.question_text)+'</h3>'+list+(mode!=="paper"?'<p><b>Correct Answer:</b> '+String.fromCharCode(65+answer)+'. '+esc(opts[answer].value)+'</p>'+(q.explanation?'<p><b>Explanation / Notes:</b> '+esc(q.explanation)+'</p>':''):'')+'</article>';
  }).join("");
  const title=mode==="paper"?"Random Exam Practice Paper":mode==="key"?"Answer Key":"Question Notes & Answer Key";
- const node=document.createElement("div");
- node.style.cssText="font-family:Arial,sans-serif;color:#172033;background:#fff;width:210mm;box-sizing:border-box;line-height:1.35;position:relative;margin:0;padding:0";
  const logo=new URL("assets/smart-tax-solution-logo.svg",window.location.href).href;
- const pageSize=3;
+ const node=document.createElement("div");
+ node.style.cssText="position:fixed;left:-12000px;top:0;width:794px;background:#fff;z-index:-1;font-family:Arial,sans-serif;color:#172033;line-height:1.35";
+ const style=document.createElement("style");
+ style.textContent=`
+ .sts-page{position:relative;width:794px;height:1123px;box-sizing:border-box;padding:112px 56px 78px;background:#fff;overflow:hidden}
+ .sts-head{position:absolute;top:26px;left:56px;right:56px;height:62px;border-bottom:2px solid #173b68;display:flex;align-items:center;gap:18px}
+ .sts-logo{display:block;width:180px;height:48px;object-fit:contain;object-position:left center}
+ .sts-head-text{display:flex;flex-direction:column;gap:3px}.sts-head-text strong{font-size:17px;letter-spacing:.4px;color:#173b68}.sts-head-text span{font-size:10px;color:#66758b}
+ .sts-watermark{position:absolute;width:440px;height:125px;object-fit:contain;opacity:.065;left:50%;top:52%;transform:translate(-50%,-50%);z-index:0}
+ .sts-content{position:relative;z-index:1;height:925px;overflow:hidden}
+ .sts-foot{position:absolute;bottom:27px;left:56px;right:56px;border-top:1px solid #d9e1ed;padding-top:8px;display:flex;justify-content:space-between;color:#69778b;font-size:9px}
+ .sts-title{font-size:21px;color:#173b68;margin:0 0 4px}.sts-meta{font-size:10px;color:#66758b;margin:0 0 18px}
+ .sts-section{font-size:14px;color:#173b68;margin:0 0 12px}
+ .q{box-sizing:border-box;border-bottom:1px solid #d8deea;padding:12px 0;margin:0 0 10px;break-inside:avoid}
+ .q h3{font-size:13px;line-height:1.35;margin:0 0 7px;color:#172033;overflow-wrap:anywhere}
+ .opt{font-size:11px;line-height:1.35;padding:3px 8px;overflow-wrap:anywhere}
+ .q p{font-size:10px;line-height:1.4;margin:6px 0;overflow-wrap:anywhere}
+ `;
+ node.appendChild(style);document.body.appendChild(node);
+ const makePage=(pageNo)=>{const page=document.createElement("section");page.className="sts-page";page.innerHTML='<header class="sts-head"><img class="sts-logo" src="'+logo+'" alt="Smart Tax Solution"><div class="sts-head-text"><strong>SMART TAX SOLUTION</strong><span>Professional Learning & Certification</span></div></header><img class="sts-watermark" src="'+logo+'" alt=""><main class="sts-content"></main><footer class="sts-foot"><span>Smart Tax Solution | For educational use</span><span>Page '+pageNo+'</span></footer>';node.appendChild(page);return page;};
  const questionHtml=body.match(/<article class="q">[\s\S]*?<\/article>/g)||[];
- if(questionHtml.length!==n){box.textContent="PDF page content could not be prepared. Please refresh and retry.";return;}
- const pages=[];
- for(let p=0;p<questionHtml.length;p+=pageSize){
-  const pageItems=questionHtml.slice(p,p+pageSize).join("");
-  const pageNo=pages.length+1;
-  pages.push('<section class="sts-page"><header class="sts-head"><img class="sts-logo" src="'+logo+'" alt="Smart Tax Solution"><div class="sts-head-text"><strong>SMART TAX SOLUTION</strong><span>Professional Learning & Certification</span></div></header><img class="sts-watermark" src="'+logo+'" alt=""><main class="sts-content">'+(p===0?'<h1 class="sts-title">'+esc(c.title)+'</h1><p class="sts-meta">'+title+' | '+n+' Questions | Admin Study Material</p>':'<h2 class="sts-section">'+esc(c.title)+' — '+title+'</h2>')+pageItems+'</main><footer class="sts-foot"><span>Smart Tax Solution | For educational use</span><span>Page '+pageNo+' of '+Math.ceil(questionHtml.length/pageSize)+'</span></footer></section>');
+ if(questionHtml.length!==n){node.remove();box.textContent="PDF content preparation failed. Please refresh and retry.";return;}
+ const pages=[];let page=makePage(1);pages.push(page);let content=page.querySelector(".sts-content");
+ content.innerHTML='<h1 class="sts-title">'+esc(c.title)+'</h1><p class="sts-meta">'+title+' | '+n+' Questions | Admin Study Material</p>';
+ for(const qHtml of questionHtml){
+  const q=document.createElement("div");q.innerHTML=qHtml;const card=q.firstElementChild;
+  content.appendChild(card);
+  if(content.scrollHeight>content.clientHeight && content.children.length>1){
+   content.removeChild(card);page=makePage(pages.length+1);pages.push(page);content=page.querySelector(".sts-content");
+   content.innerHTML='<h2 class="sts-section">'+esc(c.title)+' — '+title+'</h2>';content.appendChild(card);
+  }
  }
- node.innerHTML='<style>@page{size:A4 portrait;margin:0}html,body{margin:0;padding:0}.sts-page{position:relative;width:210mm;height:297mm;min-height:297mm;max-height:297mm;box-sizing:border-box;padding:29mm 15mm 19mm;overflow:hidden;background:#fff;page-break-after:always;break-after:page}.sts-page:last-child{page-break-after:auto;break-after:auto}.sts-head{position:absolute;top:8mm;left:15mm;right:15mm;height:16mm;border-bottom:0.5mm solid #173b68;display:flex;align-items:center;gap:5mm}.sts-logo{display:block;width:48mm;height:13mm;object-fit:contain;object-position:left center}.sts-head-text{display:flex;flex-direction:column;gap:1mm}.sts-head-text strong{font-size:12pt;letter-spacing:.3pt;color:#173b68}.sts-head-text span{font-size:7pt;color:#66758b}.sts-watermark{position:absolute;width:125mm;height:35mm;object-fit:contain;opacity:.07;left:50%;top:51%;transform:translate(-50%,-50%);z-index:0}.sts-content{position:relative;z-index:1}.sts-foot{position:absolute;bottom:8mm;left:15mm;right:15mm;border-top:.25mm solid #d9e1ed;padding-top:2mm;display:flex;justify-content:space-between;color:#69778b;font-size:7pt}.sts-title{font-size:16pt;color:#173b68;margin:0 0 1mm}.sts-meta{font-size:8pt;color:#66758b;margin:0 0 5mm}.q{break-inside:avoid;page-break-inside:avoid;border-bottom:.25mm solid #d8deea;padding:4mm 0;margin:0 0 3mm}.q h3{font-size:10pt;line-height:1.3;margin:0 0 2mm;color:#172033}.opt{font-size:9pt;padding:1mm 2mm;line-height:1.3}.q p{font-size:8pt;margin:2mm 0}.sts-section{font-size:11pt;color:#173b68;margin:0 0 4mm}</style>'+pages.join("");
- node.querySelectorAll(".sts-page").forEach(x=>{x.style.breakAfter="page";});
-
- document.body.appendChild(node);
+ pages.forEach((p,i)=>{p.querySelector(".sts-foot span:last-child").textContent="Page "+(i+1)+" of "+pages.length;});
  const filename=slug+"-"+mode+"-"+new Date().toISOString().slice(0,10)+".pdf";
- try{await Promise.all(Array.from(node.querySelectorAll("img")).map(img=>img.decode?img.decode().catch(()=>{}):Promise.resolve()));await html2pdf().set({margin:0,filename,image:{type:"jpeg",quality:.98},html2canvas:{scale:2,useCORS:true,backgroundColor:"#fff",windowWidth:794,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait",compress:true},pagebreak:{mode:["css"],before:".sts-page:not(:first-child)"}}).from(node).save();box.textContent="PDF downloaded: "+filename;}
- catch(e){box.textContent="PDF generation failed: "+(e.message||"Please retry.");}
+ try{
+  await Promise.all(Array.from(node.querySelectorAll("img")).map(img=>img.decode?img.decode().catch(()=>{}):Promise.resolve()));
+  const html2canvasFn=window.html2canvas;
+  const JsPDF=window.jspdf?.jsPDF||window.jsPDF;
+  if(typeof html2canvasFn!=="function"||typeof JsPDF!=="function")throw new Error("PDF rendering library is unavailable. Please refresh.");
+  const pdf=new JsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+  for(let i=0;i<pages.length;i++){
+   const canvas=await html2canvasFn(pages[i],{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false,width:794,height:1123,windowWidth:794,windowHeight:1123,scrollX:0,scrollY:0});
+   const image=canvas.toDataURL("image/jpeg",.96);
+   if(i>0)pdf.addPage("a4","portrait");
+   pdf.addImage(image,"JPEG",0,0,210,297,undefined,"FAST");
+   canvas.width=1;canvas.height=1;
+  }
+  pdf.save(filename);box.textContent="PDF downloaded: "+filename;
+ }catch(e){box.textContent="PDF generation failed: "+(e.message||"Please retry.");}
  finally{node.remove();}
+
 }
 $("downloadAnswerKey").onclick=downloadAnswerKeyPdf;
 
