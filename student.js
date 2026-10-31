@@ -92,7 +92,21 @@ async function downloadDocument(cert,kind){
    const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
    const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);
    stampData=canvas.toDataURL('image/png');
- }catch(err){console.warn('Original stamp could not be loaded',err);}
+ }catch(err){
+   console.warn('Original stamp PNG is not yet published; using the existing site stamp temporarily.',err);
+   try{
+     const response=await fetch(new URL('assets/smart-tax-stamp.svg',document.baseURI).href,{cache:'no-cache'});
+     if(!response.ok)throw new Error('Fallback stamp request failed');
+     const svg=await response.text(),blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'}),blobUrl=URL.createObjectURL(blob);
+     try{
+       const fallbackImg=new Image();
+       await new Promise((resolve,reject)=>{fallbackImg.onload=resolve;fallbackImg.onerror=reject;fallbackImg.src=blobUrl;});
+       const canvas=document.createElement('canvas');canvas.width=600;canvas.height=600;
+       const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,600,600);ctx.drawImage(fallbackImg,0,0,600,600);
+       stampData=canvas.toDataURL('image/png');
+     }finally{URL.revokeObjectURL(blobUrl);}
+   }catch(fallbackErr){console.warn('Fallback stamp could not be loaded',fallbackErr);}
+ }
  const navy=[20,43,74],gold=[190,145,54],muted=[95,108,124];
  doc.setFillColor(255,255,255);doc.rect(0,0,w,h,'F');
  doc.setDrawColor(...navy);doc.setLineWidth(1.1);doc.rect(7,7,w-14,h-14);
