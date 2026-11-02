@@ -125,9 +125,9 @@ async function downloadDocument(cert,kind){
    // Premium landscape certificate layout inspired by the user's reference artwork.
    const blue=[13,43,105],royal=[28,48,205],gold=[218,157,35],ink=[14,35,78],pale=[232,244,255];
    doc.setFillColor(255,255,255);doc.rect(0,0,w,h,'F');
-   // Light, repeated Smart Tax Solution watermark across the full certificate page.
-   doc.setFont('helvetica','bold');doc.setFontSize(17);doc.setTextColor(237,240,244);
-   for(let wy=-15;wy<h+35;wy+=42){for(let wx=-38;wx<w+35;wx+=92){doc.text('Smart Tax',wx,wy,{angle: -32});}}
+   // Subtle horizontal Smart Tax watermark rows, matching the supplied reference image.
+   doc.setFont('times','normal');doc.setFontSize(8);doc.setTextColor(222,224,227);
+   for(let wy=9;wy<h-8;wy+=11){for(let wx=7;wx<w-45;wx+=76){doc.text('Smart Tax',wx,wy);}}
    // Double gold/navy frame and corner ribbons.
    doc.setDrawColor(...gold);doc.setLineWidth(1.1);doc.rect(2.5,2.5,w-5,h-5);
    doc.setDrawColor(...blue);doc.setLineWidth(.45);doc.rect(4.5,4.5,w-9,h-9);
@@ -204,9 +204,9 @@ async function downloadDocument(cert,kind){
    doc.text('Together Towards Financial Literacy',148.5,203,{align:'center'});
 
  }else{
-   // Light, repeated Smart Tax Solution watermark across the full marksheet page.
-   doc.setFont('helvetica','bold');doc.setFontSize(17);doc.setTextColor(237,240,244);
-   for(let wy=-15;wy<h+35;wy+=42){for(let wx=-38;wx<w+35;wx+=92){doc.text('Smart Tax',wx,wy,{angle: -32});}}
+   // Subtle horizontal Smart Tax watermark rows, matching the supplied reference image.
+   doc.setFont('times','normal');doc.setFontSize(8);doc.setTextColor(222,224,227);
+   for(let wy=9;wy<h-8;wy+=11){for(let wx=7;wx<w-45;wx+=76){doc.text('Smart Tax',wx,wy);}}
    doc.setTextColor(...navy);
    doc.setFontSize(19);doc.text('STATEMENT OF MARKS',w/2,38,{align:'center'});
    doc.setFontSize(11);doc.setFont('helvetica','normal');doc.text('Student Assessment Record',w/2,45,{align:'center'});
