@@ -5,16 +5,16 @@ const url='https://jbjergbqjokxxcvntimk.supabase.co';
 const key='sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k';
 if(!window.supabase){$('loading').innerHTML='<h1>Service unavailable</h1><p>Please reload later.</p>';return;}
 const db=window.supabase.createClient(url,key);
-let user=null,course=null,questions=[],answers=new Map(),index=0,seconds=600,examFinished=false,timerId=null,idleId=null;
+let user=null,course=null,questions=[],answers=new Map(),index=0,seconds=1200,examFinished=false,timerId=null,idleId=null,examEndAt=0,examStorageKey='';
 const requestedCourse=new URLSearchParams(location.search).get('course');
 const courseSlug=['income-tax','complete-accounting'].includes(requestedCourse)?requestedCourse:'gst';
 const requestedCount=new URLSearchParams(location.search).get('count')==='100'?100:50;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function signOut(message){clearInterval(timerId);clearTimeout(idleId);db.auth.signOut().finally(()=>{location.replace('student.html'+(message?'?message='+encodeURIComponent(message):''));});}
 $('signOutBtn').addEventListener('click',()=>signOut('You have signed out.'));
-function resetIdle(){if(examFinished)return;clearTimeout(idleId);idleId=setTimeout(()=>signOut('Signed out after 5 minutes of inactivity.'),5*60*1000);}
+function resetIdle(){if(examFinished)return;clearTimeout(idleId);idleId=setTimeout(()=>signOut('Signed out after 10 minutes of inactivity.'),10*60*1000);}
 ['pointerdown','keydown','mousemove','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
-function showTime(){const m=Math.floor(seconds/60),s=seconds%60;$('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');$('timer').classList.toggle('warning',seconds<=60);}
+function showTime(){seconds=Math.max(0,Math.ceil((examEndAt-Date.now())/1000));const m=Math.floor(seconds/60),s=seconds%60;$('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');$('timer').classList.toggle('warning',seconds<=60);}
 async function init(){
  try{
   const {data:{session},error}=await db.auth.getSession();if(error)throw error;
@@ -28,7 +28,14 @@ async function init(){
   const {data:qs,error:qe}=await db.from('questions').select('id,question_text,options').eq('course_id',course.id).eq('is_active',true);
   if(qe)throw qe;
   if(qe){$('loading').innerHTML='<h1>Question bank could not be loaded</h1><p>The portal could not read the course question bank. Please ask the administrator to check Supabase table permissions and database setup.</p><p class="muted">Technical detail: '+esc(qe.message||'Database query failed')+'</p><a class="button primary" href="student.html">Return to student portal</a>';return;}if(!qs||qs.length<requestedCount){const n=qs?.length||0;const setup=n===0?'The database has no active questions for this course yet. The administrator must run the SQL setup files in the Supabase SQL Editor, in this order: schema.sql, admin-setup.sql, then seed-question-bank.sql.': 'The course question bank is only partly populated.';$('loading').innerHTML='<h1>Exam not available yet</h1><p>'+setup+'</p><p>This course currently has '+n+' active questions. A '+requestedCount+'-question exam needs at least '+requestedCount+' active questions. Please do not repeatedly retry until the question bank has been populated.</p><a class="button primary" href="student.html">Return to student portal</a>';return;}
-  questions=qs.sort(()=>Math.random()-.5).slice(0,requestedCount);
+  examStorageKey='sts_exam_'+user.id+'_'+courseSlug;
+  let saved=null;try{saved=JSON.parse(localStorage.getItem(examStorageKey)||'null');}catch(_){}
+  if(saved&&saved.endAt&&saved.endAt>Date.now()&&Array.isArray(saved.questionIds)){
+   const byId=new Map(qs.map(q=>[q.id,q]));const restored=saved.questionIds.map(id=>byId.get(id)).filter(Boolean);
+   if(restored.length===requestedCount){questions=restored;examEndAt=saved.endAt;index=Math.min(Math.max(0,Number(saved.index)||0),questions.length-1);answers=new Map(Object.entries(saved.answers||{}).map(([id,v])=>[id,Number(v)]));}
+  }
+  if(!questions.length){questions=qs.sort(()=>Math.random()-.5).slice(0,requestedCount);examEndAt=Date.now()+20*60*1000;index=0;answers=new Map();}
+  localStorage.setItem(examStorageKey,JSON.stringify({endAt:examEndAt,questionIds:questions.map(q=>q.id),index,answers:Object.fromEntries(answers)}));
   $('courseTitle').textContent=course.title+' — Certification Assessment';
   $('questionCounter').textContent='Question 1 of '+questions.length;
   $('loading').classList.add('hidden');$('examShell').classList.remove('hidden');
@@ -37,12 +44,13 @@ async function init(){
   $('prevBtn').addEventListener('click',()=>{saveCurrent();if(index>0)index--;render();});
   $('nextBtn').addEventListener('click',()=>{saveCurrent();if(index<questions.length-1)index++;render();});
   $('submitBtn').addEventListener('click',()=>submitExam(false));
-  render();showTime();resetIdle();timerId=setInterval(()=>{seconds--;showTime();if(seconds<=0)submitExam(true);},1000);
+  $('instructions')?.remove();
+  render();showTime();resetIdle();timerId=setInterval(()=>{showTime();if(seconds<=0)submitExam(true);},250);
  }catch(e){$('loading').innerHTML='<h1>Could not open exam</h1><p>'+esc(e.message||'Please try again.')+'</p><a class="button primary" href="student.html">Return to student portal</a>';}
 }
-function saveCurrent(){const picked=document.querySelector('input[name="answer"]:checked');if(picked)answers.set(questions[index].id,Number(picked.value));}
+function saveCurrent(){const picked=document.querySelector('input[name="answer"]:checked');if(picked)answers.set(questions[index].id,Number(picked.value));if(examStorageKey)localStorage.setItem(examStorageKey,JSON.stringify({endAt:examEndAt,questionIds:questions.map(q=>q.id),index,answers:Object.fromEntries(answers)}));}
 function render(){
- const q=questions[index];$('questionCounter').textContent='Question '+(index+1)+' of '+questions.length;
+ const q=questions[index];if(examStorageKey)localStorage.setItem(examStorageKey,JSON.stringify({endAt:examEndAt,questionIds:questions.map(q=>q.id),index,answers:Object.fromEntries(answers)}));$('questionCounter').textContent='Question '+(index+1)+' of '+questions.length;
  $('questionArea').innerHTML='<div class="question">'+(index+1)+'. '+esc(q.question_text)+'</div>'+q.options.map((o,j)=>'<label class="option"><input type="radio" name="answer" value="'+j+'" '+(answers.get(q.id)===j?'checked':'')+'><span><strong>'+String.fromCharCode(65+j)+'.</strong> '+esc(o)+'</span></label>').join('');
  $('prevBtn').disabled=index===0;$('nextBtn').textContent=index===questions.length-1?'Last question':'Save & Next →';
  document.querySelectorAll('.qjump').forEach((b,i)=>{b.classList.toggle('answered',answers.has(questions[i].id));b.classList.toggle('current',i===index);});
@@ -50,7 +58,7 @@ function render(){
 }
 function updateProgress(){const n=answers.size;$('answerCount').textContent='Answered '+n+' of '+questions.length;$('progressFill').style.width=(n/questions.length*100)+'%';}
 async function submitExam(timeUp){
- if(examFinished)return;saveCurrent();examFinished=true;clearInterval(timerId);clearTimeout(idleId);$('submitBtn').disabled=true;$('nextBtn').disabled=true;$('prevBtn').disabled=true;
+ if(examFinished)return;saveCurrent();examFinished=true;clearInterval(timerId);if(examStorageKey)localStorage.removeItem(examStorageKey);clearTimeout(idleId);$('submitBtn').disabled=true;$('nextBtn').disabled=true;$('prevBtn').disabled=true;
  $('questionArea').innerHTML='<p>Submitting answers securely…</p>';
  const payload=questions.map(q=>({question_id:q.id,selected_option:answers.has(q.id)?answers.get(q.id):-1}));
  try{
