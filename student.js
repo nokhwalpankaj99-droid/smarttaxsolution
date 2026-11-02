@@ -134,21 +134,23 @@ async function downloadDocument(cert,kind){
    // Brand header.
    if(logoData)doc.addImage(logoData,'PNG',12,10,83,18,'STSLOGO','FAST');
    doc.setDrawColor(...ink);doc.setLineWidth(.5);doc.line(144,9,144,34);
-   doc.setFillColor(255,250,237);doc.setDrawColor(...gold);doc.roundedRect(151,9,57,25,2,2,'FD');
-   doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.setTextColor(...blue);doc.text('UDYAM',179.5,16.5,{align:'center'});
-   doc.setFontSize(7.2);doc.setTextColor(...ink);doc.text('Registered Enterprise',179.5,21.5,{align:'center'});
-   doc.setFillColor(...blue);doc.roundedRect(153,24,53,7,2,2,'F');
-   doc.setFontSize(7.3);doc.setTextColor(255,255,255);doc.text('UDYAM-RJ-15-0042566',179.5,28.8,{align:'center'});
-   // ISO details in a fixed top-right panel, clear of the certificate title ribbon.
+   // Compact graphic marks only; keep the original corner ribbons untouched.
+   doc.setFillColor(255,255,255);doc.setDrawColor(...gold);doc.setLineWidth(.55);
+   doc.roundedRect(151,9,57,25,2,2,'FD');
+   // Neutral Udyam/MSME business mark (not the Government emblem).
+   doc.setFillColor(18,48,105);doc.roundedRect(157,12,10,10,1,1,'F');
+   doc.setFillColor(218,157,35);doc.rect(159,14,2.5,2.5,'F');doc.rect(162.5,14,2.5,2.5,'F');doc.rect(159,17.5,2.5,2.5,'F');doc.rect(162.5,17.5,2.5,2.5,'F');
+   doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(...blue);doc.text('MSME',184,20,{align:'center'});
+   doc.setFontSize(5.8);doc.setTextColor(...ink);doc.text('UDYAM REGISTERED',179.5,27,{align:'center'});
+   // ISO certification mark graphic, without adding extra certificate text.
    doc.setFillColor(255,255,255);doc.setDrawColor(...gold);doc.setLineWidth(.55);
    doc.roundedRect(214,8,44,27,1.8,1.8,'FD');
-   doc.setFont('helvetica','bold');doc.setFontSize(6.8);doc.setTextColor(...blue);
-   doc.text('ISO 9001:2015 CERTIFIED',236,15,{align:'center',maxWidth:40});
-   doc.setDrawColor(...gold);doc.setLineWidth(.25);doc.line(218,18,254,18);
-   doc.setFontSize(5.4);doc.setTextColor(...ink);
-   doc.text('Certification No.: GCS/QMS/11666',236,23,{align:'center',maxWidth:40});
-   doc.setFont('helvetica','normal');doc.setFontSize(4.6);doc.setTextColor(...muted);
-   doc.text('Certified by Global Certification Services',236,29,{align:'center',maxWidth:40});
+   doc.setDrawColor(30,100,160);doc.setLineWidth(1.1);doc.roundedRect(217,11,38,20,1.5,1.5,'S');
+   doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(25,75,120);
+   doc.text('ISO',220,21);
+   doc.setFontSize(6.5);doc.text('9001',244,17);
+   doc.setFontSize(6);doc.text('2015',244,22);
+   doc.setFontSize(7);doc.text('CERTIFIED',236,28,{align:'center'});
    // Ribbon title.
    doc.setFillColor(...blue);doc.rect(27,42,243,17,'F');
    doc.setFillColor(...gold);doc.rect(27,42,243,1.1,'F');doc.rect(27,58,243,1.1,'F');
