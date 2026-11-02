@@ -59,7 +59,7 @@
 .service-visual{min-height:270px;border:1px solid rgba(255,255,255,.45);transition:transform .3s ease,box-shadow .3s ease}.service-visual:hover{transform:translateY(-7px);box-shadow:0 20px 42px rgba(15,35,65,.2)}
 @media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:55px;padding-bottom:55px;gap:30px}.hero-showcase{justify-self:start;max-width:100%}.showcase-slideshow{height:300px}}
 @media(max-width:560px){.hero{min-height:auto;padding:42px 20px}.hero h1{font-size:39px}.showcase-slideshow{height:245px}.showcase-points{font-size:10px}.service-visuals{padding:48px 18px}}
-@media(prefers-reduced-motion:reduce){.showcase-frame,.showcase-progress i,.hero-showcase{animation:none}.frame-one{opacity:1}}
+.showcase-captions{display:block;min-height:105px}.caption-slide{position:absolute;left:28px;right:20px;bottom:36px;display:grid;gap:7px;opacity:0;animation:captionCycle 18s infinite}.caption-slide span{font-size:10px;letter-spacing:2px;color:#f2c66d;font-weight:800}.caption-slide strong{font-size:clamp(22px,2.4vw,29px);line-height:1.1;color:#fff}.caption-slide small{font-size:13px;color:#e4edf7}.caption-a{animation-delay:0s}.caption-b{animation-delay:4.5s}.caption-c{animation-delay:9s}.caption-d{animation-delay:13.5s}@keyframes captionCycle{0%,3%{opacity:0;transform:translateY(10px)}7%,21%{opacity:1;transform:translateY(0)}25%,100%{opacity:0;transform:translateY(-7px)}}@media(prefers-reduced-motion:reduce){.caption-slide{animation:none;opacity:0}.caption-a{opacity:1}}@media(prefers-reduced-motion:reduce){.showcase-frame,.showcase-progress i,.hero-showcase{animation:none}.frame-one{opacity:1}}
 </style></head>
 <body>
   <header class="site-header">
@@ -90,13 +90,48 @@
         <div class="showcase-slideshow" aria-hidden="true">
           <div class="showcase-frame frame-one"></div><div class="showcase-frame frame-two"></div><div class="showcase-frame frame-three"></div><div class="showcase-frame frame-four"></div>
           <div class="showcase-shade"></div>
-          <div class="showcase-caption"><span>SMART TAX SOLUTION</span><strong>Business. Tax. Growth.</strong><small>Professional support, all in one place.</small></div>
+          <div class="showcase-caption showcase-captions">
+            <div class="caption-slide caption-a"><span>01 • GST SERVICES</span><strong>GST Registration & Returns</strong><small>GSTR-1 • GSTR-3B • ITC • Reconciliation</small></div>
+            <div class="caption-slide caption-b"><span>02 • INCOME TAX</span><strong>Income Tax & TDS Support</strong><small>ITR assistance • TDS guidance • Tax compliance</small></div>
+            <div class="caption-slide caption-c"><span>03 • BUSINESS SERVICES</span><strong>MSME & Business Compliance</strong><small>Udyam • Company / LLP links • Business guidance</small></div>
+            <div class="caption-slide caption-d"><span>04 • ACCOUNTING</span><strong>Accounting & Software Training</strong><small>Tally Prime • BUSY • GST entries • Inventory</small></div>
+          </div>
           <div class="showcase-progress"><i></i></div>
         </div>
         <div class="showcase-points"><span><b>GST</b> Compliance</span><span><b>IT</b> Tax Support</span><span><b>Learn</b> Online Courses</span></div>
       </div>
     </section>
-    <section class="service-visuals"><div class="section-heading"><span class="eyebrow">ONE PLACE • MULTIPLE SOLUTIONS</span><h2>Professional support for every important step</h2><p>Explore our services, learning programs and business support.</p></div><div class="service-visual-grid"><a class="service-visual" href="gst-services.html"><div><span class="visual-label">GST SERVICES</span><h3>GST Registration & Returns</h3><p>Registration, returns, ITC and compliance support</p></div></a><a class="service-visual" href="income-tax-services.html"><div><span class="visual-label">INCOME TAX</span><h3>Income Tax & TDS</h3><p>Return filing, tax guidance and TDS support</p></div></a><a class="service-visual" href="student.html"><div><span class="visual-label">ONLINE LEARNING</span><h3>Courses & Certification</h3><p>Practical GST, Income Tax and Accounting courses</p></div></a><a class="service-visual" href="job-vacancies.html"><div><span class="visual-label">CAREERS</span><h3>Job Vacancy Portal</h3><p>Explore openings city-wise and apply online</p></div></a></div></section>
+    <section class="service-visuals"><div class="section-heading"><span class="eyebrow">ONE PLACE • MULTIPLE SOLUTIONS</span><h2>Professional support for every important step</h2><p>Explore our services, learning programs and business support.</p></div><div class="service-visual-grid"><a class="service-visual" href="gst-services.html"><div><span class="visual-label">GST SERVICES</span><h3>GST Registration & Returns</h3><p>Registration, returns, ITC and compliance support</p></div></a><a class="service-visual" href="income-tax-services.html"><div><span class="visual-label">INCOME TAX</span><h3>Income Tax & TDS</h3><p>Return filing, tax guidance and TDS support</p></div></a><a class="service-visual" href="student.html"><div><span class="visual-label">ONLINE LEARNING</span><h3>Courses & Certification</h3><p>Practical GST, Income Tax and Accounting courses</p></div></a><a class="service-visual" href="job-vacancies.html"><div><span class="visual-label">CAREERS</span><h3>Job Vacancy Portal</h3><p>Explore openings city-wise and apply online</p></div></a></div>
+      <div class="all-services-wrap">
+        <div class="section-heading" style="margin:46px auto 22px"><span class="eyebrow">SMART TAX SOLUTION • SERVICE DIRECTORY</span><h2>Explore all our service areas</h2><p>Scroll through the full range of tax support, learning and online facilities available on our website.</p></div>
+        <div class="all-services-grid">
+          <a href="gst-services.html"><b>GST Registration & Amendments</b><span>New registration, profile updates and related guidance</span></a>
+          <a href="gst-services.html"><b>GST Return Filing</b><span>GSTR-1, GSTR-3B, NIL returns and compliance support</span></a>
+          <a href="gst-services.html"><b>Input Tax Credit & Reconciliation</b><span>ITC review, purchase matching and GST reconciliation</span></a>
+          <a href="income-tax-services.html"><b>Income Tax Return Assistance</b><span>Individual and business ITR-related assistance</span></a>
+          <a href="income-tax-services.html"><b>TDS / TCS Guidance</b><span>TDS compliance, certificates and related tax support</span></a>
+          <a href="#government-portals"><b>PAN & Official Tax Portals</b><span>Quick links to government tax and taxpayer resources</span></a>
+          <a href="#government-portals"><b>MSME / Udyam & Business Resources</b><span>Official MSME, MCA and business portal links</span></a>
+          <a href="#government-portals"><b>Payroll & Labour Resources</b><span>EPFO, ESIC and Shram Suvidha official links</span></a>
+          <a href="#government-portals"><b>Import / Export Resources</b><span>ICEGATE, DGFT and customs portal access</span></a>
+          <a href="student.html"><b>GST & Income Tax Online Courses</b><span>Learning material, online assessment and eligible certificates</span></a>
+          <a href="student.html"><b>Complete Accounting Course</b><span>Tally Prime, BUSY and practical accounting topics</span></a>
+          <a href="job-vacancies.html"><b>City-wise Job Vacancy Portal</b><span>Explore listed job opportunities by location</span></a>
+          <a href="student.html"><b>Student Portal & Online Exams</b><span>Student login, course access and examination</span></a>
+          <a href="grievance.html"><b>Grievance & Support Portal</b><span>Submit a website-related grievance or request support</span></a>
+          <a href="contact.html"><b>Enquiry & WhatsApp Support</b><span>Contact our team for service-related enquiries</span></a>
+        </div>
+      </div>
+    </section>
+    <style>
+      .all-services-wrap{max-width:1180px;margin:0 auto;padding:0 5% 12px}
+      .all-services-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+      .all-services-grid a{display:flex;flex-direction:column;gap:8px;padding:19px 20px;min-height:112px;border:1px solid #dce5ef;border-radius:14px;background:#fff;text-decoration:none;box-shadow:0 8px 22px rgba(20,43,74,.05);transition:transform .25s,box-shadow .25s,border-color .25s}
+      .all-services-grid a:hover{transform:translateY(-4px);border-color:#9bb9d8;box-shadow:0 14px 28px rgba(20,43,74,.11)}
+      .all-services-grid b{color:#173b68;font-size:15px}.all-services-grid span{color:#64748b;font-size:13px;line-height:1.5}
+      @media(max-width:850px){.all-services-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+      @media(max-width:560px){.all-services-wrap{padding-left:0;padding-right:0}.all-services-grid{grid-template-columns:1fr}.all-services-grid a{min-height:auto}}
+    </style>
     <section class="trust-strip" aria-label="Learning features">
       <div><strong>Practical Focus</strong><span>Learn concepts with real-world context</span></div>
       <div><strong>Learn at Your Pace</strong><span>Course material organised by topic</span></div>
