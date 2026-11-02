@@ -127,7 +127,7 @@ async function downloadDocument(cert,kind){
    doc.setFillColor(255,255,255);doc.rect(0,0,w,h,'F');
    // Light, repeated Smart Tax Solution watermark across the full certificate page.
    doc.setFont('helvetica','bold');doc.setFontSize(17);doc.setTextColor(237,240,244);
-   for(let wy=-15;wy<h+35;wy+=42){for(let wx=-38;wx<w+35;wx+=92){doc.text('SMART TAX SOLUTION',wx,wy,{angle: -32});}}
+   for(let wy=-15;wy<h+35;wy+=42){for(let wx=-38;wx<w+35;wx+=92){doc.text('Smart Tax',wx,wy,{angle: -32});}}
    // Double gold/navy frame and corner ribbons.
    doc.setDrawColor(...gold);doc.setLineWidth(1.1);doc.rect(2.5,2.5,w-5,h-5);
    doc.setDrawColor(...blue);doc.setLineWidth(.45);doc.rect(4.5,4.5,w-9,h-9);
@@ -206,7 +206,7 @@ async function downloadDocument(cert,kind){
  }else{
    // Light, repeated Smart Tax Solution watermark across the full marksheet page.
    doc.setFont('helvetica','bold');doc.setFontSize(17);doc.setTextColor(237,240,244);
-   for(let wy=-15;wy<h+35;wy+=42){for(let wx=-38;wx<w+35;wx+=92){doc.text('SMART TAX SOLUTION',wx,wy,{angle: -32});}}
+   for(let wy=-15;wy<h+35;wy+=42){for(let wx=-38;wx<w+35;wx+=92){doc.text('Smart Tax',wx,wy,{angle: -32});}}
    doc.setTextColor(...navy);
    doc.setFontSize(19);doc.text('STATEMENT OF MARKS',w/2,38,{align:'center'});
    doc.setFontSize(11);doc.setFont('helvetica','normal');doc.text('Student Assessment Record',w/2,45,{align:'center'});
