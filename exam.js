@@ -30,7 +30,7 @@ async function init(){
   if(qe){$('loading').innerHTML='<h1>Question bank could not be loaded</h1><p>The portal could not read the course question bank. Please ask the administrator to check Supabase table permissions and database setup.</p><p class="muted">Technical detail: '+esc(qe.message||'Database query failed')+'</p><a class="button primary" href="student.html">Return to student portal</a>';return;}if(!qs||qs.length<requestedCount){const n=qs?.length||0;const setup=n===0?'The database has no active questions for this course yet. The administrator must run the SQL setup files in the Supabase SQL Editor, in this order: schema.sql, admin-setup.sql, then seed-question-bank.sql.': 'The course question bank is only partly populated.';$('loading').innerHTML='<h1>Exam not available yet</h1><p>'+setup+'</p><p>This course currently has '+n+' active questions. A '+requestedCount+'-question exam needs at least '+requestedCount+' active questions. Please do not repeatedly retry until the question bank has been populated.</p><a class="button primary" href="student.html">Return to student portal</a>';return;}
   examStorageKey='sts_exam_'+user.id+'_'+courseSlug;
   let saved=null;try{saved=JSON.parse(localStorage.getItem(examStorageKey)||'null');}catch(_){}
-  if(saved&&saved.endAt&&saved.endAt>Date.now()&&Array.isArray(saved.questionIds)){
+  if(saved&&saved.endAt&&Array.isArray(saved.questionIds)){
    const byId=new Map(qs.map(q=>[q.id,q]));const restored=saved.questionIds.map(id=>byId.get(id)).filter(Boolean);
    if(restored.length===requestedCount){questions=restored;examEndAt=saved.endAt;index=Math.min(Math.max(0,Number(saved.index)||0),questions.length-1);answers=new Map(Object.entries(saved.answers||{}).map(([id,v])=>[id,Number(v)]));}
   }
@@ -45,7 +45,7 @@ async function init(){
   $('nextBtn').addEventListener('click',()=>{saveCurrent();if(index<questions.length-1)index++;render();});
   $('submitBtn').addEventListener('click',()=>submitExam(false));
   $('instructions')?.remove();
-  render();showTime();resetIdle();timerId=setInterval(()=>{showTime();if(seconds<=0)submitExam(true);},250);
+  render();showTime();resetIdle();if(seconds<=0){submitExam(true);return;}timerId=setInterval(()=>{showTime();if(seconds<=0)submitExam(true);},250);
  }catch(e){$('loading').innerHTML='<h1>Could not open exam</h1><p>'+esc(e.message||'Please try again.')+'</p><a class="button primary" href="student.html">Return to student portal</a>';}
 }
 function saveCurrent(){const picked=document.querySelector('input[name="answer"]:checked');if(picked)answers.set(questions[index].id,Number(picked.value));if(examStorageKey)localStorage.setItem(examStorageKey,JSON.stringify({endAt:examEndAt,questionIds:questions.map(q=>q.id),index,answers:Object.fromEntries(answers)}));}
@@ -58,7 +58,7 @@ function render(){
 }
 function updateProgress(){const n=answers.size;$('answerCount').textContent='Answered '+n+' of '+questions.length;$('progressFill').style.width=(n/questions.length*100)+'%';}
 async function submitExam(timeUp){
- if(examFinished)return;saveCurrent();examFinished=true;clearInterval(timerId);if(examStorageKey)localStorage.removeItem(examStorageKey);clearTimeout(idleId);$('submitBtn').disabled=true;$('nextBtn').disabled=true;$('prevBtn').disabled=true;
+ if(examFinished)return;saveCurrent();examFinished=true;clearInterval(timerId);clearTimeout(idleId);$('submitBtn').disabled=true;$('nextBtn').disabled=true;$('prevBtn').disabled=true;
  $('questionArea').innerHTML='<p>Submitting answers securely…</p>';
  const payload=questions.map(q=>({question_id:q.id,selected_option:answers.has(q.id)?answers.get(q.id):-1}));
  try{
@@ -67,7 +67,7 @@ async function submitExam(timeUp){
   $('examShell').classList.add('hidden');$('resultPanel').classList.remove('hidden');
   const pct=Number(data.percentage||0);
   $('resultPanel').innerHTML='<span class="badge">ASSESSMENT RESULT</span><h1>'+(data.passed?'Congratulations — you passed':'Assessment completed')+'</h1><p class="status">'+(timeUp?'The time limit was reached and your answers were submitted automatically.':'Your answers were submitted successfully.')+'</p><div class="result-score">'+esc(pct.toFixed(2))+'%</div><p><strong>Score:</strong> '+esc(data.score)+' / '+esc(data.total)+'<br><strong>Status:</strong> '+(data.passed?'PASS':'NOT PASSED')+'<br><strong>Pass mark:</strong> 60%</p>'+(data.certificate_number?'<p><strong>Certificate number:</strong><br>'+esc(data.certificate_number)+'</p><p class="status">This is a private Smart Tax Solution training certificate, not a TCS or government-accredited credential.</p>':'<p class="status">Review the course lessons and try again when ready.</p>')+'<button id="resultSignOut" class="btn-primary" type="button">Sign out securely</button> <a class="button" href="student.html">Student portal</a>';
-  $('resultSignOut').addEventListener('click',()=>signOut('Exam completed. You have signed out.'));
+  if(examStorageKey)localStorage.removeItem(examStorageKey);$('resultSignOut').addEventListener('click',()=>signOut('Exam completed. You have signed out.'));
  }catch(e){examFinished=false;$('submitBtn').disabled=false;$('nextBtn').disabled=false;$('prevBtn').disabled=false;$('questionArea').innerHTML='<p role="alert">Submission could not be confirmed: '+esc(e.message||'Unknown error')+'. Keep this page open and contact the administrator; do not assume your result was saved.</p><button class="btn-primary" id="retrySubmit" type="button">Retry submission</button>'; $('retrySubmit').addEventListener('click',()=>{examFinished=false;submitExam(timeUp);});}
 }
 init();
