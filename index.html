@@ -310,5 +310,61 @@
  document.querySelectorAll(".offer-was").forEach(el=>{el.style.display=active?"inline":"none";el.textContent=el.dataset.regular;});
 })();
 </script>
+
+<style>
+/* Festive course-offer notification popup */
+.sts-offer-overlay{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(5,14,32,.72);backdrop-filter:blur(3px)}
+.sts-offer-overlay.is-visible{display:flex}
+.sts-offer-popup{position:relative;width:min(760px,96vw);max-height:90vh;overflow:auto;border-radius:15px;background:#fff;box-shadow:0 24px 75px rgba(0,0,0,.38);font-family:inherit}
+.sts-offer-top{padding:23px 26px 20px;text-align:center;color:#fff;background:linear-gradient(120deg,#092b5b,#1264a4 58%,#d18419)}
+.sts-offer-top .mini{font-size:11px;font-weight:800;letter-spacing:2px;color:#ffe5a4}
+.sts-offer-top h2{margin:8px 0 5px;font-size:clamp(27px,5vw,42px);line-height:1.1;color:#fff}
+.sts-offer-top p{margin:0;color:#fff4dc;font-size:14px}
+.sts-offer-close{position:absolute;right:12px;top:12px;width:34px;height:34px;border:0;border-radius:50%;background:#fff;color:#183b66;font-size:25px;line-height:1;cursor:pointer;z-index:2}
+.sts-offer-body{padding:22px 26px 24px}
+.sts-offer-ribbon{text-align:center;margin:-2px 0 15px;color:#9a4c08;font-weight:900;letter-spacing:1px;font-size:13px}
+.sts-offer-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sts-offer-item{padding:13px 14px;border:1px solid #dce6f1;border-radius:10px;background:#f7faff}
+.sts-offer-item h3{margin:0 0 9px;color:#173b68;font-size:15px;line-height:1.3}
+.sts-offer-prices{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.sts-offer-old{font-size:13px;color:#7b8794;text-decoration:line-through}
+.sts-offer-new{font-size:24px;font-weight:900;color:#0b6c43}
+.sts-offer-foot{margin:17px 0 0;text-align:center;color:#596b80;font-size:12px}
+.sts-offer-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:17px}
+.sts-offer-actions a{display:inline-block;padding:12px 22px;border-radius:7px;background:#0d5592;color:#fff;text-decoration:none;font-weight:800}
+.sts-offer-actions a.secondary{background:#eef3f8;color:#173b68}
+@media(max-width:560px){.sts-offer-body{padding:18px 15px}.sts-offer-list{grid-template-columns:1fr}.sts-offer-top{padding:25px 17px 18px}.sts-offer-popup{max-height:92vh}}
+</style>
+<div class="sts-offer-overlay" id="stsOfferPopup" role="dialog" aria-modal="true" aria-labelledby="stsOfferTitle">
+ <div class="sts-offer-popup">
+  <button class="sts-offer-close" id="stsOfferClose" aria-label="Close offer notification">×</button>
+  <div class="sts-offer-top"><div class="mini">🪔 FESTIVE SPECIAL • SMART TAX SOLUTION</div><h2 id="stsOfferTitle">DIWALI & DHANTERAS OFFERS</h2><p>Upgrade your skills. Learn more. Save more!</p></div>
+  <div class="sts-offer-body">
+   <div class="sts-offer-ribbon">LIMITED PERIOD COURSE FEE OFFERS • 06–15 NOVEMBER 2026</div>
+   <div class="sts-offer-list">
+    <div class="sts-offer-item"><h3>Complete Accounting Course</h3><div class="sts-offer-prices"><span class="sts-offer-old">₹3,499</span><span class="sts-offer-new">₹1,599</span></div></div>
+    <div class="sts-offer-item"><h3>GST + Income Tax Combo</h3><div class="sts-offer-prices"><span class="sts-offer-old">₹2,999</span><span class="sts-offer-new">₹1,599</span></div></div>
+    <div class="sts-offer-item"><h3>GST Complete Course</h3><div class="sts-offer-prices"><span class="sts-offer-old">₹1,499</span><span class="sts-offer-new">₹799</span></div></div>
+    <div class="sts-offer-item"><h3>Income Tax Complete Course</h3><div class="sts-offer-prices"><span class="sts-offer-old">₹1,499</span><span class="sts-offer-new">₹799</span></div></div>
+   </div>
+   <p class="sts-offer-foot">Offer prices valid from 06 November to 15 November 2026 only. Terms and course details apply.</p>
+   <div class="sts-offer-actions"><a href="student.html">ENROL NOW</a><a class="secondary" href="#courses" id="stsOfferExplore">VIEW COURSE DETAILS</a></div>
+  </div>
+ </div>
+</div>
+<script>
+(function(){
+ const popup=document.getElementById("stsOfferPopup"),close=document.getElementById("stsOfferClose");
+ if(!popup||!close)return;
+ const now=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+ const day=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+ if(day>="2026-11-05"&&day<="2026-11-15"&&!sessionStorage.getItem("stsFestiveOfferClosed"))popup.classList.add("is-visible");
+ function dismiss(){popup.classList.remove("is-visible");sessionStorage.setItem("stsFestiveOfferClosed","1");}
+ close.addEventListener("click",dismiss);
+ popup.addEventListener("click",e=>{if(e.target===popup)dismiss();});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&popup.classList.contains("is-visible"))dismiss();});
+ document.getElementById("stsOfferExplore")?.addEventListener("click",dismiss);
+})();
+</script>
 </body>
 </html>
