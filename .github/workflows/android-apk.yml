@@ -5,6 +5,10 @@ on:
   push:
     paths:
       - "android/**"
+      - ".github/workflows/android-apk.yml"
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -26,3 +30,12 @@ jobs:
         with:
           name: Smart-Tax-Solution-debug-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Publish APK download release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: android-latest
+          name: Smart Tax Solution Android App
+          body: Install the latest Smart Tax Solution Android app. For Android phones only.
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          fail_on_unmatched_files: true
+          make_latest: true
