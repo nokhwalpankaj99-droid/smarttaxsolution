@@ -89,7 +89,9 @@
 .festive-upcoming .festive-offer{background:linear-gradient(90deg,#174b78,#b87919)}
 .offer-price{color:#1769aa!important;font-weight:900}
 @media(prefers-reduced-motion:reduce){.festive-slide{animation:none;opacity:0}.festive-slide.di-slide{opacity:1}.festive-slide:before,.festive-lamps{animation:none}}
-</style></head>
+</style>  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b315e">
+</head>
 <body>
   <header class="site-header">
     <a class="brand" href="index.html" aria-label="Smart Tax Solution home"><img class="brand-logo" src="assets/smart-tax-solution-logo.svg" alt="Smart Tax Solution — Your Tax Partner for a Brighter Future"></a>
@@ -365,6 +367,11 @@
  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&popup.classList.contains("is-visible"))dismiss();});
  document.getElementById("stsOfferExplore")?.addEventListener("click",dismiss);
 })();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/service-worker.js").catch(err => console.warn("App offline setup:", err)));
+}
 </script>
 </body>
 </html>
