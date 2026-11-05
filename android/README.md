@@ -16,3 +16,6 @@ The app uses the existing website for live course, student portal, certificate, 
 
 ## Automated APK build
 The GitHub Actions workflow `.github/workflows/android-apk.yml` builds a debug APK when Android project files change and uploads it as the `Smart-Tax-Solution-debug-APK` artifact.
+
+
+APK builds are published to the android-latest GitHub release for the website download button.
