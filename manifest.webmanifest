@@ -1,0 +1,15 @@
+{
+  "id": "/",
+  "name": "Smart Tax Solution",
+  "short_name": "Smart Tax",
+  "description": "GST, Income Tax services, online courses and student portal.",
+  "start_url": "/?source=android-app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0b315e",
+  "icons": [
+    {"src": "/assets/smart-tax-solution-logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
+  ]
+}
