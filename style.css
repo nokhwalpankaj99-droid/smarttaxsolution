@@ -90,3 +90,51 @@ h1 span{color:#173d70}.hero-copy>p{font-size:16px;line-height:1.8;color:#5d6b7f}
 .info-page{max-width:920px;margin:0 auto;padding:48px 24px 80px}.info-page h1{font-size:clamp(32px,4vw,46px);line-height:1.15;color:#17345d}.info-page h2{font-size:21px;margin-top:30px;color:#17345d}.info-page p,.info-page li{font-size:14px;color:#526176;line-height:1.85}.info-page .updated{font-size:12px;color:#7c8ba0}.info-panel{border:1px solid var(--line);border-radius:12px;padding:28px;background:#fff}
 .enquiry-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px}.form-field{display:flex;flex-direction:column;gap:6px}.form-field.full{grid-column:1/-1}.form-field label{font-size:13px;font-weight:700;color:#17345d}.form-field input,.form-field select,.form-field textarea{width:100%;border:1px solid #ccd6e3;border-radius:7px;padding:12px;font:inherit;font-size:14px;background:#fff;color:#17233b}.form-field textarea{min-height:125px;resize:vertical}.form-note{font-size:12px!important;color:#64748b!important}.form-actions{grid-column:1/-1;display:flex;gap:12px;flex-wrap:wrap}
 @media(max-width:650px){.info-page{padding:32px 18px 55px}.info-panel{padding:20px}.enquiry-form{grid-template-columns:1fr}.form-field.full,.form-actions{grid-column:auto}}
+
+
+/* App-like Smart Tax home experience — preserves all existing page URLs */
+.site-header{position:sticky;top:0;z-index:1000;max-width:none;padding:12px clamp(18px,4vw,54px);background:rgba(255,255,255,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(220,229,240,.9);box-shadow:0 5px 22px rgba(20,43,74,.05)}
+.site-header nav{gap:clamp(12px,1.8vw,25px)}
+.app-welcome{padding:22px clamp(18px,4vw,54px);background:linear-gradient(115deg,#edf4fc,#f7faff 55%,#e7f4ee)}
+.app-welcome-inner{max-width:1160px;margin:auto;display:grid;grid-template-columns:1fr 1.45fr auto;align-items:center;gap:30px;padding:24px 28px;border:1px solid #e0e9f3;border-radius:22px;background:rgba(255,255,255,.86);box-shadow:0 15px 40px rgba(20,43,74,.07)}
+.app-welcome-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.app-welcome-brand img{width:74px;height:60px;object-fit:contain}
+.app-welcome-brand strong,.app-welcome-brand small{display:block}
+.app-welcome-brand strong{font-size:14px;color:#142b4a}
+.app-welcome-brand small{font-size:10px;color:#738198;margin-top:3px}
+.app-kicker{font-size:9px;font-weight:850;letter-spacing:1.6px;color:#16805a}
+.app-welcome-copy h2{font-size:clamp(20px,2.4vw,28px);line-height:1.2;letter-spacing:-.7px;color:#142b4a;margin:5px 0 7px}
+.app-welcome-copy p{font-size:12px;color:#607087;margin:0;line-height:1.55}
+.app-welcome-actions{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.app-download-button{display:flex;align-items:center;gap:10px;padding:11px 15px;border-radius:12px;background:#11734b;color:white;white-space:nowrap;box-shadow:0 8px 18px rgba(17,115,75,.18)}
+.app-download-button>span:first-child{font-size:25px;line-height:1}
+.app-download-button b,.app-download-button small{display:block}
+.app-download-button b{font-size:12px}
+.app-download-button small{font-size:9px;opacity:.85;margin-top:2px}
+.app-install-button{border:1px solid #cbd9e7;border-radius:10px;padding:9px 12px;background:#fff;color:#173b60;font-size:11px;font-weight:750;cursor:pointer}
+.app-bottom-nav{display:none}
+@media(max-width:900px){
+ .site-header{align-items:flex-start;flex-direction:column;gap:9px;padding:10px 16px}
+ .site-header nav{width:100%;overflow-x:auto;gap:18px;padding:4px 0 7px;white-space:nowrap;scrollbar-width:none}
+ .site-header nav::-webkit-scrollbar{display:none}
+ .app-welcome-inner{grid-template-columns:1fr 1.5fr;gap:16px;padding:19px}
+ .app-welcome-actions{grid-column:1/-1;flex-direction:row;align-items:center}
+ .app-download-button{flex:1;justify-content:center}
+}
+@media(max-width:620px){
+ body{padding-bottom:68px;background:#f7f9fc}
+ .site-header{padding:9px 14px;background:rgba(255,255,255,.97)}
+ .site-header nav{font-size:12px}
+ .nav-button{padding:8px 12px}
+ .app-welcome{padding:12px 12px 18px}
+ .app-welcome-inner{grid-template-columns:1fr;gap:12px;padding:17px;border-radius:18px}
+ .app-welcome-brand img{width:62px;height:48px}
+ .app-welcome-copy h2{font-size:22px}
+ .app-welcome-actions{grid-column:auto;flex-direction:column;align-items:stretch}
+ .app-download-button{justify-content:center;padding:12px}
+ .app-bottom-nav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:10px;right:10px;bottom:9px;z-index:1200;padding:7px 5px calc(7px + env(safe-area-inset-bottom));border:1px solid #e1e8f1;border-radius:17px;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);box-shadow:0 8px 30px rgba(15,35,65,.17)}
+ .app-bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:1px;color:#607087;font-size:10px;font-weight:700}
+ .app-bottom-nav a span{font-size:20px;line-height:1.2;color:#173d70}
+ .app-bottom-nav a small{font-size:9px}
+ .hero{margin-top:12px}
+}
