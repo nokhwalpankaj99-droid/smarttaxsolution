@@ -12,3 +12,7 @@ Application ID: `site.smarttaxsolution.app`
 Website loaded: https://smarttaxsolution.site/
 
 The app uses the existing website for live course, student portal, certificate, grievance and contact features. Website changes are reflected in the app when online. Offline support is provided separately by the website service worker for cached shell assets.
+
+
+## Automated APK build
+The GitHub Actions workflow `.github/workflows/android-apk.yml` builds a debug APK when Android project files change and uploads it as the `Smart-Tax-Solution-debug-APK` artifact.
