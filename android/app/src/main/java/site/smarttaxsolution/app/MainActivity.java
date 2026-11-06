@@ -10,88 +10,86 @@ import android.net.Uri;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import org.json.*;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.*;
 
 public class MainActivity extends Activity {
-    private final int navy=Color.rgb(18,39,76), blue=Color.rgb(38,98,190), pale=0xFFF2F5FA;
+    private static final String BASE="https://jbjergbqjokxxcvntimk.supabase.co";
+    private static final String KEY="sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k";
+    private final int navy=Color.rgb(18,39,76),blue=Color.rgb(38,98,190),pale=0xFFF2F5FA;
     private LinearLayout root,body,nav;
+    private SharedPreferences prefs;
+    private ExecutorService worker=Executors.newSingleThreadExecutor();
     private String current="Home";
-    private android.content.SharedPreferences prefs;
-    private final String[] tabs={"Home","Services","Notifications","Profile"};
+    private final String[] tabs={"Home","Courses","Services","Profile"};
 
-    @Override public void onCreate(Bundle b){
-        super.onCreate(b); prefs=getSharedPreferences("smarttax_user",MODE_PRIVATE);
-        getWindow().setStatusBarColor(navy); getWindow().setNavigationBarColor(Color.WHITE);
+    @Override public void onCreate(Bundle b){super.onCreate(b);
+        prefs=getSharedPreferences("smarttax_session",MODE_PRIVATE);
+        getWindow().setStatusBarColor(navy);getWindow().setNavigationBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
-        root=new LinearLayout(this); root.setOrientation(1); root.setBackgroundColor(pale); setContentView(root);
-        ScrollView sc=new ScrollView(this); sc.setFillViewport(true);
-        body=new LinearLayout(this); body.setOrientation(1); sc.addView(body);
-        root.addView(sc,new LinearLayout.LayoutParams(-1,0,1));
-        nav=new LinearLayout(this); nav.setBackgroundColor(Color.WHITE); nav.setElevation(dp(9));
-        root.addView(nav,new LinearLayout.LayoutParams(-1,dp(66))); show("Home");
+        root=new LinearLayout(this);root.setOrientation(1);root.setBackgroundColor(pale);setContentView(root);
+        ScrollView sc=new ScrollView(this);sc.setFillViewport(true);body=new LinearLayout(this);body.setOrientation(1);sc.addView(body);
+        root.addView(sc,new LinearLayout.LayoutParams(-1,0,1));nav=new LinearLayout(this);nav.setBackgroundColor(Color.WHITE);root.addView(nav,new LinearLayout.LayoutParams(-1,dp(62)));
+        if(prefs.getString("access","").isEmpty())authScreen();else show("Home");
     }
     int dp(float n){return (int)(n*getResources().getDisplayMetrics().density+.5f);}
-    GradientDrawable shape(int color,int radius){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(radius));return d;}
-    TextView txt(String s,int z,int c,boolean b){TextView t=new TextView(this);t.setText(s);t.setTextSize(z);t.setTextColor(c);if(b)t.setTypeface(Typeface.DEFAULT,1);return t;}
+    GradientDrawable shape(int c,int r){GradientDrawable d=new GradientDrawable();d.setColor(c);d.setCornerRadius(dp(r));return d;}
+    TextView text(String s,int z,int c,boolean bold){TextView t=new TextView(this);t.setText(s);t.setTextSize(z);t.setTextColor(c);if(bold)t.setTypeface(Typeface.DEFAULT,Typeface.BOLD);return t;}
     LinearLayout col(){LinearLayout l=new LinearLayout(this);l.setOrientation(1);return l;}
-    void padding(View v,int n){v.setPadding(dp(n),dp(n),dp(n),dp(n));}
-    void show(String tab){
-        current=tab;body.removeAllViews();nav.removeAllViews();
-        if(tab.equals("Home"))home();else if(tab.equals("Services"))services();else if(tab.equals("Notifications"))notifications();else profile();
-        String[] glyph={"⌂","▦","♧","●"};
-        for(int i=0;i<tabs.length;i++){final String name=tabs[i];LinearLayout it=col();it.setGravity(Gravity.CENTER);
-            TextView a=txt(glyph[i],21,name.equals(tab)?blue:0xFF818A99,true);a.setGravity(17);
-            TextView b=txt(name,10,name.equals(tab)?blue:0xFF818A99,name.equals(tab));b.setGravity(17);it.addView(a);it.addView(b);
-            it.setOnClickListener(v->show(name));nav.addView(it,new LinearLayout.LayoutParams(0,-1,1));}
+    void pad(View v,int n){v.setPadding(dp(n),dp(n),dp(n),dp(n));}
+    EditText field(String hint,int type){EditText e=new EditText(this);e.setSingleLine(true);e.setHint(hint);e.setInputType(type);return e;}
+    void message(String s){new android.app.AlertDialog.Builder(this).setMessage(s).setPositiveButton("OK",null).show();}
+    void authScreen(){
+        nav.removeAllViews();body.removeAllViews();LinearLayout card=col();card.setBackground(shape(Color.WHITE,18));pad(card,20);
+        TextView brand=text("SMART TAX SOLUTION",14,blue,true);card.addView(brand);
+        TextView title=text("Student Login",25,navy,true);title.setPadding(0,dp(12),0,dp(4));card.addView(title);
+        card.addView(text("Sign in with the same account used on the Smart Tax website.",13,0xFF5B6575,false));
+        EditText email=field("Registered email",33),pass=field("Password",129);email.setPadding(0,dp(12),0,dp(8));pass.setPadding(0,dp(12),0,dp(8));card.addView(email);card.addView(pass);
+        Button login=new Button(this);login.setText("Sign In");card.addView(login);
+        Button register=new Button(this);register.setText("Create Student Account");card.addView(register);
+        Button forgot=new Button(this);forgot.setText("Forgot Password");card.addView(forgot);
+        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.setMargins(dp(18),dp(45),dp(18),dp(18));body.addView(card,p);
+        login.setOnClickListener(v->{String em=email.getText().toString().trim(),pw=pass.getText().toString();if(em.isEmpty()||pw.isEmpty()){message("Enter email and password.");return;}busy(login,true);request("POST","/auth/v1/token?grant_type=password",authBody(em,pw),null,(res,err)->{busy(login,false);if(err!=null){message(err);return;}try{saveSession(res);show("Home");}catch(Exception x){message("Login response was incomplete.");}});});
+        register.setOnClickListener(v->registration());
+        forgot.setOnClickListener(v->{if(email.getText().toString().trim().isEmpty()){message("Enter your registered email first.");return;}try{JSONObject j=new JSONObject();j.put("email",email.getText().toString().trim());request("POST","/auth/v1/recover",j,null,(res,err)->message(err==null?"If the account exists, a password recovery email has been sent.":"Could not send recovery email: "+err));}catch(Exception ignored){}});
     }
-    void header(String title,String subtitle){LinearLayout h=col();padding(h,20);h.setBackgroundColor(navy);
-        h.addView(txt("SMART TAX SOLUTION",11,0xFFBFD2F2,true));TextView t=txt(title,25,Color.WHITE,true);t.setPadding(0,dp(8),0,dp(4));h.addView(t);h.addView(txt(subtitle,13,0xFFE1E9F7,false));body.addView(h);}
-    void section(String s){TextView t=txt(s,18,navy,true);t.setPadding(dp(17),dp(17),dp(17),dp(7));body.addView(t);}
-    void card(String icon,String title,String desc,Runnable run){LinearLayout c=new LinearLayout(this);c.setGravity(Gravity.CENTER_VERTICAL);c.setBackground(shape(Color.WHITE,15));c.setElevation(dp(2));padding(c,13);
-        TextView ic=txt(icon,19,blue,true);ic.setGravity(17);ic.setBackground(shape(0xFFEAF1FC,12));c.addView(ic,new LinearLayout.LayoutParams(dp(46),dp(46)));
-        LinearLayout w=col();w.setPadding(dp(12),0,0,0);w.addView(txt(title,15,navy,true));TextView d=txt(desc,12,0xFF596273,false);d.setPadding(0,dp(4),0,0);w.addView(d);c.addView(w,new LinearLayout.LayoutParams(0,-2,1));
-        TextView arrow=txt("›",25,0xFF8793A5,false);c.addView(arrow);c.setOnClickListener(v->run.run());
-        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.setMargins(dp(15),dp(5),dp(15),dp(8));body.addView(c,p);}
-    void banner(String title,String desc){LinearLayout b=col();b.setBackground(shape(blue,18));padding(b,18);b.addView(txt("SMART TAX • DIGITAL SERVICES",10,0xFFDCE9FF,true));
-        TextView t=txt(title,20,Color.WHITE,true);t.setPadding(0,dp(8),0,dp(6));b.addView(t);b.addView(txt(desc,13,Color.WHITE,false));
-        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.setMargins(dp(15),dp(15),dp(15),dp(4));body.addView(b,p);}
-    void home(){header("Your Tax, Simplified","A smarter way to access tax services and learning");banner("Tax support, made simple","Explore services, manage your profile and contact our team.");
-        section("Quick services");card("GST","GST Services","Registration, returns and compliance",()->show("Services"));
-        card("₹","Income Tax","ITR assistance and tax information",()->detail("Income Tax","Income tax return assistance and tax-related support."));
-        card("▣","Accounting","Tally, Busy and accounting support",()->detail("Accounting","Accounting and software support. Contact our team for details."));
-        section("Learning & assistance");card("▤","Courses & Exams","Course information, exams and certificates",()->detail("Courses & Exams","The dedicated course, examination, result and certificate system requires secure account and backend integration."));
-        card("☎","WhatsApp Support","Chat with Smart Tax Solution",()->open("https://wa.me/919664029638"));}
-    void services(){header("Our Services","Choose a service to know more");section("Tax & compliance");
-        card("＋","GST Registration","Registration and documentation assistance",()->detail("GST Registration","Get assistance with GST registration and required documents."));
-        card("↻","GST Returns","GSTR-1, GSTR-3B and compliance",()->detail("GST Returns","Return preparation and compliance assistance."));
-        card("₹","Income Tax","Income tax return support",()->detail("Income Tax","ITR filing and income tax assistance."));
-        card("▦","Accounting","Bookkeeping, Tally and Busy",()->detail("Accounting","Accounting and software support."));
-        section("Official portals");card("↗","GST Portal","Government of India",()->open("https://www.gst.gov.in/"));
-        card("↗","Income Tax Portal","Government of India",()->open("https://www.incometax.gov.in/"));
-        card("↗","Udyam Portal","MSME registration",()->open("https://udyamregistration.gov.in/"));
-        card("☎","Talk to our team","WhatsApp support",()->open("https://wa.me/919664029638"));}
-    void notifications(){header("Notifications","Your updates and alerts");section("App updates");
-        card("•","Welcome to Smart Tax","Your app dashboard is ready.",()->detail("Welcome","Thank you for using Smart Tax Solution."));
-        card("!","Need assistance?","Our team is available on WhatsApp.",()->open("https://wa.me/919664029638"));
-        TextView n=txt("Personalised application, payment, course and exam alerts will appear here after notification and account services are connected.",13,0xFF596273,false);padding(n,18);body.addView(n);}
-    void profile(){header("My Profile","Manage your contact information");LinearLayout box=col();box.setBackground(shape(Color.WHITE,16));padding(box,16);
-        box.addView(txt("Your details",17,navy,true));String name=prefs.getString("name","");String phone=prefs.getString("phone","");
-        box.addView(txt(name.isEmpty()?"Profile not set up":name,15,0xFF333B49,true));
-        box.addView(txt(phone.isEmpty()?"Add your mobile number":phone,13,0xFF596273,false));
-        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.setMargins(dp(15),dp(16),dp(15),dp(8));body.addView(box,p);
-        card("✎","Edit Profile","Update your name, mobile and email",()->editProfile());
-        card("✉","Email Support","smarttaxsolutionsgnr@gmail.com",()->open("mailto:smarttaxsolutionsgnr@gmail.com"));
-        card("☎","WhatsApp Support","96640 29638",()->open("https://wa.me/919664029638"));
-        card("ⓘ","About Smart Tax","Sri Ganganagar, Rajasthan",()->detail("About Smart Tax Solution","Tax, GST and accounting assistance.\nSri Ganganagar, Rajasthan."));}
-    void editProfile(){LinearLayout form=col();EditText name=new EditText(this);name.setSingleLine();name.setHint("Full name");name.setText(prefs.getString("name",""));
-        EditText phone=new EditText(this);phone.setSingleLine();phone.setHint("Mobile number");phone.setInputType(3);phone.setText(prefs.getString("phone",""));
-        EditText email=new EditText(this);email.setSingleLine();email.setHint("Email address");email.setInputType(33);email.setText(prefs.getString("email",""));
-        form.addView(name);form.addView(phone);form.addView(email);padding(form,8);
-        new android.app.AlertDialog.Builder(this).setTitle("Edit Profile").setView(form).setNegativeButton("Cancel",null).setPositiveButton("Save",(d,w)->{
-            prefs.edit().putString("name",name.getText().toString().trim()).putString("phone",phone.getText().toString().trim()).putString("email",email.getText().toString().trim()).apply();show("Profile");
-        }).show();}
-    void detail(String title,String msg){new android.app.AlertDialog.Builder(this).setTitle(title).setMessage(msg).setPositiveButton("OK",null).setNeutralButton("WhatsApp",(d,w)->open("https://wa.me/919664029638")).show();}
-    void open(String u){try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(u)));}catch(Exception e){detail("Unable to open","No compatible app found.");}}
-    @Override public void onBackPressed(){if(!current.equals("Home"))show("Home");else super.onBackPressed();}
+    void registration(){
+        LinearLayout f=col();EditText name=field("Full name",1),phone=field("Mobile number",3),father=field("Father's name",1),mother=field("Mother's name",1),address=field("Address",1),email=field("Email",33),pw=field("Password (minimum 8 characters)",129);
+        f.addView(name);f.addView(phone);f.addView(father);f.addView(mother);f.addView(address);f.addView(email);f.addView(pw);pad(f,8);
+        new android.app.AlertDialog.Builder(this).setTitle("Student Registration").setView(f).setNegativeButton("Cancel",null).setPositiveButton("Register",(d,w)->{
+            if(name.length()==0||phone.length()==0||father.length()==0||mother.length()==0||address.length()==0||email.length()==0||pw.length()<8){message("Complete all details. Password must contain at least 8 characters.");return;}
+            try{JSONObject meta=new JSONObject();meta.put("full_name",name.getText().toString());meta.put("phone",phone.getText().toString());meta.put("father_name",father.getText().toString());meta.put("mother_name",mother.getText().toString());meta.put("address",address.getText().toString());JSONObject j=authBody(email.getText().toString().trim(),pw.getText().toString());j.put("data",meta);
+                request("POST","/auth/v1/signup",j,null,(res,err)->{if(err!=null)message("Registration failed: "+err);else{try{JSONObject x=new JSONObject(res);if(x.has("access_token")){saveSession(res);show("Home");}else message("Registration received. Confirm your email, then sign in.");}catch(Exception ex){message("Registration received. Check your email for confirmation.");}}});
+            }catch(Exception ex){message("Could not prepare registration.");}
+        }).show();
+    }
+    JSONObject authBody(String e,String p){JSONObject j=new JSONObject();try{j.put("email",e);j.put("password",p);}catch(Exception ignored){}return j;}
+    interface Done{void finish(String result,String error);}
+    void request(String method,String path,JSONObject data,String token,Done done){
+        worker.execute(()->{String result=null,error=null;HttpURLConnection c=null;try{
+            c=(HttpURLConnection)new URL(BASE+path).openConnection();c.setRequestMethod(method);c.setConnectTimeout(15000);c.setReadTimeout(20000);c.setRequestProperty("apikey",KEY);c.setRequestProperty("Accept","application/json");
+            if(token!=null&&!token.isEmpty())c.setRequestProperty("Authorization","Bearer "+token);
+            if(data!=null){c.setDoOutput(true);c.setRequestProperty("Content-Type","application/json");try(OutputStream o=c.getOutputStream()){o.write(data.toString().getBytes(StandardCharsets.UTF_8));}}
+            int code=c.getResponseCode();InputStream in=code>=200&&code<300?c.getInputStream():c.getErrorStream();ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] b=new byte[4096];int n;while((n=in.read(b))!=-1)out.write(b,0,n);result=out.toString("UTF-8");if(code<200||code>=300){try{JSONObject j=new JSONObject(result);error=j.optString("msg",j.optString("message",j.optString("error_description",j.optString("error","Request failed ("+code+")"))));}catch(Exception ex){error="Request failed ("+code+")";}}
+        }catch(Exception ex){error="Network error. Check your internet connection."; }finally{if(c!=null)c.disconnect();}
+        final String rr=result,ee=error;runOnUiThread(()->done.finish(rr,ee));});
+    }
+    void saveSession(String raw)throws Exception{JSONObject j=new JSONObject(raw);String access=j.getString("access_token"),refresh=j.optString("refresh_token","");JSONObject u=j.getJSONObject("user");prefs.edit().putString("access",access).putString("refresh",refresh).putString("uid",u.optString("id")).putString("email",u.optString("email")).apply();}
+    void busy(Button b,boolean yes){b.setEnabled(!yes);b.setText(yes?"Please wait…": "Sign In");}
+    void header(String title,String sub){LinearLayout h=col();pad(h,20);h.setBackgroundColor(navy);h.addView(text("SMART TAX SOLUTION",11,0xFFBFD2F2,true));TextView t=text(title,25,Color.WHITE,true);t.setPadding(0,dp(8),0,dp(4));h.addView(t);h.addView(text(sub,13,0xFFE1E9F7,false));body.addView(h);}
+    void card(String icon,String title,String desc,Runnable action){LinearLayout c=new LinearLayout(this);c.setGravity(Gravity.CENTER_VERTICAL);c.setBackground(shape(Color.WHITE,14));pad(c,13);TextView i=text(icon,20,blue,true);c.addView(i,new LinearLayout.LayoutParams(dp(42),dp(42)));LinearLayout w=col();w.addView(text(title,15,navy,true));w.addView(text(desc,12,0xFF596273,false));c.addView(w,new LinearLayout.LayoutParams(0,-2,1));c.setOnClickListener(v->action.run());LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.setMargins(dp(14),dp(6),dp(14),dp(6));body.addView(c,p);}
+    void show(String tab){current=tab;body.removeAllViews();nav.removeAllViews();
+        if(tab.equals("Home")){header("Your Tax, Simplified","Access your Smart Tax student account");card("▤","Courses & Exams","Browse published courses",()->show("Courses"));card("₹","Payment Status","Submit and track course payment on the portal",()->open("https://smarttaxsolution.site/student.html#payment"));card("▣","Certificates & Marksheet","View results and download documents",()->open("https://smarttaxsolution.site/student.html"));card("☎","WhatsApp Support","Chat with Smart Tax Solution",()->open("https://wa.me/919664029638"));}
+        else if(tab.equals("Courses")){header("Courses & Exams","Published courses from your Smart Tax account");TextView loading=text("Loading published courses…",14,navy,false);pad(loading,18);body.addView(loading);loadCourses(loading);}
+        else if(tab.equals("Services")){header("Services","Tax and accounting support");card("GST","GST Portal","Government portal",()->open("https://www.gst.gov.in/"));card("₹","Income Tax Portal","Government portal",()->open("https://www.incometax.gov.in/"));card("▦","Udyam Registration","MSME portal",()->open("https://udyamregistration.gov.in/"));card("☎","WhatsApp","96640 29638",()->open("https://wa.me/919664029638"));}
+        else{header("My Profile","Signed in student account");card("✉","Email",prefs.getString("email",""),()->{});card("↻","Refresh session","Sign out and sign in again if required",()->{});card("⇥","Sign Out","End this session on this device",()->{prefs.edit().clear().apply();authScreen();});}
+        String[] glyph={"⌂","▤","▦","●"};for(int i=0;i<tabs.length;i++){final String n=tabs[i];TextView b=text(glyph[i]+"\n"+n,11,n.equals(tab)?blue:0xFF818A99,true);b.setGravity(17);nav.addView(b,new LinearLayout.LayoutParams(0,-1,1));b.setOnClickListener(v->show(n));}
+    }
+    void loadCourses(TextView target){request("GET","/rest/v1/courses?select=id,slug,title,description&is_published=eq.true&order=title.asc",null,prefs.getString("access",""),(res,err)->{if(err!=null){target.setText("Courses could not be loaded: "+err);return;}try{JSONArray a=new JSONArray(res);LinearLayout parent=(LinearLayout)target.getParent();parent.removeView(target);if(a.length()==0){TextView none=text("No courses are currently published.",14,navy,false);pad(none,18);parent.addView(none);return;}for(int i=0;i<a.length();i++){JSONObject c=a.getJSONObject(i);String title=c.optString("title"),desc=c.optString("description"),slug=c.optString("slug");card("▤",title,desc+"\nOpen the student portal to enrol, pay and take the exam.",()->open("https://smarttaxsolution.site/student.html"));}}catch(Exception ex){target.setText("Could not read the course list.");}});}
+    void open(String u){try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(u)));}catch(Exception e){message("Unable to open this link.");}}
+    @Override public void onBackPressed(){if(!prefs.getString("access","").isEmpty()&&!current.equals("Home"))show("Home");else super.onBackPressed();}
+    @Override protected void onDestroy(){super.onDestroy();worker.shutdownNow();}
 }
