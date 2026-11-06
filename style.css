@@ -138,3 +138,67 @@ h1 span{color:#173d70}.hero-copy>p{font-size:16px;line-height:1.8;color:#5d6b7f}
  .app-bottom-nav a small{font-size:9px}
  .hero{margin-top:12px}
 }
+
+
+/* Native-style mobile dashboard inspired by modern Indian finance apps */
+.mobile-app-home{display:none}
+@media(max-width:620px){
+ body{background:#f4f7fb;padding-bottom:82px}
+ .site-header{position:sticky;top:0;z-index:1100;display:block;padding:10px 17px;background:#fff;border-bottom:1px solid #e8edf4;box-shadow:0 2px 12px rgba(22,45,75,.04)}
+ .site-header .brand-logo{width:190px;max-height:45px}
+ .site-header nav{display:none}
+ .app-welcome{display:none}
+ .mobile-app-home{display:block;max-width:560px;margin:0 auto;padding:17px 17px 28px}
+ .mobile-app-top{display:flex;align-items:center;justify-content:space-between;margin:0 0 23px}
+ .mobile-app-brand{display:flex;align-items:center;gap:9px}
+ .mobile-app-brand img{width:47px;height:43px;object-fit:contain}
+ .mobile-app-brand span,.mobile-app-brand strong{display:block}
+ .mobile-app-brand span{font-size:8px;letter-spacing:1.5px;font-weight:800;color:#8492a6}
+ .mobile-app-brand strong{font-size:14px;line-height:1.4;color:#142b4a}
+ .mobile-profile{width:39px;height:39px;display:grid;place-items:center;border-radius:50%;background:#fff;color:#173d70;border:1px solid #e4eaf2;font-size:18px}
+ .mobile-greeting{margin:0 0 17px}
+ .mobile-greeting>span,.mobile-section-head span{font-size:9px;font-weight:850;letter-spacing:1.5px;color:#718198}
+ .mobile-greeting h1{font-size:26px;line-height:1.17;letter-spacing:-.8px;color:#142b4a;margin:7px 0 6px;max-width:360px}
+ .mobile-greeting p{font-size:12px;color:#6d7b90;margin:0}
+ .mobile-feature-card{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:126px;padding:20px;border-radius:18px;color:#fff;background:linear-gradient(120deg,#102e54,#176c83);box-shadow:0 12px 25px rgba(20,64,93,.16);position:relative;overflow:hidden}
+ .mobile-feature-card:after{content:"";position:absolute;width:160px;height:160px;border:1px solid rgba(255,255,255,.13);border-radius:50%;right:-45px;top:-62px;box-shadow:0 0 0 24px rgba(255,255,255,.035),0 0 0 48px rgba(255,255,255,.025)}
+ .mobile-feature-card>div{position:relative;z-index:1}
+ .mobile-feature-tag{display:block;font-size:8px;letter-spacing:1.5px;font-weight:850;color:#bde8df;margin-bottom:7px}
+ .mobile-feature-card strong{display:block;font-size:17px;line-height:1.25;max-width:235px}
+ .mobile-feature-card small{display:block;font-size:10px;color:#d7e9f1;margin-top:6px}
+ .mobile-feature-arrow{position:relative;z-index:1;font-size:32px;color:#fff}
+ .mobile-section-head{display:flex;align-items:end;justify-content:space-between;margin:25px 1px 13px}
+ .mobile-section-head h2{font-size:17px;color:#182b46;letter-spacing:-.3px;margin:3px 0 0}
+ .mobile-section-head>a{font-size:10px;font-weight:800;color:#176c83}
+ .mobile-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+ .mobile-action-grid>a{min-height:116px;display:flex;flex-direction:column;align-items:flex-start;padding:14px;border-radius:15px;background:#fff;border:1px solid #e9eef5;box-shadow:0 4px 13px rgba(24,48,78,.035)}
+ .mobile-action-icon{width:39px;height:39px;display:grid;place-items:center;border-radius:12px;font-size:13px;font-weight:900;margin-bottom:9px}
+ .icon-blue{background:#e7f0ff;color:#2860b7}.icon-green{background:#e4f7ee;color:#178153}.icon-violet{background:#f0eaff;color:#7252b5}.icon-orange{background:#fff1df;color:#bb761c}.icon-red{background:#ffebeb;color:#b34c4c}.icon-teal{background:#e1f6f5;color:#16817c}
+ .mobile-action-grid strong{font-size:12px;color:#1c304d}
+ .mobile-action-grid small{font-size:9px;color:#7a8799;margin-top:2px}
+ .mobile-help-head{margin-top:24px}
+ .mobile-help-card{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px;border-radius:15px;background:#fff;border:1px solid #e8eef4}
+ .mobile-help-card strong,.mobile-help-card small{display:block}
+ .mobile-help-card strong{font-size:12px;color:#1c304d}
+ .mobile-help-card small{font-size:9px;color:#77869a;margin-top:4px}
+ .mobile-help-card>a{padding:9px 12px;border-radius:9px;background:#16845a;color:#fff;font-size:10px;font-weight:800;white-space:nowrap}
+ .mobile-apk-link{display:block;text-align:center;margin:14px 0 0;padding:11px;border:1px solid #dce5ee;border-radius:11px;color:#3b5877;font-size:10px;font-weight:750;background:#fff}
+ /* The desktop marketing hero remains available on larger screens; mobile opens directly into the app dashboard. */
+ .hero,.service-visuals{display:none!important}
+ .app-bottom-nav{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:10px;right:10px;bottom:8px;z-index:1300;padding:8px 4px calc(8px + env(safe-area-inset-bottom));border:1px solid #e3eaf2;border-radius:18px;background:rgba(255,255,255,.97);backdrop-filter:blur(18px);box-shadow:0 8px 28px rgba(20,43,74,.15)}
+ .app-bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:2px;color:#687991;font-size:9px;font-weight:750}
+ .app-bottom-nav a span{font-size:20px;line-height:1.1;color:#173d70}
+ .app-bottom-nav a small{font-size:9px}
+ .section,.feature-section{padding:55px 17px}
+ .section-heading{margin-bottom:25px}
+ .course-grid{grid-template-columns:1fr;gap:13px}
+ .course-card{padding:21px;border-radius:15px}
+ .trust-strip{margin:0 16px;grid-template-columns:1fr;gap:12px;padding:18px}
+ .portal-grid{grid-template-columns:1fr!important}
+ .footer-main{padding-bottom:25px}
+}
+@media(max-width:370px){
+ .mobile-app-home{padding-left:13px;padding-right:13px}
+ .mobile-greeting h1{font-size:24px}
+ .mobile-action-grid>a{padding:12px}
+}
