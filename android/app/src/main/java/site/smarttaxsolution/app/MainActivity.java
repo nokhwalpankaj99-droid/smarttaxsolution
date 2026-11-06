@@ -102,7 +102,7 @@ public class MainActivity extends Activity {
             if(err!=null){target.setText("Profile details could not be loaded. "+err);return;}
             try{JSONArray a=new JSONArray(res);if(a.length()==0){target.setText("Email: "+prefs.getString("email","")+"\\nProfile details are not available yet.");return;}
                 JSONObject p=a.getJSONObject(0);
-                target.setText("Name: "+p.optString("full_name,"—")+"\\nEmail: "+prefs.getString("email","—")+"\\nMobile: "+p.optString("phone","—")+"\\nFather: "+p.optString("father_name","—")+"\\nMother: "+p.optString("mother_name","—")+"\\nAddress: "+p.optString("address","—"));
+                target.setText("Name: "+p.optString("full_name","—")+"\\nEmail: "+prefs.getString("email","—")+"\\nMobile: "+p.optString("phone","—")+"\\nFather: "+p.optString("father_name","—")+"\\nMother: "+p.optString("mother_name","—")+"\\nAddress: "+p.optString("address","—"));
             }catch(Exception e){target.setText("Could not read profile details.");}
         });
     }
