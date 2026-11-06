@@ -2,6 +2,8 @@ package site.smarttaxsolution.app;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.content.*;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -24,6 +26,8 @@ public class MainActivity extends Activity {
     private SharedPreferences prefs;
     private ExecutorService worker=Executors.newSingleThreadExecutor();
     private String current="Home";
+    private final Handler idleHandler=new Handler(Looper.getMainLooper());
+    private Runnable idleWarning,idleLogout;
     private final String[] tabs={"Home","Courses","Services","Profile"};
 
     @Override public void onCreate(Bundle b){super.onCreate(b);
@@ -34,6 +38,7 @@ public class MainActivity extends Activity {
         ScrollView sc=new ScrollView(this);sc.setFillViewport(true);body=new LinearLayout(this);body.setOrientation(1);sc.addView(body);
         root.addView(sc,new LinearLayout.LayoutParams(-1,0,1));nav=new LinearLayout(this);nav.setBackgroundColor(Color.WHITE);root.addView(nav,new LinearLayout.LayoutParams(-1,dp(62)));
         if(prefs.getString("access","").isEmpty())authScreen();else show("Home");
+        resetIdleTimer();
     }
     int dp(float n){return (int)(n*getResources().getDisplayMetrics().density+.5f);}
     GradientDrawable shape(int c,int r){GradientDrawable d=new GradientDrawable();d.setColor(c);d.setCornerRadius(dp(r));return d;}
@@ -85,11 +90,33 @@ public class MainActivity extends Activity {
         if(tab.equals("Home")){header("Your Tax, Simplified","Access your Smart Tax student account");card("▤","Courses & Exams","Browse published courses",()->show("Courses"));card("₹","Payment Status","Submit and track course payment on the portal",()->open("https://smarttaxsolution.site/student.html#payment"));card("▣","Certificates & Marksheet","View results and download documents",()->open("https://smarttaxsolution.site/student.html"));card("☎","WhatsApp Support","Chat with Smart Tax Solution",()->open("https://wa.me/919664029638"));}
         else if(tab.equals("Courses")){header("Courses & Exams","Published courses from your Smart Tax account");TextView loading=text("Loading published courses…",14,navy,false);pad(loading,18);body.addView(loading);loadCourses(loading);}
         else if(tab.equals("Services")){header("Services","Tax and accounting support");card("GST","GST Portal","Government portal",()->open("https://www.gst.gov.in/"));card("₹","Income Tax Portal","Government portal",()->open("https://www.incometax.gov.in/"));card("▦","Udyam Registration","MSME portal",()->open("https://udyamregistration.gov.in/"));card("☎","WhatsApp","96640 29638",()->open("https://wa.me/919664029638"));}
-        else{header("My Profile","Signed in student account");card("✉","Email",prefs.getString("email",""),()->{});card("↻","Refresh session","Sign out and sign in again if required",()->{});card("⇥","Sign Out","End this session on this device",()->{prefs.edit().clear().apply();authScreen();});}
+        else{header("My Profile","Your registered Smart Tax student details");TextView details=text("Loading profile…",14,navy,false);pad(details,18);body.addView(details);loadProfile(details);card("⇥","Sign Out","End this session on this device",()->logoutNow());}
         String[] glyph={"⌂","▤","▦","●"};for(int i=0;i<tabs.length;i++){final String n=tabs[i];TextView b=text(glyph[i]+"\n"+n,11,n.equals(tab)?blue:0xFF818A99,true);b.setGravity(17);nav.addView(b,new LinearLayout.LayoutParams(0,-1,1));b.setOnClickListener(v->show(n));}
     }
     void loadCourses(TextView target){request("GET","/rest/v1/courses?select=id,slug,title,description&is_published=eq.true&order=title.asc",null,prefs.getString("access",""),(res,err)->{if(err!=null){target.setText("Courses could not be loaded: "+err);return;}try{JSONArray a=new JSONArray(res);LinearLayout parent=(LinearLayout)target.getParent();parent.removeView(target);if(a.length()==0){TextView none=text("No courses are currently published.",14,navy,false);pad(none,18);parent.addView(none);return;}for(int i=0;i<a.length();i++){JSONObject c=a.getJSONObject(i);String title=c.optString("title"),desc=c.optString("description"),slug=c.optString("slug");card("▤",title,desc+"\nOpen the student portal to enrol, pay and take the exam.",()->open("https://smarttaxsolution.site/student.html"));}}catch(Exception ex){target.setText("Could not read the course list.");}});}
+    
+    void loadProfile(TextView target){
+        String uid=prefs.getString("uid","");
+        if(uid.isEmpty()){target.setText("Please sign in again to load your profile.");return;}
+        request("GET","/rest/v1/profiles?select=full_name,phone,father_name,mother_name,address&id=eq."+Uri.encode(uid),null,prefs.getString("access",""),(res,err)->{
+            if(err!=null){target.setText("Profile details could not be loaded. "+err);return;}
+            try{JSONArray a=new JSONArray(res);if(a.length()==0){target.setText("Email: "+prefs.getString("email","")+"\\nProfile details are not available yet.");return;}
+                JSONObject p=a.getJSONObject(0);
+                target.setText("Name: "+p.optString("full_name,"—")+"\\nEmail: "+prefs.getString("email","—")+"\\nMobile: "+p.optString("phone","—")+"\\nFather: "+p.optString("father_name","—")+"\\nMother: "+p.optString("mother_name","—")+"\\nAddress: "+p.optString("address","—"));
+            }catch(Exception e){target.setText("Could not read profile details.");}
+        });
+    }
+    void logoutNow(){idleHandler.removeCallbacksAndMessages(null);prefs.edit().clear().apply();authScreen();message("You have been signed out.");}
+    void resetIdleTimer(){
+        if(prefs==null||prefs.getString("access","").isEmpty())return;
+        idleHandler.removeCallbacksAndMessages(null);
+        idleWarning=()->new android.app.AlertDialog.Builder(this).setTitle("Session about to expire").setMessage("You have been inactive. Continue using the app?").setNegativeButton("Log out",(d,w)->logoutNow()).setPositiveButton("Continue",(d,w)->resetIdleTimer()).setOnCancelListener(d->resetIdleTimer()).show();
+        idleLogout=()->{if(!isFinishing()&&!prefs.getString("access","").isEmpty())logoutNow();};
+        idleHandler.postDelayed(idleWarning,9*60*1000L);idleHandler.postDelayed(idleLogout,10*60*1000L);
+    }
+    @Override public boolean dispatchTouchEvent(android.view.MotionEvent ev){if(ev.getAction()==android.view.MotionEvent.ACTION_DOWN)resetIdleTimer();return super.dispatchTouchEvent(ev);}
+    @Override public boolean dispatchKeyEvent(android.view.KeyEvent ev){if(ev.getAction()==android.view.KeyEvent.ACTION_DOWN)resetIdleTimer();return super.dispatchKeyEvent(ev);}
     void open(String u){try{startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(u)));}catch(Exception e){message("Unable to open this link.");}}
     @Override public void onBackPressed(){if(!prefs.getString("access","").isEmpty()&&!current.equals("Home"))show("Home");else super.onBackPressed();}
-    @Override protected void onDestroy(){super.onDestroy();worker.shutdownNow();}
+    @Override protected void onDestroy(){idleHandler.removeCallbacksAndMessages(null);super.onDestroy();worker.shutdownNow();}
 }
