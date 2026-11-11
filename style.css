@@ -202,3 +202,39 @@ h1 span{color:#173d70}.hero-copy>p{font-size:16px;line-height:1.8;color:#5d6b7f}
  .mobile-greeting h1{font-size:24px}
  .mobile-action-grid>a{padding:12px}
 }
+
+
+/* 2026 homepage polish: premium navy/gold hierarchy */
+:root{--ink:#142b49;--blue:#174a78;--teal:#13866f;--gold:#c49a56;--muted:#65758b}
+body{background:#fff;color:#172b45}
+.site-header{padding-top:13px;padding-bottom:13px}
+.site-header nav a{transition:color .2s ease,background .2s ease}
+.site-header nav>a:not(.nav-button):hover{color:#b18442}
+.app-welcome{background:linear-gradient(110deg,#eef4fa,#f8fafc 58%,#edf5f2);padding-top:17px;padding-bottom:17px}
+.app-welcome-inner{border-radius:15px;box-shadow:0 10px 30px rgba(20,43,74,.055);padding:18px 22px}
+.app-welcome-brand img{width:66px;height:54px}
+.app-download-button{border-radius:8px;background:#176b50}
+.hero{max-width:none;width:100%;margin:0;padding:76px max(30px,calc((100% - 1180px)/2)) 78px;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);gap:clamp(35px,6vw,85px);background:radial-gradient(ellipse at 82% 15%,rgba(75,128,170,.23),transparent 34%),linear-gradient(115deg,#102945,#173e63 58%,#102b49);color:#fff}
+.hero-copy{max-width:650px}
+.hero .eyebrow{color:#e0bd82;border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.07)}
+.hero h1{font-size:clamp(43px,5.2vw,67px);line-height:1.06;letter-spacing:-2.4px;color:#fff}
+.hero h1 span{color:#e9c47f}
+.hero-copy>p:not(.note){color:#dce7f2;font-size:16px;line-height:1.85}
+.hero .note{color:#c0d0df!important}
+.hero-actions .primary{background:#e7c17c;color:#142b49;box-shadow:0 9px 24px rgba(0,0,0,.14)}
+.hero-actions .secondary{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);color:#fff}
+.hero-showcase{justify-self:end;max-width:560px;border:1px solid rgba(255,255,255,.25);border-radius:18px!important;box-shadow:0 28px 65px rgba(0,0,0,.25)}
+.showcase-slideshow{height:350px}
+.showcase-points{font-size:11px;padding:15px 10px}
+.service-visuals{padding:76px max(22px,calc((100% - 1180px)/2));background:linear-gradient(180deg,#f6f8fb,#fff)}
+.service-visual-grid{max-width:1180px;gap:18px}
+.service-visual{min-height:250px;border-radius:13px}
+.service-visual h3{font-size:19px}
+.all-services-wrap{max-width:1180px;padding-left:0;padding-right:0}
+.all-services-grid a{border-radius:10px;box-shadow:0 5px 18px rgba(20,43,74,.035)}
+.section{max-width:1180px}
+.course-card{box-shadow:0 6px 22px rgba(20,43,74,.035)}
+.course-card h3{color:#172b45}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding:55px 24px;gap:30px}.hero-showcase{justify-self:stretch;max-width:none}.app-welcome-inner{grid-template-columns:1fr 1.5fr}}
+@media(max-width:620px){body{background:#f4f7fb}.site-header{padding:9px 15px}.mobile-app-home{padding-top:17px}.mobile-greeting h1{font-size:28px;line-height:1.14}.mobile-feature-card{background:linear-gradient(120deg,#102b4b,#17647a);border-radius:15px}.mobile-action-grid>a{border-radius:13px;box-shadow:0 4px 15px rgba(20,43,74,.045)}.mobile-help-card{border-radius:13px}.app-bottom-nav{border-radius:15px}}
+@media(prefers-reduced-motion:reduce){.service-visual:before,.service-visual,.button{transition:none!important}}
