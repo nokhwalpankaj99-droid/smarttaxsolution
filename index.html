@@ -60,36 +60,7 @@
 @media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:55px;padding-bottom:55px;gap:30px}.hero-showcase{justify-self:start;max-width:100%}.showcase-slideshow{height:300px}}
 @media(max-width:560px){.hero{min-height:auto;padding:42px 20px}.hero h1{font-size:39px}.showcase-slideshow{height:245px}.showcase-points{font-size:10px}.service-visuals{padding:48px 18px}}
 .showcase-captions{display:block;min-height:105px}.caption-slide{position:absolute;left:28px;right:20px;bottom:36px;display:grid;gap:7px;opacity:0;animation:captionCycle 18s infinite}.caption-slide span{font-size:10px;letter-spacing:2px;color:#f2c66d;font-weight:800}.caption-slide strong{font-size:clamp(22px,2.4vw,29px);line-height:1.1;color:#fff}.caption-slide small{font-size:13px;color:#e4edf7}.caption-a{animation-delay:0s}.caption-b{animation-delay:4.5s}.caption-c{animation-delay:9s}.caption-d{animation-delay:13.5s}@keyframes captionCycle{0%,3%{opacity:0;transform:translateY(10px)}7%,21%{opacity:1;transform:translateY(0)}25%,100%{opacity:0;transform:translateY(-7px)}}@media(prefers-reduced-motion:reduce){.caption-slide{animation:none;opacity:0}.caption-a{opacity:1}}@media(prefers-reduced-motion:reduce){.showcase-frame,.showcase-progress i,.hero-showcase{animation:none}.frame-one{opacity:1}}
-</style>
-<style>
-/* Diwali & Dhanteras full-screen festive offer carousel */
-.festive-fullscreen{position:relative;min-height:88vh;overflow:hidden;display:grid;place-items:center;text-align:center;color:#fff;background:#101b3c;isolation:isolate}
-.festive-slide{position:absolute;inset:0;display:grid;place-items:center;padding:34px 20px;opacity:0;animation:festiveCycle 16s infinite}
-.festive-slide.di-slide{background:radial-gradient(circle at 50% 75%,rgba(255,174,36,.38),transparent 30%),linear-gradient(135deg,#071b49,#123d75 55%,#4a1648)}
-.festive-slide.dhan-slide{background:radial-gradient(circle at 50% 72%,rgba(255,195,58,.35),transparent 31%),linear-gradient(135deg,#4b071b,#9b2419 55%,#3d102e);animation-delay:8s}
-.festive-slide:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#ffd979 1px,transparent 1.8px),radial-gradient(#fff0bb 1px,transparent 1.8px);background-size:70px 70px,113px 113px;background-position:0 0,35px 42px;opacity:.35;animation:starDrift 18s linear infinite}
-.festive-inner{position:relative;z-index:1;max-width:1000px;text-shadow:0 4px 20px #170b22}
-.festive-kicker{letter-spacing:4px;font-size:clamp(12px,2vw,17px);font-weight:800;color:#ffe5a1}
-.festive-title{font-size:clamp(48px,9vw,112px);line-height:1.03;margin:18px 0;color:#ffdc78;font-family:Georgia,serif;text-shadow:0 5px 0 #8a420e,0 12px 35px #000}
-.festive-inner p{font-size:clamp(17px,2.5vw,25px);color:#fff7e8}
-.festive-lamps{font-size:clamp(30px,6vw,64px);letter-spacing:15px;margin:18px 0;animation:lampGlow 2s ease-in-out infinite alternate}
-.festive-offer{display:inline-block;margin:16px auto;padding:14px 25px;border:1px solid #ffe29a;border-radius:40px;background:linear-gradient(90deg,#9b4a0a,#d28a17);font-weight:800;font-size:clamp(15px,2vw,21px);box-shadow:0 8px 30px #090c22}
-.festive-inner a{display:inline-block;margin-top:12px;padding:13px 26px;border-radius:30px;background:#fff4d8;color:#57200c;text-decoration:none;font-weight:900;text-shadow:none}
-.festive-brand{margin-top:20px;font-weight:800;letter-spacing:2px;color:#ffe8b0}
-@keyframes festiveCycle{0%,5%{opacity:0;transform:scale(1.04)}10%,44%{opacity:1;transform:scale(1)}50%,100%{opacity:0;transform:scale(1.04)}}
-@keyframes lampGlow{from{filter:drop-shadow(0 0 5px #ffb52e)}to{filter:drop-shadow(0 0 22px #ffd35e)}}
-@keyframes starDrift{to{background-position:70px 70px,148px 155px}}
-.festive-note{padding:12px 18px;text-align:center;background:#fff4d8;color:#6e390c;font-weight:700}
-.festive-fullscreen[hidden],.festive-note[hidden]{display:none!important}
-.festive-upcoming{display:none;position:absolute;inset:0;z-index:3;place-items:center;padding:30px 20px;background:radial-gradient(circle at 50% 70%,rgba(255,190,65,.35),transparent 32%),linear-gradient(135deg,#102b55,#4b1648);text-align:center}
-.festive-fullscreen.is-upcoming .festive-slide{display:none}
-.festive-fullscreen.is-upcoming .festive-upcoming{display:grid}
-.festive-upcoming h2{font: bold clamp(42px,8vw,90px)/1.05 Georgia,serif;color:#ffdc78;margin:18px 0}
-.festive-upcoming p{font-size:clamp(17px,2.4vw,24px);color:#fff7e8}
-.festive-upcoming .festive-offer{background:linear-gradient(90deg,#174b78,#b87919)}
-.offer-price{color:#1769aa!important;font-weight:900}
-@media(prefers-reduced-motion:reduce){.festive-slide{animation:none;opacity:0}.festive-slide.di-slide{opacity:1}.festive-slide:before,.festive-lamps{animation:none}}
-</style>  <link rel="manifest" href="/manifest.webmanifest">
+</style></style>  <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b315e">
 </head>
 <body>
@@ -113,26 +84,6 @@
 
   <main>
 
-    <section class="festive-fullscreen" id="festiveBanner" aria-label="Diwali and Dhanteras festive offers" hidden>
-      <div class="festive-upcoming"><div class="festive-inner"><div class="festive-kicker">✨ COMING SOON • SMART TAX SOLUTION ✨</div><div class="festive-lamps">🪔 ✨ 🪔</div><h2>FESTIVE OFFERS<br>COMING SOON</h2><p>Diwali & Dhanteras celebrations begin on 06 November 2026.</p><div class="festive-offer">UPCOMING OFFER • 06–15 NOVEMBER 2026</div><div class="festive-brand">SMART TAX SOLUTION</div></div></div>
-      <div class="festive-slide di-slide"><div class="festive-inner">
-        <div class="festive-kicker">✨ FESTIVE CELEBRATION • SMART TAX SOLUTION ✨</div>
-        <div class="festive-lamps">🪔 ✨ 🪔</div>
-        <h1 class="festive-title">HAPPY DIWALI</h1>
-        <p>May your celebrations shine with happiness, prosperity and success.</p>
-        <div class="festive-offer">DIWALI SPECIAL • UP TO 20% OFF ON SELECTED COURSES</div><br>
-        <a href="#courses">EXPLORE FESTIVE OFFERS</a><div class="festive-brand">SMART TAX SOLUTION</div>
-      </div></div>
-      <div class="festive-slide dhan-slide"><div class="festive-inner">
-        <div class="festive-kicker">🌟 DHANTERAS SPECIAL • SMART TAX SOLUTION 🌟</div>
-        <div class="festive-lamps">🪔 💰 🪔</div>
-        <h1 class="festive-title">HAPPY DHANTERAS</h1>
-        <p>Wishing you wealth, good fortune and new beginnings.</p>
-        <div class="festive-offer">LEARN MORE • SAVE MORE • GROW WITH CONFIDENCE</div><br>
-        <a href="#courses">VIEW COURSE DEALS</a><div class="festive-brand">SMART TAX SOLUTION</div>
-      </div></div>
-    </section>
-    <div class="festive-note" id="festiveNote" hidden>🪔 Festive Learning Offers • Special course pricing available through 15 November 2026 • Enrol via Student Portal / WhatsApp</div>
     <section id="download-app" class="app-welcome">
       <div class="app-welcome-inner">
         <div class="app-welcome-brand"><img src="assets/smart-tax-solution-logo.svg" alt="Smart Tax Solution"><div><strong>Smart Tax Solution</strong><small>Your tax & learning companion</small></div></div>
@@ -232,10 +183,10 @@
       </div>
       <div class="section-heading" style="margin-top:48px"><span class="eyebrow">STUDENT LEARNING PROGRAMS</span><h2>Course Fees</h2><p>Introductory pricing for our GST and Income Tax learning programs. Certificate and marksheet are included for eligible students who pass the assessment.</p></div>
       <div class="course-grid">
-        <article class="course-card"><span class="course-tag">INDIVIDUAL COURSE</span><h3>GST Complete Course</h3><p><strong class="offer-price" data-regular="₹999" data-offer="₹799" style="font-size:30px">₹999</strong> <span class="offer-was" data-regular="₹1,499" data-offer="₹1,499" style="color:#7b8794;text-decoration:line-through;display:none">₹1,499</span></p><ul><li>GST learning material</li><li>Online assessment</li><li>Digital certificate and marksheet on passing</li></ul><a href="student.html" class="text-link">Student Portal <span>→</span></a></article>
-        <article class="course-card"><span class="course-tag">INDIVIDUAL COURSE</span><h3>Income Tax Complete Course</h3><p><strong class="offer-price" data-regular="₹999" data-offer="₹799" style="font-size:30px">₹999</strong> <span class="offer-was" data-regular="₹1,499" data-offer="₹1,499" style="color:#7b8794;text-decoration:line-through;display:none">₹1,499</span></p><ul><li>Income Tax learning material</li><li>Online assessment</li><li>Digital certificate and marksheet on passing</li></ul><a href="student.html" class="text-link">Student Portal <span>→</span></a></article>
-        <article class="course-card"><span class="course-tag">COMBO OFFER</span><h3>GST + Income Tax Combo</h3><p><strong class="offer-price" data-regular="₹1,999" data-offer="₹1,599" style="font-size:30px">₹1,999</strong> <span class="offer-was" data-regular="₹2,999" data-offer="₹2,999" style="color:#7b8794;text-decoration:line-through;display:none">₹2,999</span></p><ul><li>Both course learning materials</li><li>Assessments for both courses</li><li>Digital certificate and marksheet on passing each course</li></ul><a href="student.html" class="text-link">Student Portal <span>→</span></a></article>
-        <article class="course-card"><span class="course-tag">PRACTICAL SOFTWARE COURSE</span><h3>Complete Accounting Course</h3><p><strong class="offer-price" data-regular="₹1,999" data-offer="₹1,599" style="font-size:30px">₹1,999</strong> <span class="offer-was" data-regular="₹3,499" data-offer="₹3,499" style="color:#7b8794;text-decoration:line-through;display:none">₹3,499</span></p><ul><li>Tally Prime & BUSY Accounting</li><li>GST, purchase & sales entries</li><li>Inventory, banking & reconciliation</li><li>Accounting reports and other software</li></ul><a href="student.html" class="text-link">Enrol via Student Portal <span>→</span></a></article>
+        <article class="course-card"><span class="course-tag">INDIVIDUAL COURSE</span><h3>GST Complete Course</h3><p><strong style="font-size:30px;color:#1769aa">₹999</strong></p><ul><li>GST learning material</li><li>Online assessment</li><li>Digital certificate and marksheet on passing</li></ul><a href="student.html" class="text-link">Student Portal <span>→</span></a></article>
+        <article class="course-card"><span class="course-tag">INDIVIDUAL COURSE</span><h3>Income Tax Complete Course</h3><p><strong style="font-size:30px;color:#1769aa">₹999</strong></p><ul><li>Income Tax learning material</li><li>Online assessment</li><li>Digital certificate and marksheet on passing</li></ul><a href="student.html" class="text-link">Student Portal <span>→</span></a></article>
+        <article class="course-card"><span class="course-tag">COMBO COURSE</span><h3>GST + Income Tax Combo</h3><p><strong style="font-size:30px;color:#1769aa">₹1,999</strong></p><ul><li>Both course learning materials</li><li>Assessments for both courses</li><li>Digital certificate and marksheet on passing each course</li></ul><a href="student.html" class="text-link">Student Portal <span>→</span></a></article>
+        <article class="course-card"><span class="course-tag">PRACTICAL SOFTWARE COURSE</span><h3>Complete Accounting Course</h3><p><strong style="font-size:30px;color:#1769aa">₹1,999</strong></p><ul><li>Tally Prime & BUSY Accounting</li><li>GST, purchase & sales entries</li><li>Inventory, banking & reconciliation</li><li>Accounting reports and other software</li></ul><a href="student.html" class="text-link">Enrol via Student Portal <span>→</span></a></article>
       </div>
       <p class="portal-disclaimer" style="text-align:center;margin-top:18px">Introductory fees. No separate certificate or marksheet fee for eligible students. For enrolment and payment instructions, contact Smart Tax Solution at <a href="https://wa.me/919664029638?text=Hello%2C%20I%20want%20to%20enrol%20in%20a%20course." target="_blank" rel="noopener noreferrer">WhatsApp 96640-29638</a>. Online payment is not available through this page.</p>
     </section>
@@ -334,73 +285,7 @@
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 (async()=>{try{const sb=window.supabase.createClient("https://jbjergbqjokxxcvntimk.supabase.co","sb_publishable_wOwWiLuundz06ABsksvrbQ_2oXiV_5k");const {data}=await sb.auth.getSession();if(data.session?.user){location.replace("student.html?message="+encodeURIComponent("Please logout from the Student Portal before accessing the main website."));}}catch(e){console.warn("Student session check unavailable",e);}})();
-</script><script>
-(function(){
- const now=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
- const day=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
- const starts=day>="2026-11-06", active=day>="2026-11-06"&&day<="2026-11-15";
- const banner=document.getElementById("festiveBanner"), note=document.getElementById("festiveNote");
- if(banner){banner.hidden=day>"2026-11-15";banner.classList.toggle("is-upcoming",!starts&&day<="2026-11-15");}
- if(note)note.hidden=day<"2026-11-06"||day>"2026-11-15";
- document.querySelectorAll(".offer-price").forEach(el=>{el.textContent=active?el.dataset.offer:el.dataset.regular;});
- document.querySelectorAll(".offer-was").forEach(el=>{el.style.display=active?"inline":"none";el.textContent=el.dataset.regular;});
-})();
-</script>
-
-<style>
-/* Festive course-offer notification popup */
-.sts-offer-overlay{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(5,14,32,.72);backdrop-filter:blur(3px)}
-.sts-offer-overlay.is-visible{display:flex}
-.sts-offer-popup{position:relative;width:min(760px,96vw);max-height:90vh;overflow:auto;border-radius:15px;background:#fff;box-shadow:0 24px 75px rgba(0,0,0,.38);font-family:inherit}
-.sts-offer-top{padding:23px 26px 20px;text-align:center;color:#fff;background:linear-gradient(120deg,#092b5b,#1264a4 58%,#d18419)}
-.sts-offer-top .mini{font-size:11px;font-weight:800;letter-spacing:2px;color:#ffe5a4}
-.sts-offer-top h2{margin:8px 0 5px;font-size:clamp(27px,5vw,42px);line-height:1.1;color:#fff}
-.sts-offer-top p{margin:0;color:#fff4dc;font-size:14px}
-.sts-offer-close{position:absolute;right:12px;top:12px;width:34px;height:34px;border:0;border-radius:50%;background:#fff;color:#183b66;font-size:25px;line-height:1;cursor:pointer;z-index:2}
-.sts-offer-body{padding:22px 26px 24px}
-.sts-offer-ribbon{text-align:center;margin:-2px 0 15px;color:#9a4c08;font-weight:900;letter-spacing:1px;font-size:13px}
-.sts-offer-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.sts-offer-item{padding:13px 14px;border:1px solid #dce6f1;border-radius:10px;background:#f7faff}
-.sts-offer-item h3{margin:0 0 9px;color:#173b68;font-size:15px;line-height:1.3}
-.sts-offer-prices{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-.sts-offer-old{font-size:13px;color:#7b8794;text-decoration:line-through}
-.sts-offer-new{font-size:24px;font-weight:900;color:#0b6c43}
-.sts-offer-foot{margin:17px 0 0;text-align:center;color:#596b80;font-size:12px}
-.sts-offer-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:17px}
-.sts-offer-actions a{display:inline-block;padding:12px 22px;border-radius:7px;background:#0d5592;color:#fff;text-decoration:none;font-weight:800}
-.sts-offer-actions a.secondary{background:#eef3f8;color:#173b68}
-@media(max-width:560px){.sts-offer-body{padding:18px 15px}.sts-offer-list{grid-template-columns:1fr}.sts-offer-top{padding:25px 17px 18px}.sts-offer-popup{max-height:92vh}}
-</style>
-<div class="sts-offer-overlay" id="stsOfferPopup" role="dialog" aria-modal="true" aria-labelledby="stsOfferTitle">
- <div class="sts-offer-popup">
-  <button class="sts-offer-close" id="stsOfferClose" aria-label="Close offer notification">×</button>
-  <div class="sts-offer-top"><div class="mini">🪔 FESTIVE SPECIAL • SMART TAX SOLUTION</div><h2 id="stsOfferTitle">DIWALI & DHANTERAS OFFERS</h2><p>Upgrade your skills. Learn more. Save more!</p></div>
-  <div class="sts-offer-body">
-   <div class="sts-offer-ribbon">LIMITED PERIOD COURSE FEE OFFERS • 06–15 NOVEMBER 2026</div>
-   <div class="sts-offer-list">
-    <div class="sts-offer-item"><h3>Complete Accounting Course</h3><div class="sts-offer-prices"><span class="sts-offer-old">₹3,499</span><span class="sts-offer-new">₹1,599</span></div></div>
-    <div class="sts-offer-item"><h3>GST + Income Tax Combo</h3><div class="sts-offer-prices"><span class="sts-offer-old">₹2,999</span><span class="sts-offer-new">₹1,599</span></div></div>
-    <div class="sts-offer-item"><h3>GST Complete Course</h3><div class="sts-offer-prices"><span class="sts-offer-old">₹1,499</span><span class="sts-offer-new">₹799</span></div></div>
-    <div class="sts-offer-item"><h3>Income Tax Complete Course</h3><div class="sts-offer-prices"><span class="sts-offer-old">₹1,499</span><span class="sts-offer-new">₹799</span></div></div>
-   </div>
-   <p class="sts-offer-foot">Offer prices valid from 06 November to 15 November 2026 only. Terms and course details apply.</p>
-   <div class="sts-offer-actions"><a href="student.html">ENROL NOW</a><a class="secondary" href="#courses" id="stsOfferExplore">VIEW COURSE DETAILS</a></div>
-  </div>
- </div>
-</div>
-<script>
-(function(){
- const popup=document.getElementById("stsOfferPopup"),close=document.getElementById("stsOfferClose");
- if(!popup||!close)return;
- const now=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
- const day=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
- if(day>="2026-11-05"&&day<="2026-11-15"&&!sessionStorage.getItem("stsFestiveOfferClosed"))popup.classList.add("is-visible");
- function dismiss(){popup.classList.remove("is-visible");sessionStorage.setItem("stsFestiveOfferClosed","1");}
- close.addEventListener("click",dismiss);
- popup.addEventListener("click",e=>{if(e.target===popup)dismiss();});
- document.addEventListener("keydown",e=>{if(e.key==="Escape"&&popup.classList.contains("is-visible"))dismiss();});
- document.getElementById("stsOfferExplore")?.addEventListener("click",dismiss);
-})();
+</script></script>
 </script>
 <script>
 (function(){
