@@ -15,6 +15,11 @@ body{background:#f3f6fa;color:var(--ink);font-family:Arial,sans-serif}.site-head
 .job-list-note{background:#fff8e7;border:1px solid #f2d48b;padding:10px;font-size:12px;color:#674d13}
 @media(max-width:650px){.formgrid{grid-template-columns:1fr}.quick-links{grid-template-columns:repeat(2,1fr)}.portal-brand h1{font-size:22px}}
 
+/* Logo visibility fix: original SVG uses navy lettering, so give it a clean white backing */
+.site-header .brand{display:flex!important;align-items:center!important;flex:0 0 auto!important;background:#fff!important;padding:5px 12px!important;border-radius:7px!important;min-height:58px!important;}
+.site-header .brand-logo{display:block!important;width:285px!important;height:auto!important;max-height:58px!important;object-fit:contain!important;opacity:1!important;visibility:visible!important;filter:none!important;}
+@media(max-width:760px){.site-header .brand{min-height:50px!important;padding:4px 8px!important}.site-header .brand-logo{width:215px!important;max-height:48px!important}}
+@media(max-width:390px){.site-header .brand-logo{width:180px!important}}
 /* High-contrast job portal header: keep logo and navigation crisp */
 .site-header{background:#123b70!important;color:#fff!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;opacity:1!important;filter:none!important;box-shadow:0 2px 8px rgba(10,30,55,.16)}
 .site-header .brand,.site-header .brand-logo,.site-header nav,.site-header nav a{opacity:1!important;filter:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;text-shadow:none!important}
