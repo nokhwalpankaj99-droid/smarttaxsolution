@@ -80,7 +80,7 @@ $("signIn").onclick=async()=>{
  catch(e){status("Login process error: "+(e?.message||"Refresh karke dobara try karein."));}
  finally{$("signIn").disabled=false;}
 };
-function readStructuredJobData(desc){const m=String(desc||'').match(/\n?\[SMART_TAX_JOB_DATA:([A-Za-z0-9%._~-]+)\]/);if(!m)return{};try{return JSON.parse(decodeURIComponent(m[1]));}catch{return{};}}
+function readStructuredJobData(desc){const m=String(desc||'').match(/\n?\[SMART_TAX_JOB_DATA:([^\]]+)\]/);if(!m)return{};try{return JSON.parse(decodeURIComponent(m[1]));}catch{return{};}}
 function writeStructuredJobData(desc,data){const clean=String(desc||'').replace(/\n?\[SMART_TAX_JOB_DATA:([^\]]+)\]/g,'').trim();const has=Object.values(data).some(v=>String(v||'').trim());return clean+(has?'\n\n[SMART_TAX_JOB_DATA:'+encodeURIComponent(JSON.stringify(data))+']':'');}
 function clearJobDetailInputs(){['jobVacancyCount','jobPostWise','jobAgeLimit','jobFee','jobDates','jobSelection','jobNotification','jobApplyUrl'].forEach(id=>{const el=$(id);if(el)el.value='';});}
 let editingJobId=null;function jobEsc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
