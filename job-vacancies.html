@@ -179,6 +179,48 @@ body{background:linear-gradient(180deg,#edf3f9 0,#f7f9fc 430px,#f4f7fb 100%);col
 @media(max-width:370px){.career-hub-grid{grid-template-columns:1fr}.career-hub-card{min-height:88px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.career-hub-card,.category-tiles a,.job,.jobs button{transition:none}}
 
+
+/* State / UT names: high-contrast, readable labels */
+#stateCards .state-card{
+  color:#102b4c !important;
+  background:#ffffff !important;
+  border:1px solid #b8cadd !important;
+  text-align:left;
+}
+#stateCards .state-card.has-vacancies{
+  background:#f0f7ff !important;
+  border-color:#8fb4d8 !important;
+}
+#stateCards .state-card.no-vacancies{
+  background:#f7f9fc !important;
+  border-style:dashed !important;
+}
+#stateCards .state-card b{
+  display:block;
+  color:#102b4c !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  line-height:1.35;
+  letter-spacing:.005em;
+}
+#stateCards .state-card small{
+  color:#40566e !important;
+  font-size:12px !important;
+  font-weight:600;
+  line-height:1.4;
+}
+#stateCards .state-card .state-count{
+  color:#ffffff !important;
+  background:#145a91 !important;
+  min-width:30px;
+  text-align:center;
+}
+#stateCards .state-card.has-vacancies .state-count{background:#087443 !important}
+#stateCards .state-card.no-vacancies .state-count{background:#65758a !important}
+#stateCards .state-card:focus-visible{
+  outline:3px solid #16a6b6;
+  outline-offset:3px;
+}
 </style></head><body><header class="site-header"><a class="brand" href="index.html"><img class="brand-logo" src="assets/smart-tax-solution-logo.svg" alt="Smart Tax Solution"></a><nav><a href="index.html">Home</a><a href="student.html">Student Portal</a><a href="admin.html">Admin</a></nav></header><main class="jobs">
 <section class="portal-top">
  <div class="portal-brand"><div><h1>SMART TAX JOB ALERT</h1><p>INDIA’S CAREER &amp; RECRUITMENT INFORMATION PLATFORM · JOBS · EXAMS · RESULTS · CAREER UPDATES</p></div><div style="font-size:13px;font-weight:700">OFFICIAL-SOURCE FIRST · ALL INDIA</div></div>
