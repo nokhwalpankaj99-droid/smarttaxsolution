@@ -12,6 +12,8 @@
 <meta name="twitter:title" content="Smart Tax Job Alert | Jobs Across India">
 <meta name="twitter:description" content="Verified government and private job alerts, state-wise recruitment and official apply links across India.">
 <link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://jbjergbqjokxxcvntimk.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -95,7 +97,12 @@ body{background:#f3f6fa;color:var(--ink);font-family:Arial,sans-serif}.site-head
 .job-summary-title{font-size:17px;font-weight:700;color:#123b70;margin:16px 0 8px}
 .job-summary-note{font-size:12px;color:#64748b;margin:7px 0 0}
 
-\n/* Clear state-wise hierarchy: active locations first, empty locations subdued */\n.state-card{min-height:76px;transition:background .15s,border-color .15s,transform .15s}.state-card.has-vacancies{background:#f0f7ff;border-color:#9dbfe3}.state-card.has-vacancies .state-count{background:#087443}.state-card.no-vacancies{background:#fafbfd;color:#64748b;border-style:dashed}.state-card.no-vacancies .state-count{background:#7b8794}.department-card{min-height:70px}.department-card .state-count{background:#245b91}\n</style></head><body><header class="site-header"><a class="brand" href="index.html"><img class="brand-logo" src="assets/smart-tax-solution-logo.svg" alt="Smart Tax Solution"></a><nav><a href="index.html">Home</a><a href="student.html">Student Portal</a><a href="admin.html">Admin</a></nav></header><main class="jobs">
+\n/* Clear state-wise hierarchy: active locations first, empty locations subdued */\n.state-card{min-height:76px;transition:background .15s,border-color .15s,transform .15s}.state-card.has-vacancies{background:#f0f7ff;border-color:#9dbfe3}.state-card.has-vacancies .state-count{background:#087443}.state-card.no-vacancies{background:#fafbfd;color:#64748b;border-style:dashed}.state-card.no-vacancies .state-count{background:#7b8794}.department-card{min-height:70px}.department-card .state-count{background:#245b91}\n
+/* Rendering optimisation for long, card-heavy vacancy lists */
+.job{content-visibility:auto;contain-intrinsic-size:auto 300px}
+.portal-section{content-visibility:auto;contain-intrinsic-size:auto 420px}
+@media(prefers-reduced-motion:reduce){.job,.portal-section{scroll-behavior:auto}}
+</style></head><body><header class="site-header"><a class="brand" href="index.html"><img class="brand-logo" src="assets/smart-tax-solution-logo.svg" alt="Smart Tax Solution"></a><nav><a href="index.html">Home</a><a href="student.html">Student Portal</a><a href="admin.html">Admin</a></nav></header><main class="jobs">
 <section class="portal-top">
  <div class="portal-brand"><div><h1>SMART TAX JOB ALERT</h1><p>Central Govt • State Govt • PSU • Banking • Defence • Teaching • Private • All India</p></div><div style="font-size:13px;font-weight:700">Verified Source Listings</div></div>
  <section class="portal-section" aria-label="About Smart Tax Job Alert in Hindi and English"><h2>All India Government & Private Jobs | भारत में सरकारी और प्राइवेट नौकरियाँ</h2><p class="meta">Browse state-wise and department-wise recruitment, eligibility, salary, important dates and official application links. यहाँ राज्य-वार और विभाग-वार भर्तियाँ, योग्यता, वेतन, महत्वपूर्ण तिथियाँ और आधिकारिक आवेदन लिंक देखें। Smart Tax Job Alert is an independent information service; always verify details on the recruiting authority’s official website.</p></section>
