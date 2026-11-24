@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+<title id="title">Guru Nanak Dev Ji Prakash Parv greetings — Smart Tax Solution</title>
+<desc id="desc">A blue and gold devotional greeting with the Golden Temple, Guru Nanak Dev Ji inspired symbolic portrait and the original Smart Tax Solution logo.</desc>
+<defs>
+ <linearGradient id="sky" x2="1" y2="1"><stop stop-color="#061b45"/><stop offset=".55" stop-color="#164c83"/><stop offset="1" stop-color="#f0a54b"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#fff3bd" stop-opacity=".9"/><stop offset="1" stop-color="#f7bd54" stop-opacity="0"/></radialGradient>
+ <linearGradient id="gold" x2="0" y2="1"><stop stop-color="#fff0a5"/><stop offset=".5" stop-color="#e9ae39"/><stop offset="1" stop-color="#9b5d13"/></linearGradient>
+ <linearGradient id="water" x2="0" y2="1"><stop stop-color="#f5c46b"/><stop offset="1" stop-color="#0b3e70"/></linearGradient>
+ <filter id="shadow"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#sky)"/>
+<circle cx="1180" cy="330" r="390" fill="url(#glow)"/>
+<g opacity=".2" fill="none" stroke="#f8d98a"><circle cx="340" cy="355" r="260"/><circle cx="340" cy="355" r="230"/><circle cx="340" cy="355" r="200"/></g>
+<!-- symbolic portrait silhouette -->
+<g transform="translate(75 110)">
+ <ellipse cx="270" cy="685" rx="260" ry="42" fill="#071936" opacity=".55" filter="url(#shadow)"/>
+ <path d="M50 760 Q65 570 155 520 Q190 485 192 425 L350 425 Q355 500 410 530 Q505 600 510 760Z" fill="#174d89" stroke="#d8a640" stroke-width="7"/>
+ <path d="M150 260 Q155 115 270 100 Q395 110 400 265 L385 380 Q360 465 270 470 Q175 460 150 380Z" fill="#e6b77b"/>
+ <path d="M130 270 Q95 95 270 42 Q455 90 415 270 Q370 210 270 205 Q185 205 130 270Z" fill="#f2b943" stroke="#ffdf8b" stroke-width="10"/>
+ <path d="M135 275 Q90 225 125 155 Q150 80 265 55 Q390 75 420 165 Q445 235 405 285 Q360 235 270 225 Q190 220 135 275Z" fill="#e8a72f"/>
+ <path d="M185 305 Q220 280 245 300 M295 300 Q330 280 355 305" fill="none" stroke="#54371f" stroke-width="10" stroke-linecap="round"/>
+ <path d="M260 305 Q245 355 270 365 Q292 365 285 350" fill="none" stroke="#9a6842" stroke-width="8"/>
+ <path d="M205 385 Q270 410 340 382 Q330 465 270 470 Q215 455 205 385Z" fill="#f7f0df"/>
+ <path d="M220 395 Q270 425 330 395 M230 425 Q270 450 320 425 M245 450 Q270 463 295 450" fill="none" stroke="#d7d0bd" stroke-width="8"/>
+ <path d="M150 530 Q270 615 395 530 L430 760 L90 760Z" fill="#f0a52f"/>
+ <path d="M65 585 Q120 530 185 520 L270 760 L80 760Z" fill="#0e3b70"/>
+ <path d="M430 585 Q380 530 350 520 L270 760 L475 760Z" fill="#0e3b70"/>
+ <path d="M65 360 Q45 420 78 470 Q110 495 140 450 L145 385Z" fill="#e7b67d" stroke="#f6d8a0" stroke-width="5"/>
+ <path d="M80 420 L118 410 M82 438 L120 430" stroke="#8c633b" stroke-width="5" stroke-linecap="round"/>
+ <text x="82" y="505" font-family="serif" font-size="45" fill="#123c76">ੴ</text>
+</g>
+<!-- temple and reflecting pool -->
+<g transform="translate(810 430)">
+ <path d="M-80 300 L690 300 L640 365 L-35 365Z" fill="#d99836" opacity=".7"/>
+ <rect x="0" y="165" width="610" height="140" fill="url(#gold)" stroke="#fff0a5" stroke-width="5"/>
+ <path d="M-35 165 L305 65 L645 165Z" fill="url(#gold)" stroke="#fff0a5" stroke-width="5"/>
+ <rect x="75" y="100" width="460" height="65" fill="#c98a2a" stroke="#ffe7a0" stroke-width="5"/>
+ <path d="M245 100 Q305 5 365 100Z" fill="url(#gold)" stroke="#fff0a5" stroke-width="5"/>
+ <path d="M305 10 L305 -55 M285 -35 L325 -35" stroke="#ffe8a2" stroke-width="9" stroke-linecap="round"/>
+ <g fill="#0b3768" stroke="#fff0a5" stroke-width="4"><path d="M100 305 V200 Q145 135 190 200 V305Z"/><path d="M225 305 V195 Q305 100 385 195 V305Z"/><path d="M420 305 V200 Q465 135 510 200 V305Z"/></g>
+ <g fill="none" stroke="#f8d889" stroke-width="5"><path d="M-30 190 H640 M-10 225 H620 M10 260 H600"/><path d="M30 165 V305 M580 165 V305"/></g>
+ <path d="M-70 370 Q300 390 680 370 L650 435 Q300 465 -35 435Z" fill="url(#water)" opacity=".88"/>
+ <path d="M45 390 H550 M100 412 H490 M185 435 H400" stroke="#ffe09a" stroke-width="5" opacity=".65"/>
+</g>
+<!-- message -->
+<g text-anchor="middle">
+ <text x="1110" y="115" fill="#f7d77d" font-family="Arial,sans-serif" font-size="27" font-weight="700" letter-spacing="8">ੴ • WAHEGURU JI • ੴ</text>
+ <text x="1110" y="205" fill="#fff7df" font-family="Noto Sans Devanagari, Mangal, sans-serif" font-size="56" font-weight="700">श्री गुरु नानक देव जी के</text>
+ <text x="1110" y="300" fill="#ffd36c" font-family="Noto Sans Devanagari, Mangal, sans-serif" font-size="88" font-weight="800">प्रकाश पर्व की</text>
+ <text x="1110" y="380" fill="#fff7df" font-family="Noto Sans Devanagari, Mangal, sans-serif" font-size="64" font-weight="700">हार्दिक शुभकामनाएँ</text>
+ <rect x="740" y="690" width="740" height="90" rx="45" fill="#071e48" stroke="#e8b64b" stroke-width="4"/>
+ <text x="1110" y="748" fill="#ffe6a0" font-family="Georgia,serif" font-size="34" font-weight="700" letter-spacing="2">HAPPY GURU NANAK GURPURAB</text>
+</g>
+<path d="M0 815 Q400 780 800 815 T1600 815 V900 H0Z" fill="#f6e6be"/>
+<rect x="0" y="815" width="1600" height="85" fill="#fff4d6" opacity=".85"/>
+<image x="500" y="822" width="600" height="74" xlink:href="smart-tax-solution-logo.svg" preserveAspectRatio="xMidYMid meet"/>
+</svg>
