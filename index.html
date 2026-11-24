@@ -63,6 +63,15 @@
 .showcase-captions{display:block;min-height:105px}.caption-slide{position:absolute;left:28px;right:20px;bottom:36px;display:grid;gap:7px;opacity:0;animation:captionCycle 18s infinite}.caption-slide span{font-size:10px;letter-spacing:2px;color:#f2c66d;font-weight:800}.caption-slide strong{font-size:clamp(22px,2.4vw,29px);line-height:1.1;color:#fff}.caption-slide small{font-size:13px;color:#e4edf7}.caption-a{animation-delay:0s}.caption-b{animation-delay:4.5s}.caption-c{animation-delay:9s}.caption-d{animation-delay:13.5s}@keyframes captionCycle{0%,3%{opacity:0;transform:translateY(10px)}7%,21%{opacity:1;transform:translateY(0)}25%,100%{opacity:0;transform:translateY(-7px)}}@media(prefers-reduced-motion:reduce){.caption-slide{animation:none;opacity:0}.caption-a{opacity:1}}@media(prefers-reduced-motion:reduce){.showcase-frame,.showcase-progress i,.hero-showcase{animation:none}.frame-one{opacity:1}}
 </style></style>  <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b315e">
+<style>
+/* Gentle looping motion for the Guru Nanak Gurpurab homepage greeting */
+#guru-nanak-prakash-parv .gurpurab-animated-poster{display:block;width:100%;height:auto;transform-origin:center;animation:gurpurabGlow 7s ease-in-out infinite;}
+#guru-nanak-prakash-parv>div{position:relative}
+#guru-nanak-prakash-parv>div:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 35%,rgba(255,238,173,.17) 48%,transparent 61%);transform:translateX(-110%);animation:gurpurabShimmer 6s ease-in-out infinite;}
+@keyframes gurpurabGlow{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.055);transform:scale(1.008)}}
+@keyframes gurpurabShimmer{0%,25%{transform:translateX(-110%)}75%,100%{transform:translateX(110%)}}
+@media(prefers-reduced-motion:reduce){#guru-nanak-prakash-parv .gurpurab-animated-poster,#guru-nanak-prakash-parv>div:after{animation:none}}
+</style>
 </head>
 <body>
   <header class="site-header">
@@ -115,7 +124,7 @@
     </section>
     <section id="guru-nanak-prakash-parv" aria-label="Guru Nanak Dev Ji Prakash Parv greetings" style="padding:24px clamp(12px,3vw,42px);background:linear-gradient(180deg,#f4f7fb,#e9eff7)">
       <div style="max-width:1440px;margin:0 auto;border:1px solid #d8c18a;border-radius:18px;overflow:hidden;box-shadow:0 18px 42px rgba(12,32,61,.16);background:#071b43">
-        <img src="assets/guru-nanak-gurpurab-poster.svg" alt="श्री गुरु नानक देव जी के प्रकाश पर्व की हार्दिक शुभकामनाएँ — Smart Tax Solution" width="1600" height="900" fetchpriority="high" style="display:block;width:100%;height:auto">
+        <img class="gurpurab-animated-poster" src="assets/guru-nanak-gurpurab-poster.svg" alt="श्री गुरु नानक देव जी के प्रकाश पर्व की हार्दिक शुभकामनाएँ — Smart Tax Solution" width="1600" height="900" fetchpriority="high">
       </div>
     </section>
     <section class="hero">
