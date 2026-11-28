@@ -1,5 +1,5 @@
-const CACHE_NAME = "smart-tax-shell-v3";
-const CORE = ["/", "/index.html", "/manifest.webmanifest", "/assets/smart-tax-solution-logo.svg", "/assets/guru-nanak-gurpurab-poster.svg"];
+const CACHE_NAME = "smart-tax-shell-v4";
+const CORE = ["/", "/index.html", "/manifest.webmanifest", "/assets/smart-tax-solution-logo.svg"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
 });
